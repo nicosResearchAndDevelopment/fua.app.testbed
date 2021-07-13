@@ -1,0 +1,68 @@
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:            <http://www.w3.org/2002/07/owl#> .
+@prefix dct:            <http://purl.org/dc/terms/> .
+@prefix foaf:           <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:            <http://www.w3.org/ns/org#> .
+@prefix ids:            <https://w3id.org/idsa/core/> .
+
+@prefix idsa:           <https://www.internationaldataspaces.org/the-association/> .
+@prefix nicos-ag:       <https://www.nicos-ag.com/> .
+
+@prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
+
+@base <https://localhost:8080/> .
+@prefix ec:             <ids/> .
+
+ec:
+    a                                       idsecm:Ecosystem ;
+    rdfs:label                              "testbed.IDS" ;
+    idsecm:acronym                          "TB-EC-IDS" ;
+#    foaf:homepage                           "https://localhost" ;
+##region meta
+    idsecm:owner                            nicos-ag: ;
+    idsecm:provider                         nicos-ag: ;
+#    idsecm:domain                           ec:DOMAIN ;
+##endregion meta
+##region org
+##endregion org
+    idsecm:certificationBodies              idsa: ;
+    idsecm:certificationFacilities          <https://testcenter.sick.com/> ;
+    idsecm:certificationFacilities          <https://ids-certification.pwc.com/> ;
+##region cas
+    idsecm:cas                              <CA> ;
+##endregion cas
+#    idsecm:daps                             <https://daps.nicos-rd.com/> ;
+#    idsecm:ParIS            <https://paris.nicos-rd.com/> ;
+##region participants
+#    idsecm:participants                     <https://ids.atos.net/> ;
+#    idsecm:participants                     <https://ids.sick.com/> ;
+    idsecm:participants                     <https://www.nicos-ag.com/> ;
+##endregion participants
+#    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
+#    idsecm:connectors       <https://gbx.nicos-rd.com/> ;
+##region ecosystems
+#    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
+#    idsecm:ecosystems                       <https://testbed.nicos-ag.com/> ;
+#    idsecm:ecosystems                       <https://testcenter.sick.com/> ;
+##region ecosystems subs
+    idsecm:componentTestbeds                <https://testbed.nicos-ag.com/> ;
+    idsecm:componentCertificationFacilities <https://testcenter.sick.com/> ;
+##endregion ecosystems subs
+##endregion ecosystems
+#    idsecm:islands          <> ;
+    rdfs:isDefinedBy                        ec: ;
+.
+
+#@base <https://w3id.org/idsa/3cm/> .
+#@prefix fn:             <tests/getDATfromDAPS/> .
+
+@prefix tb:             <https://localhost:8080/> .
+
+tb:
+#    tbm:function <https://w3id.org/idsa/3cm/tests/getDATfromDAPS/> ;
+    tbm:function </ids/getDATfromDAPS/> ;
+.
+
+## EOF : nrd-testbed.IDS

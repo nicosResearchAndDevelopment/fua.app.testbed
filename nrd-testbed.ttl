@@ -1,0 +1,32 @@
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:            <http://www.w3.org/2002/07/owl#> .
+@prefix dct:            <http://purl.org/dc/terms/> .
+@prefix foaf:           <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:            <http://www.w3.org/ns/org#> .
+
+@prefix nicos-ag:       <https://www.nicos-ag.com/> .
+
+@prefix fua-ec:         <https://www.nicos-rd.com.org/ecosystem#> .
+
+@base <https://localhost:8080/> .
+@prefix ec:             <https://localhost:8080/> .
+
+ec:
+    a                fua-ec:Ecosystem ;
+    rdfs:label       "Testbed" ;
+#    foaf:homepage                           "https://localhost:8080/browse" ;
+##region meta
+    fua-ec:owner     nicos-ag: ;
+    fua-ec:provider  nicos-ag: ;
+#    fua-ec:domain                           ec:DOMAIN ;
+##endregion meta
+    fua-ec:ecosystem <https://localhost:8080/ids/> ;
+#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
+#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
+#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
+    rdfs:isDefinedBy nicos-ag: ;
+.
+
+## EOF : nrd-testbed
