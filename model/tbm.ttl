@@ -42,7 +42,7 @@ tbm:testsuite
     rdfs:label       "Testsuite"@en ;
 #    dct:description  ""@en ;
     rdfs:domain      tbm:Testbed ;
-    rdfs:range       idsecm:Testsuite ;
+    rdfs:range       tbm:Testsuite ;
     rdfs:isDefinedBy tbm: ;
 .
 
@@ -51,9 +51,25 @@ tbm:testbed
     rdfs:label       "Testbed"@en ;
 #    dct:description  ""@en ;
     rdfs:domain      tbm:Testsuite ;
-    rdfs:range       idsecm:Testbed ;
+    rdfs:range       tbm:Testbed ;
     rdfs:isDefinedBy tbm: ;
 .
 
+tbm:Applicant
+    a                owl:Class ;
+    rdfs:label       "Class of Applicants" ;
+    rdfs:subClassOf  idsecm:ApplicantComponent ;
+    rdfs:isDefinedBy tbm: ;
+.
+
+tbm:applicant
+    a                owl:ObjectProperty ;
+    rdfs:label       "Applicant"@en ;
+    rdfs:label       "Prüfgegenstand"@en ;
+#    dct:description  ""@en ;
+    rdfs:domain      tbm:Testbed ;
+    rdfs:range       tbm:Applicant ;
+    rdfs:isDefinedBy tbm: ;
+.
 
 ## EOF

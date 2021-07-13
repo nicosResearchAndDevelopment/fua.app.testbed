@@ -14,8 +14,20 @@
 @prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
 @prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
-@base <https://localhost:8080/> .
+@prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
+
+@base <https://testbed.local:8080/> .
 @prefix ec:             <ids/> .
+
+#region model
+tbm:Applicant_IDS_Connector
+    a                owl:Class ;
+    rdfs:label       "Class of IDS Connectors as Testbed-Applicant" ;
+    rdfs:subClassOf  tbm:Applicant ;
+    rdfs:subClassOf  idsecm:ApplicantComponent ;
+    rdfs:isDefinedBy ec: ;
+.
+#endregion model
 
 ec:
     a                                       idsecm:ComponentTestbed ;
@@ -57,17 +69,19 @@ ec:
 ##endregion ecosystems subs
 ##endregion ecosystems
 #    idsecm:islands          <> ;
-    rdfs:isDefinedBy                        ec: ;
+
+rdfs:isDefinedBy                        ec: ;
 .
+
 
 #@base <https://w3id.org/idsa/3cm/> .
 #@prefix fn:             <tests/getDATfromDAPS/> .
-
-@prefix tb:             <https://localhost:8080/> .
-
-tb:
-#    tbm:function <https://w3id.org/idsa/3cm/tests/getDATfromDAPS/> ;
-    tbm:function </ids/getDATfromDAPS/> ;
-.
+#
+#@prefix tb:             <https://localhost:8080/> .
+#
+#tb:
+##    tbm:function <https://w3id.org/idsa/3cm/tests/getDATfromDAPS/> ;
+#    tbm:function </ids/getDATfromDAPS/> ;
+#.
 
 ## EOF : nrd-testbed.IDS

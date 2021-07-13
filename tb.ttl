@@ -12,9 +12,9 @@
 @prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
 @prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
 
-@base <https://localhost:8080/> .
-@prefix tb:             <https://localhost:8080/> .
-@prefix ts:             <https://localhost:8081/> .
+@base <https://testbed.local:8080/> .
+@prefix tb:             <https://testbed.local:8080/> .
+@prefix ts:             <https://testsuite.local:8081/> .
 
 tb:
     a                tbm:Testbed ;
@@ -31,8 +31,12 @@ tb:
 #    fua-ec:ecosystem <https://localhost:8080/vc/> ;
 #    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
 
-    tbm:testsuite ts: ;
-
+    tbm:testsuite    ts: ;
+    owl:sameAs       <https://10.10.33.42> ;
+    owl:sameAs       <https://testbed.nicos-ag.com> ;
+##region applicant
+    tbm:applicant    <https://nicos-gbx.testbed.local/> ;
+##endregion applicant
     rdfs:isDefinedBy nrd: ;
 .
 
