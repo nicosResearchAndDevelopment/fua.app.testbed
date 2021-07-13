@@ -1,0 +1,59 @@
+@prefix dct:       <http://purl.org/dc/terms/> .
+@prefix foaf:      <http://xmlns.com/foaf/0.1/> .
+@prefix org:       <http://www.w3.org/ns/org#> .
+@prefix owl:       <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann:      <http://purl.org/vocab/vann/> .
+@prefix voaf:      <http://purl.org/vocommons/voaf#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix ecm:       <https://www.nicos-rd.com.org/ecosystem#> .
+@prefix idsecm:    <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
+
+@prefix tbm:       <https://www.nicos-rd.com.org/testbed#> .
+
+tbm:
+    a                             owl:Ontology ;
+    owl:versionInfo               "0.0.1" ;
+    dct:creator                   <https://github.com/jlangkau> ;
+    dct:publisher                 <https://www.nicos-rd.com/> ;
+    vann:preferredNamespaceUri    "https://www.nicos-rd.com.org/ecosystem#" ;
+    vann:preferredNamespacePrefix "tbm" ;
+.
+
+tbm:Testbed
+    a                             owl:Class ;
+    rdfs:label                    "Class of Tesbeds" ;
+    rdfs:subClassOf               ecm:Ecosystem ;
+    vann:preferredNamespacePrefix "tb" ;
+    rdfs:isDefinedBy              tbm: ;
+.
+
+tbm:Testsuite
+    a                             owl:Class ;
+    rdfs:label                    "Class of Testsuites" ;
+    vann:preferredNamespacePrefix "ts" ;
+    rdfs:isDefinedBy              tbm: ;
+.
+
+tbm:testsuite
+    a                owl:ObjectProperty ;
+    rdfs:label       "Testsuite"@en ;
+#    dct:description  ""@en ;
+    rdfs:domain      tbm:Testbed ;
+    rdfs:range       idsecm:Testsuite ;
+    rdfs:isDefinedBy tbm: ;
+.
+
+tbm:testbed
+    a                owl:ObjectProperty ;
+    rdfs:label       "Testbed"@en ;
+#    dct:description  ""@en ;
+    rdfs:domain      tbm:Testsuite ;
+    rdfs:range       idsecm:Testbed ;
+    rdfs:isDefinedBy tbm: ;
+.
+
+
+## EOF

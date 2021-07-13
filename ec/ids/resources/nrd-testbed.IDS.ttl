@@ -9,20 +9,25 @@
 
 @prefix idsa:           <https://www.internationaldataspaces.org/the-association/> .
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
+@prefix nrd:            <https://www.nicos-rd.com/> .
 
+@prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
 @prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
 @base <https://localhost:8080/> .
 @prefix ec:             <ids/> .
 
 ec:
+    a                                       idsecm:ComponentTestbed ;
+# redundant (idsecm:Ecosystem, ecm:Ecosystem)
     a                                       idsecm:Ecosystem ;
-    rdfs:label                              "testbed.IDS" ;
+    a                                       ecm:Ecosystem ;
+    rdfs:label                              "testbed 'IDS'" ;
     idsecm:acronym                          "TB-EC-IDS" ;
 #    foaf:homepage                           "https://localhost" ;
 ##region meta
-    idsecm:owner                            nicos-ag: ;
-    idsecm:provider                         nicos-ag: ;
+    idsecm:owner                            nrd: ;
+    idsecm:provider                         nrd: ;
 #    idsecm:domain                           ec:DOMAIN ;
 ##endregion meta
 ##region org

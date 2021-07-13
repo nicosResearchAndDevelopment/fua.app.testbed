@@ -7,26 +7,29 @@
 @prefix org:            <http://www.w3.org/ns/org#> .
 
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
+@prefix nrd:            <https://www.nicos-rd.com/> .
 
-@prefix fua-ec:         <https://www.nicos-rd.com.org/ecosystem#> .
+@prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
+@prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
 
-@base <https://localhost:8080/> .
-@prefix ec:             <https://localhost:8080/> .
+@base <https://localhost:8081/> .
+@prefix tb:             <https://localhost:8080/> .
+@prefix ts:             <https://localhost:8081/> .
 
-ec:
-    a                fua-ec:Ecosystem ;
-    rdfs:label       "Testbed" ;
+ts:
+    a                tbm:Testsuite ;
+    rdfs:label       "nrd Testsuite" ;
 #    foaf:homepage                           "https://localhost:8080/browse" ;
 ##region meta
-    fua-ec:owner     nicos-ag: ;
-    fua-ec:provider  nicos-ag: ;
+    ecm:owner        nrd: ;
+    ecm:provider     nrd: ;
+
 #    fua-ec:domain                           ec:DOMAIN ;
 ##endregion meta
-    fua-ec:ecosystem <https://localhost:8080/ids/> ;
-#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
-#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
-#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
-    rdfs:isDefinedBy nicos-ag: ;
+
+    tbm:testbed tb: ;
+
+    rdfs:isDefinedBy nrd: ;
 .
 
-## EOF : nrd-testbed
+## EOF : nrd-testsuite

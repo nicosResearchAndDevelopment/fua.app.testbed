@@ -1,0 +1,39 @@
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:            <http://www.w3.org/2002/07/owl#> .
+@prefix dct:            <http://purl.org/dc/terms/> .
+@prefix foaf:           <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:            <http://www.w3.org/ns/org#> .
+
+@prefix nicos-ag:       <https://www.nicos-ag.com/> .
+@prefix nrd:            <https://www.nicos-rd.com/> .
+
+@prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
+@prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
+
+@base <https://localhost:8080/> .
+@prefix tb:             <https://localhost:8080/> .
+@prefix ts:             <https://localhost:8081/> .
+
+tb:
+    a                tbm:Testbed ;
+    rdfs:label       "nrd Testbed" ;
+#    foaf:homepage                           "https://localhost:8080/browse" ;
+##region meta
+    ecm:owner        nrd: ;
+    ecm:provider     nrd: ;
+
+#    fua-ec:domain                           ec:DOMAIN ;
+##endregion meta
+    ecm:ecosystem    <https://localhost:8080/ids/> ;
+#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
+#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
+#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
+
+    tbm:testsuite ts: ;
+
+    rdfs:isDefinedBy nrd: ;
+.
+
+## EOF : nrd-testbed
