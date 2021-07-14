@@ -2,6 +2,7 @@ exports.server = {
     port: 8081
 };
 
-exports.testbed = {
-    baseURL: 'http://localhost:8080/'
+exports.generator = {
+    interface: 'http',
+    baseUrl:   'http://localhost:8080/'
 };
