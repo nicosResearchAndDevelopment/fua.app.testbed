@@ -6,6 +6,9 @@
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
 @prefix org:            <http://www.w3.org/ns/org#> .
 
+@prefix fua:            <https://www.nicos-rd.com.org/fua#> .
+@prefix fua-dom:        <https://www.nicos-rd.com.org/fua/domain#> .
+
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
 
@@ -20,23 +23,56 @@ tb:
     a                tbm:Testbed ;
     rdfs:label       "nrd Testbed" ;
 #    foaf:homepage                           "https://localhost:8080/browse" ;
-##region meta
+## region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
-
-#    fua-ec:domain                           ec:DOMAIN ;
-##endregion meta
+    ecm:domain       [ a fua-dom:Domain ; ] ;
+## OR ?!?
+    fua-dom:domain   [ a fua-dom:Domain ; ] ;
+## endregion meta
+## region configuration
+## region configuration application
+    fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
+## endregion configuration application
     ecm:ecosystem    <https://localhost:8080/ids/> ;
 #    fua-ec:ecosystem <https://localhost:8080/gax/> ;
 #    fua-ec:ecosystem <https://localhost:8080/vc/> ;
 #    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
-
-    tbm:testsuite    ts: ;
+    tbm:testsuite    ts: ; ## 1..n
     owl:sameAs       <https://10.10.33.42> ;
     owl:sameAs       <https://testbed.nicos-ag.com> ;
-##  region applicant
+## region configuration applicant
     tbm:applicant    <https://nicos-gbx.testbed.local/> ;
-##endregion applicant
+## endregion configuration applicant
+## endregion configuration
+    rdfs:isDefinedBy nrd: ;
+.
+
+ts:
+    a                tbm:Testsuite ;
+    rdfs:label       "nrd Testseuite" ;
+#    foaf:homepage                           "https://localhost:8080/browse" ;
+## region meta
+    ecm:owner        nrd: ;
+    ecm:provider     nrd: ;
+
+    fua-dom:domain   [ a fua-dom:Domain ; ] ;
+## endregion meta
+## region configuration
+## region configuration application
+    fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
+## endregion configuration application
+    ecm:ecosystem    <https://localhost:8080/ids/> ;
+#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
+#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
+#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
+    tbm:testbed      tb: ; ## 0..1
+    owl:sameAs       <https://10.10.33.43> ;
+    owl:sameAs       <https://testbed.nicos-ag.com> ;
+## region configuration applicant
+    tbm:applicant    <https://nicos-gbx.testbed.local/> ;
+## endregion configuration applicant
+## endregion configuration
     rdfs:isDefinedBy nrd: ;
 .
 
