@@ -55,7 +55,7 @@ ec:
 ##region participants
 #    idsecm:participants                     <https://ids.atos.net/> ;
 #    idsecm:participants                     <https://ids.sick.com/> ;
-    idsecm:participants                     <https://www.nicos-ag.com/> ;
+    idsecm:participants                     nicos-ag: ;
 ##endregion participants
 #    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
 #    idsecm:connectors       <https://gbx.nicos-rd.com/> ;
@@ -69,10 +69,8 @@ ec:
 ##endregion ecosystems subs
 ##endregion ecosystems
 #    idsecm:islands          <> ;
-
-rdfs:isDefinedBy                        ec: ;
+    rdfs:isDefinedBy                        ec: ;
 .
-
 
 #@base <https://w3id.org/idsa/3cm/> .
 #@prefix fn:             <tests/getDATfromDAPS/> .

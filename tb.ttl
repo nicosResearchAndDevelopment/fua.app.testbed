@@ -34,7 +34,7 @@ tb:
     tbm:testsuite    ts: ;
     owl:sameAs       <https://10.10.33.42> ;
     owl:sameAs       <https://testbed.nicos-ag.com> ;
-##region applicant
+##  region applicant
     tbm:applicant    <https://nicos-gbx.testbed.local/> ;
 ##endregion applicant
     rdfs:isDefinedBy nrd: ;
