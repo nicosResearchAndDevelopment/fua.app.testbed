@@ -1,26 +1,85 @@
 const
-    path      = require('path'),
-    http      = require('http'),
-    express   = require('express'),
-    socket_io = require('socket.io'),
-    config    = require('./config/config.testbed.js'),
-    util      = require('@nrd/fua.core.util'),
-    testbed   = require('./code/main.testbed.js');
+    path           = require('path'),
+    http           = require('http'),
+    express        = require('express'),
+    socket_io      = require('socket.io'),
+    config         = require('./config/config.testbed.js'),
+    util           = require('@nrd/fua.core.util'),
+    testbed        = require('./code/main.testbed.js'),
+    ExpressSession = require('express-session'),
+    LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
+    amec           = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js'));
+
+const
+    // TODO build a proper agent amec with a concise api
+    tmp_users = new Map([
+        ["test@test", "test"],
+        ["spetrac@marzipan.com", "password123"],
+        ["jlangkau@marzipan.com", "@8mT7Q@SPHvB6sYvy*M3"]
+    ]);
+
+amec.authMechanism('login', async function (request) {
+    // 1. get identification data
+    const
+        user     = request.body?.user,
+        password = request.body?.password;
+
+    // 2. reject invalid authentication
+    if (!user || !password) return null;
+    if (!tmp_users.has(user)) return null;
+    if (password !== tmp_users.get(user)) return null;
+
+    // 3. return auth on success
+    return {user};
+});
+
+amec.authMechanism('login-tfa', async function (request) {
+    // 1. get identification data
+    const
+        user     = request.body?.user,
+        password = request.body?.password,
+        tfa      = request.body?.tfa;
+
+    // 2. reject invalid authentication
+    if (!user || !password || !tfa) return null;
+    if (!tmp_users.has(user)) return null;
+    if (tfa.replace(/\D/g, '') !== request.session.tfa) return null;
+    if (password !== tmp_users.get(user)) return null;
+
+    // 3. return auth on success
+    return {user};
+});
 
 (async (/* MAIN */) => {
     try {
         const
+            space        = await testbed.createSpace(config.space),
             app          = express(),
             server       = http.createServer(app),
             io           = socket_io(server),
-            express_json = express.json();
+            express_json = express.json(),
+            sessions     = ExpressSession(config.session);
 
         app.disable('x-powered-by');
 
-        app.get('/', (request, response) => {
-            // TODO
-            response.type('txt').send('Hello World!');
-        });
+        app.use(sessions);
+        io.use((socket, next) => sessions(socket.request, socket.request.res, next));
+
+        // REM uncomment to enable authentication
+        //app.use('/login', testbed.createLogin(config.login, amec));
+        //app.use('/', (request, response, next) => {
+        //    if (request.session.auth) next();
+        //    else response.redirect('/login');
+        //});
+
+        app.use('/browse', testbed.createBrowser(config.browser));
+
+        config.ldp.space = space;
+
+        app.use([
+            //'/model',
+            '/data'
+        ], LDPRouter(config.ldp));
 
         app.post('/inbox', express.json(), (request, response, next) => {
             // TODO
@@ -49,7 +108,21 @@ const
         }
 
         io.on('connection', (socket) => {
-            // TODO
+            // REM uncomment to enable authentication
+            //if (!socket.request.session.auth) {
+            //    socket.emit('error', 'not authorized');
+            //    socket.disconnect(true);
+            //    return;
+            //}
+
+            socket.emit('printMessage', {
+                'prov': '[Testbed]',
+                'msg':  'Welcome to NRD-Testbed!'
+            });
+        });
+
+        app.get('/', (request, response) => {
+            response.redirect('/browse');
         });
 
         await new Promise((resolve) =>
