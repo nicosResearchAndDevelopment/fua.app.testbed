@@ -1,0 +1,30 @@
+{
+  "name": "nrd-testbed",
+  "version": "0.1.0",
+  "description": "",
+  "files": [
+    "*"
+  ],
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^3.0.5",
+    "node-fetch": "^2.6.1",
+    "@nrd/fua.agent.jose": "1.0.0",
+    "@nrd/fua.core.hrt": "1.0.0",
+    "@nrd/fua.core.util": "1.0.0",
+    "@nrd/fua.module.rdf": "1.0.0",
+    "@nrd/fua.module.persistence": "1.0.0",
+    "@nrd/fua.module.persistence.inmemory": "1.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.testbed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@git02.int.nsc.ag:10022/Research/fua/app/nrd-testbed.git"
+  },
+  "keywords": [],
+  "author": "spetrac@nicos-ag.com",
+  "license": "UNLICENSED"
+}
