@@ -4,6 +4,6 @@ const
 
 module.exports = async function (param) {
     const result = await testsuite.execute('ids/getDATfromDAPS', param);
-    expect(typeof result?.body).toBe('string');
+    expect(typeof result).toBe('object');
     // TODO
 };

@@ -5,7 +5,7 @@ const
     socket_io = require('socket.io'),
     config    = require('./config/config.testsuite.js'),
     util      = require('@nrd/fua.core.util'),
-    assert    = new util.Assert('nrd-testsuite');
+    testsuite = require('./code/main.testsuite.js');
 
 (async (/* MAIN */) => {
     try {

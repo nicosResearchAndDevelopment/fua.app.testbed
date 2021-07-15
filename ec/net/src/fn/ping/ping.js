@@ -36,9 +36,9 @@ const
 
 Object.defineProperties(fn, {
     'fno:name':        {value: "getDATfromDAPS"},
-    'fno:solves':      {value: `${uri}problem`},
-    'fno:implements':  {value: `${uri}algorithm`},
-    'fno:output':      {value: `${uri}output`},
+    'fno:solves':      {value: `${id}problem`},
+    'fno:implements':  {value: `${id}algorithm`},
+    'fno:output':      {value: `${id}output`},
     'version':         {value: version},
     'ids3cm:criteria': {value: criteria}
 });

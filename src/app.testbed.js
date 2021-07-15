@@ -5,14 +5,15 @@ const
     socket_io = require('socket.io'),
     config    = require('./config/config.testbed.js'),
     util      = require('@nrd/fua.core.util'),
-    assert    = new util.Assert('nrd-testbed');
+    testbed   = require('./code/main.testbed.js');
 
 (async (/* MAIN */) => {
     try {
         const
-            app    = express(),
-            server = http.createServer(app),
-            io     = socket_io(server);
+            app          = express(),
+            server       = http.createServer(app),
+            io           = socket_io(server),
+            express_json = express.json();
 
         app.disable('x-powered-by');
 
@@ -26,6 +27,26 @@ const
             console.log(request.body);
             next();
         });
+
+        // REM an alternative would be to use url-parameters
+        for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
+            for (let [fnName, fn] of Object.entries(ec.fn)) {
+                testbed.assert(util.isFunction(fn), `expected ${ecName}->${fnName} to be a function`);
+                const route = `/${ecName}/${fnName}`;
+                app.post(route, express_json, async function (request, response, next) {
+                    try {
+                        const
+                            param   = request.body,
+                            args    = [param], // TODO parameter mapping
+                            result  = await fn.apply(null, args),
+                            payload = JSON.stringify(result); // TODO result mapping
+                        response.type('json').send(payload);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            }
+        }
 
         io.on('connection', (socket) => {
             // TODO
