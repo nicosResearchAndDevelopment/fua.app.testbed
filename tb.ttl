@@ -1,3 +1,4 @@
+@prefix ldp:            <http://www.w3.org/ns/ldp#>.
 @prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:            <http://www.w3.org/2002/07/owl#> .
@@ -7,7 +8,7 @@
 @prefix org:            <http://www.w3.org/ns/org#> .
 
 @prefix fua:            <https://www.nicos-rd.com.org/fua#> .
-@prefix fua-dom:        <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix domain:         <https://www.nicos-rd.com.org/fua/domain#> .
 
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
@@ -26,9 +27,9 @@ tb:
 ## region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
-    ecm:domain       [ a fua-dom:Domain ; ] ;
+    ecm:domain       [ a domain:Domain ; ] ;
 ## OR ?!?
-    fua-dom:domain   [ a fua-dom:Domain ; ] ;
+    domain:domain    [ a domain:Domain ; ] ;
 ## endregion meta
 ## region configuration
 ## region configuration application
@@ -48,15 +49,32 @@ tb:
     rdfs:isDefinedBy nrd: ;
 .
 
+tb:domain
+    a                domain:Domain ;
+#    domain:users    <https://testbed.local:8080/users/jlangkau> ;
+#    domain:users     [ a            domain:Users ;
+#                       ldp:contains ( <https://testbed.local:8080/users/jlangkau> ) ] ;
+    domain:users     tb:Users ;
+    rdfs:isDefinedBy nrd: ;
+.
+
+tb:Users
+    a                domain:Users ;
+    ldp:contains     ( <https://testbed.local:8080/users/testsuite>
+                       ##  Order ALPHA
+                       <https://testbed.local:8080/users/jlangkau>
+                       <https://testbed.local:8080/users/spetrac> ) ;
+    rdfs:isDefinedBy nrd: ;
+.
+
 ts:
     a                tbm:Testsuite ;
-    rdfs:label       "nrd Testseuite" ;
+    rdfs:label       "nrd Testsuite" ;
 #    foaf:homepage                           "https://localhost:8080/browse" ;
 ## region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
-
-    fua-dom:domain   [ a fua-dom:Domain ; ] ;
+    domain:domain    [ a domain:Domain ; ] ;
 ## endregion meta
 ## region configuration
 ## region configuration application
