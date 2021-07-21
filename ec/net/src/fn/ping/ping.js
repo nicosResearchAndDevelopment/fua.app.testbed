@@ -8,7 +8,7 @@ const
      * @param timeout
      * @returns {Promise<null>}
      */
-    fn       = async function /**${FIR_function_name}*/ getDATfromDAPS(daps_endpoint, timeout) {
+    fn       = async function ping(endpoint, timeout) {
 
         //${FIR_function_solves_problem}
         //${FIR_function_implement_algorithm}
@@ -35,7 +35,7 @@ const
 ; // const
 
 Object.defineProperties(fn, {
-    'fno:name':        {value: "getDATfromDAPS"},
+    'fno:name':        {value: "ping"},
     'fno:solves':      {value: `${id}problem`},
     'fno:implements':  {value: `${id}algorithm`},
     'fno:output':      {value: `${id}output`},
