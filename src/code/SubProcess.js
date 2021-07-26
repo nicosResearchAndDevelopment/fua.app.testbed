@@ -27,6 +27,15 @@ function flattenArgs(args) {
     }
 } // flattenArgs
 
+function bufferToString(buffer) {
+    switch (util.OS_PLATFORM) {
+        case 'win32':
+            return ExtendedASCII.byte2str(buffer);
+        default:
+            return buffer.toString();
+    }
+} // bufferToString
+
 /**
  * @param {string} command
  * @param {...any} args
@@ -46,7 +55,7 @@ exports.execute = async function (command, ...args) {
 
     const
         buffer = Buffer.concat(chunks),
-        string = ExtendedASCII.byte2str(buffer);
+        string = bufferToString(buffer);
 
     return string.trim().replace(/\r\n/g, '\n');
 }; // exports.execute
@@ -65,7 +74,7 @@ exports.spawn = async function (command, ...args) {
 
     let lastRow = '';
     subprocess.stdout.on('data', (chunk) => {
-        const rows = ExtendedASCII.byte2str(chunk).split(/\r?\n/g);
+        const rows = bufferToString(chunk).split(/\r?\n/g);
         rows[0]    = lastRow + rows[0];
         lastRow    = rows.pop();
         rows.forEach((dataRow) => emitter.emit('data', dataRow));
