@@ -1,9 +1,10 @@
 const
-    expect    = require('expect'),
-    testsuite = require('../../src/code/main.testsuite.js');
+    getDATfromDAPS = exports,
+    expect         = require('expect'),
+    testsuite      = require('../../src/code/main.testsuite.js');
 
-module.exports = async function (param) {
+getDATfromDAPS.basic = async function (param) {
     const result = await testsuite.execute('ids/getDATfromDAPS', param);
     expect(typeof result).toBe('object');
-    // TODO
-};
+    return result;
+}; // getDATfromDAPS.basic
