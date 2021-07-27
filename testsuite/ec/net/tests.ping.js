@@ -4,6 +4,7 @@ const
     testsuite = require('../../src/code/main.testsuite.js');
 
 ping.basic = async function (param) {
+    expect(typeof param).toBe('object');
     const result = await testsuite.execute('net/ping', param);
     expect(typeof result).toBe('object');
     console.log(result);

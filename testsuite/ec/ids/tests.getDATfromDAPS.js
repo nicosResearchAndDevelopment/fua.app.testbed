@@ -4,6 +4,7 @@ const
     testsuite      = require('../../src/code/main.testsuite.js');
 
 getDATfromDAPS.basic = async function (param) {
+    expect(typeof param).toBe('object');
     const result = await testsuite.execute('ids/getDATfromDAPS', param);
     expect(typeof result).toBe('object');
     return result;

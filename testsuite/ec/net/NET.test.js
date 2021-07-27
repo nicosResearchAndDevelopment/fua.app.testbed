@@ -1,6 +1,6 @@
 const
     {describe, test, before, after} = require('mocha'),
-    ping                            = require('./test.ping.js');
+    ping                            = require('./tests.ping.js');
 
 describe('NET', function () {
 
@@ -16,7 +16,7 @@ describe('NET', function () {
         ); // test
 
         test(
-            'should fail to ping to www.google-marzipan.com',
+            'should not successfully ping to www.google-marzipan.com',
             () => ping.unsuccessful({
                 address: 'www.google-marzipan.com'
             })
