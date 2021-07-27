@@ -1,5 +1,5 @@
 const
-    ExtendedASCII = require('./ExtendedASCII.js'),
+    ExtendedASCII = require('./parsers/ExtendedASCII.js'),
     util          = require('@nrd/fua.core.util'),
     child_process = require('child_process'),
     EventEmitter  = require('events');
