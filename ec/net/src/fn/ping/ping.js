@@ -14,7 +14,6 @@ async function fn_ping(param) {
     result.info      = parts[0];
     result.statistic = parts[1] || null;
 
-    console.log(result);
     return result;
 }
 
