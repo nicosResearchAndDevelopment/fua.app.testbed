@@ -64,8 +64,9 @@ exports.persistence = {
     options: {},
     load:    [
         {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ids.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/net/resources/tb.net.ttl'), 'dct:format': 'text/turtle'}
+        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
+        {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
+        {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'}
     ]
 };
 

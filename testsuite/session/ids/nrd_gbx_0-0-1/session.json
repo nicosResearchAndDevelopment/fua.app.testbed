@@ -1,0 +1,16 @@
+{
+	"applicant": "nrd_gbx_0-0-1",
+	"sessionStart": "2021-07-28T17:42:37.306Z",
+	"timestamp": "2021-07-28T18:12:17.898Z",
+	"sessionEnd": "2021-07-28T18:12:19.698Z",
+	"criteria": [
+		{
+			"@id": "INF_01",
+			"timestamp": "2021-07-28T18:12:17.898Z",
+			"param": null,
+			"result": null,
+			"status": "pass"
+		}
+	],
+	"additional": []
+}

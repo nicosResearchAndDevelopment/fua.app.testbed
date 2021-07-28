@@ -12,6 +12,7 @@ ping.basic = async function (param) {
 }; // ping.basic
 
 ping.successful = async function (param) {
+    // fno:id "https://w3id.org/idsa/3cm/tests/applicantGetsDATfromDAPS/validationAlgorithm"
     const result = await ping.basic(param);
     expect(result.info).toBeTruthy();
     expect(result.statistic).toBeTruthy();

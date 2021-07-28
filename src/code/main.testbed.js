@@ -12,8 +12,9 @@ const
 testbed.assert = new util.Assert('nrd-testbed');
 
 testbed.ecosystems = Object.fromEntries([
-    require('../../ec/ids/src/tb.ids.js'),
-    require('../../ec/net/src/tb.net.js')
+    require('../../ec/ids/src/tb.ec.ids.js'),
+    require('../../ec/http/src/tb.ec.http.js'),
+    require('../../ec/ip/src/tb.ec.ip.js')
 ].map((ec) => [ec.ec, ec]));
 
 /**
