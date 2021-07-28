@@ -1,6 +1,6 @@
 const
     {describe, test, before, after} = require('mocha'),
-    getDATfromDAPS                  = require('./test.getDATfromDAPS.js');
+    getDATfromDAPS                  = require('./tests.getDATfromDAPS.js');
 
 describe('IDS', function () {
 
