@@ -1,16 +1,23 @@
 {
+	"@context": "https://w3id.org/ids3cm/model.json",
 	"applicant": "nrd_gbx_0-0-1",
 	"sessionStart": "2021-07-28T17:42:37.306Z",
-	"timestamp": "2021-07-28T18:12:17.898Z",
-	"sessionEnd": "2021-07-28T18:12:19.698Z",
+	"timestamp": "2021-07-29T09:37:22.136Z",
+	"sessionEnd": "2021-07-29T09:37:25.936Z",
 	"criteria": [
 		{
 			"@id": "INF_01",
-			"timestamp": "2021-07-28T18:12:17.898Z",
+			"timestamp": "2021-07-29T09:37:22.136Z",
+			"TODO_prov": {
+				"testTunction": "https://w3id.org/idsa/3cm/tests/applicantGetsDATfromDAPS/",
+				"validationFunction": "https://w3id.org/idsa/3cm/tests/applicantGetsDATfromDAPS/validation"
+			},
 			"param": null,
 			"result": null,
-			"status": "pass"
+			"status": "pass",
+			"history": []
 		}
 	],
-	"additional": []
+	"additional": [],
+	"log": ""
 }

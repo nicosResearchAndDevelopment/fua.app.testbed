@@ -20,7 +20,7 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:           <https://www.nicos-rd.com/> .
-@prefix appl:            <https://nicos-gbx-0-0-1.testbed.local/> .
+@prefix appl:            <https://nicos-gbx-0-0-1.nicos-rd.com/> .
 
 appl:
     a                      tbm:Applicant_IDS_Connector ;
@@ -49,7 +49,7 @@ appl:
 
 # TODO: host
 # TODO: port (default)
-    rdfs:seeAlso           <https://nicos-gbx-0-0-0.testbed.local/> ;
+    rdfs:seeAlso           <https://nicos-gbx-0-0-0.nicos-rd.com/> ;
 ### OR
 #    tbm:history      <https://nicos-gbx-0-0-0.testbed.local/> ;
 ### OR
@@ -64,7 +64,7 @@ appl:http_host
 
 appl:auth_info
     a                ids:AuthInfo ;
-    ids:authService  <https://daps.testbed.local/> ;
+    ids:authService  <https://testbed.nicos-rd.com/nrd-daps/> ;
     ids:authStandard idsc:OAUTH2_JWT ;
 .
 

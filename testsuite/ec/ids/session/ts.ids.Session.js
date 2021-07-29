@@ -50,6 +50,7 @@ function write_session(file_path, session) {
 class Session {
 
     #applicant         = "";
+    #session_folder    = undefined;
     #log_file_path     = undefined;
     #session_file_path = undefined;
     #session           = undefined;
@@ -62,26 +63,33 @@ class Session {
                     'session_file_name': session_file_name = "session.json"
                 }) {
 
+        let
+            local_session_start = undefined
+        ;
+
         if (!applicant)
             throw ErrorApplicantIsMissing(`applicant: <${applicant}>`);
         this.#applicant = applicant;
 
         if (!session_folder)
             throw ErrorApplicantSessionFolderPathIsMissing(`session folder path: <${session_folder}>`);
+        this.#session_folder = session_folder;
 
-        if (!fs.existsSync(session_folder))
-            throw new ErrorApplicantSessionPathIsMissing(`session folder: (path) <${session_folder}>`);
+        if (!fs.existsSync(this.#session_folder))
+            throw new ErrorApplicantSessionPathIsMissing(`session folder: (path) <${this.#session_folder}>`);
 
-        this.#log_file_path = path.join(session_folder, log_file_name);
+        this.#log_file_path = path.join(this.#session_folder, log_file_name);
 
-        this.#session_file_path    = path.join(session_folder, session_file_name);
-        this.#session              = fs.readFileSync(this.#session_file_path, {'encoding': "utf8"}, function (err) {
+        this.#session_file_path = path.join(this.#session_folder, session_file_name);
+        this.#session           = fs.readFileSync(this.#session_file_path, {'encoding': "utf8"}, function (err) {
             if (err)
                 throw err;
         });
-        this.#session              = JSON.parse(this.#session);
+        this.#session           = JSON.parse(this.#session);
 
-        this.#session.sessionStart = (this.#session.sessionStart || timestamp());
+        local_session_start        = this.#session.sessionStart;
+        local_session_start        = (local_session_start || timestamp());
+        this.#session.sessionStart = (this.#session.sessionStart || local_session_start);
         this.#session.sessionEnd   = null;
 
         write_session(this.#session_file_path, this.#session);
@@ -92,11 +100,11 @@ class Session {
             });
         } // if ()
 
-        this['log']("session : start");
+        this['log']("session : start", local_session_start);
     } // constructor
 
-    log(message) {
-        fs.appendFile(this.#log_file_path, `${timestamp()} : ${message}\n`, (err) => {
+    log(message, ts = undefined) {
+        fs.appendFileSync(this.#log_file_path, `${(ts || timestamp())} : ${message}\n`, (err) => {
             if (err) throw err;
         });
     } // log()
@@ -126,10 +134,29 @@ class Session {
 
     sessionEnd() {
         this.#session.sessionEnd = timestamp();
+        this['log']("session : end", this.#session.sessionEnd);
         write_session(this.#session_file_path, this.#session);
         //fs.writeFileSync(this.#session_file_path, `${JSON.stringify(this.#session, undefined, "\t")}`);
     } // sessionEnd()
 
+    presentVerifiableCredential({
+                                    'presentationProof': presentationProof = ({}) => {
+                                        return "TODO_EMPTY_presentationProof";
+                                    },
+                                    'credentialProof':   credentialProof = ({}) => {
+                                        return "TODO_EMPTY_credentialProof";
+                                    },
+                                    'file_name':         file_name = "verifiablePresentation.json"
+                                }) {
+
+        let
+            vp        = {},
+            file_path = path.join(this.#session_folder, file_name)
+        ;
+        vp['proof']   = presentationProof({});
+        this['log'](`presentation : VerifiablePresentation : <${file_path}>`, undefined);
+        fs.writeFileSync(file_path, `${JSON.stringify(vp, undefined, "\t")}`);
+    } //
 } // class Session
 
 module.exports = Session;

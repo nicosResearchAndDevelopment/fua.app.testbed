@@ -14,9 +14,9 @@
 #@prefix ecm:               <https://www.nicos-rd.com.org/ecosystem#> .
 #@prefix tbm:               <https://www.nicos-rd.com.org/testbed#> .
 
-#@prefix tb:                <https://testbed.local:8080/> .
+#@prefix tb:                <https://testbed.nicos-rd.com/> .
 #@base <tb:users/> .
-@base <https://testbed.local:8080/users/> .
+@base <https://testbed.nicos-rd.com/domain/user#> .
 
 ##region users
 

@@ -1,0 +1,34 @@
+@prefix dct:                      <http://purl.org/dc/terms/> .
+@prefix foaf:                     <http://xmlns.com/foaf/0.1/> .
+@prefix ldp:                      <http://www.w3.org/ns/ldp#> .
+@prefix owl:                      <http://www.w3.org/2002/07/owl#> .
+@prefix org:                      <http://www.w3.org/ns/org#> .
+@prefix skos:                     <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:                      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:                     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:                      <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix domain:                   <https://www.nicos-rd.com.org/fua/domain#> .
+
+@prefix tbm:                      <https://www.nicos-rd.com.org/testbed#> .
+
+#@base <tb:users/> .
+@base <https://testbed.nicos-rd.com/domain/user#> .
+
+##region users
+
+## order ALPHA
+
+tbm:UserIdsDatAuthentication
+    a                owl:Class ;
+    rdfs:subClassOf  domain:User ;
+    rdfs:subClassOf  ldp:Resource ;
+    rdfs:label       "IDS DAT Authentication"@en ;
+    dct:description  """Authentication class of 'testbed:domain/user#'."""@en ;
+## domain:name     ""^^xsd:string ;
+## domain:password ""^^xsd:string ;
+    skos:broader     <domain:User> ;
+    rdfs:isDefinedBy tbm: ;
+.
+
+## EOF

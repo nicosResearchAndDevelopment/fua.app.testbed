@@ -16,7 +16,7 @@
 
 @prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
 
-@base <https://testbed.local:8080/> .
+@base <https://testbed.nicos-rd.com/> .
 @prefix ec:             <http/> .
 
 #region model
@@ -61,10 +61,10 @@ ec:
 #    idsecm:connectors       <https://gbx.nicos-rd.com/> ;
 ##region ecosystems
 #    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
-#    idsecm:ecosystems                       <https://testbed.nicos-ag.com/> ;
+#    idsecm:ecosystems                       <https://testbed.nicos-rd.com/> ;
 #    idsecm:ecosystems                       <https://testcenter.sick.com/> ;
 ##region ecosystems subs
-#    idsecm:componentTestbeds                <https://testbed.nicos-ag.com/> ;
+#    idsecm:componentTestbeds                <https://testbed.nicos-rd.com/> ;
 #    idsecm:componentCertificationFacilities <https://testcenter.sick.com/> ;
 ##endregion ecosystems subs
 ##endregion ecosystems
@@ -75,7 +75,7 @@ ec:
 #@base <https://w3id.org/idsa/3cm/> .
 #@prefix fn:             <tests/getDATfromDAPS/> .
 #
-#@prefix tb:             <https://localhost:8080/> .
+#@prefix tb:             <https://testbed.nicos-rd.com/> .
 #
 #tb:
 ##    tbm:function <https://w3id.org/idsa/3cm/tests/getDATfromDAPS/> ;

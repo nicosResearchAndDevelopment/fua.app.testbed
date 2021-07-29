@@ -1,0 +1,59 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/ids3cm/model.json"
+  ],
+  "id": "https://testbed.nicos-rd.com/presentation#asdf-asdf-asdf-42",
+  "type": [
+    "VerifiablePresentation",
+    "ids3cm:TestResultValidationPresentation"
+  ],
+  "verifiableCredential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/ids3cm/model.json"
+    ],
+    "id": "https://testbed.nicos-rd.com/credential#nrd_gbx_0-0-1_339872884766555",
+    "type": [
+      "VerifiableCredential",
+      "TestResultValidationCredential"
+    ],
+    "issuer": "https://testbed.nicos-rd.com/",
+    "issuanceDate": "2021-08-01T19:73:24Z",
+    "credentialSubject": {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/ids3cm/model.json"
+      ],
+      "id": "https://testbed.nicos-rd.com/domain/ec/ids/session#nrd_gbx_0-0-1_42",
+      "applicant": {
+        "@id": "https://testbed.nicos-rd.com/domain/user#nrd_gbx_0-0-1",
+        "type": "https://w3id.org/idsa/core/BaseConnector",
+        "owner": "https://www.nicos-ag.com/"
+      },
+      "sessionStart": "2021-07-28T09:00:00Z",
+      "sessionEnd": "2021-07-28T17:00:00",
+      "ids3cm:criteria": "REMOVE: only to show its prefix...",
+      "criteria": [
+        {
+          "id": "https://testbed.nicos-rd.com/ec/ids/criteria/COM_01_42",
+          "type": "https://w3id.org/ids3cm/ValidationResult_COM_01",
+          "TODO_timestamp": "is it in model?!?",
+          "timestamp": "2021-07-28T18:12:17.898Z",
+          "validationResultProvenance": {
+            "testFunction": "https://w3id.org/idsa/3cm/tests/makePortScan/",
+            "validationFunction": "https://w3id.org/idsa/3cm/tests/makePortScan/validation"
+          },
+          "validationResultStatus": "https://w3id.org/ids3cm/ValidationResultStatus_PASS"
+        }
+      ],
+      "additional": [],
+      "log": [
+        "2021-07-28T17:19:03.764Z : session : start",
+        "2021-07-29T09:21:00.844Z : session : end"
+      ]
+    },
+    "prof": "qwer.qwer.qwer"
+  },
+  "prof": "asdf.asdf.asdf"
+}

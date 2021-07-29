@@ -16,14 +16,14 @@
 @prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
 @prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
 
-@base <https://testbed.local:8080/> .
-@prefix tb:             <https://testbed.local:8080/> .
-@prefix ts:             <https://testsuite.local:8081/> .
+@base <https://testbed.nicos-rd.com/> .
+@prefix tb:             <https://testbed.nicos-rd.com/> .
+@prefix ts:             <https://testbed.nicos-rd.com/testsuite/> .
 
 tb:
     a                tbm:Testbed ;
     rdfs:label       "nrd Testbed" ;
-#    foaf:homepage                           "https://localhost:8080/browse" ;
+#    foaf:homepage                           "https://testbed.nicos-rd.com/browse" ;
 ## region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
@@ -35,15 +35,12 @@ tb:
 ## region configuration application
     fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
 ## endregion configuration application
-    ecm:ecosystem    <https://localhost:8080/ids/> ;
-#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
-#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
-#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
+    ecm:ecosystem    <https://testbed.nicos-rd.com/ec/ids/> ;
     tbm:testsuite    ts: ; ## 1..n
     owl:sameAs       <https://10.10.33.42> ;
-    owl:sameAs       <https://testbed.nicos-ag.com> ;
+    owl:sameAs       <https://testbed.nicos-rd.com/> ;
 ## region configuration applicant
-    tbm:applicant    <https://nicos-gbx.testbed.local/> ;
+    tbm:applicant    <https://nicos-gbx.nicos-rd.com/> ;
 ## endregion configuration applicant
 ## endregion configuration
     rdfs:isDefinedBy nrd: ;
@@ -60,17 +57,17 @@ tb:domain
 
 tb:Users
     a                domain:Users ;
-    ldp:contains     ( <https://testbed.local:8080/users/testsuite>
+    ldp:contains     ( <https://testbed.nicos-rd.com/domain/users/testsuite>
                        ##  Order ALPHA
-                       <https://testbed.local:8080/users/jlangkau>
-                       <https://testbed.local:8080/users/spetrac> ) ;
+                       <https://testbed.nicos-rd.com/domain/users/jlangkau>
+                       <https://testbed.nicos-rd.com/domain/users/spetrac> ) ;
     rdfs:isDefinedBy nrd: ;
 .
 
 ts:
     a                tbm:Testsuite ;
     rdfs:label       "nrd Testsuite" ;
-#    foaf:homepage                           "https://localhost:8080/browse" ;
+#    foaf:homepage                           "https://testbed.nicos-rd.com/testsuite/browse" ;
 ## region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
@@ -80,15 +77,13 @@ ts:
 ## region configuration application
     fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
 ## endregion configuration application
-    ecm:ecosystem    <https://localhost:8080/ids/> ;
-#    fua-ec:ecosystem <https://localhost:8080/gax/> ;
-#    fua-ec:ecosystem <https://localhost:8080/vc/> ;
-#    fua-ec:ecosystem <https://localhost:8080/ldp/> ;
+    ecm:ecosystem    <https://testbed.nicos-rd.com/ec/ids/> ;
+
     tbm:testbed      tb: ; ## 0..1
     owl:sameAs       <https://10.10.33.43> ;
-    owl:sameAs       <https://testbed.nicos-ag.com> ;
+    owl:sameAs       <https://testbed.nicos-rd.com> ;
 ## region configuration applicant
-    tbm:applicant    <https://nicos-gbx.testbed.local/> ;
+    tbm:applicant    <https://nicos-gbx.nicos-rd.com/> ;
 ## endregion configuration applicant
 ## endregion configuration
     rdfs:isDefinedBy nrd: ;

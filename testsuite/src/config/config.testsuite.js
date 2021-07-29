@@ -7,7 +7,7 @@ exports.server = {
 
 //exports.generator = {
 //    interface:   'http',
-//    baseUrl:     'http://localhost:8080/'
+//    baseUrl:     'http://testbed.nicos-rd.com/'
 //};
 
 exports.generator = {

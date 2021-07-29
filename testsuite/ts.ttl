@@ -13,13 +13,13 @@
 @prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
 
 @base <https://localhost:8081/> .
-@prefix tb:             <https://localhost:8080/> .
-@prefix ts:             <https://localhost:8081/> .
+@prefix tb:             <https://testbed.nicos-rd.com/> .
+@prefix ts:             <https://testbed.nicos-rd.com/testsuite/> .
 
 ts:
     a                tbm:Testsuite ;
     rdfs:label       "nrd Testsuite" ;
-#    foaf:homepage                           "https://localhost:8080/browse" ;
+#    foaf:homepage                           "https://testbed.nicos-rd.com/testsuite/browse" ;
 ##region meta
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;

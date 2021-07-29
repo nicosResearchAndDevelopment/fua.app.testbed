@@ -1,8 +1,12 @@
 # nrd-testbed
 
-## Installation Guides
+## Documentation
 
-[here](./install/)
+[here](./documentation/)
+
+### Installation Guides
+
+[here](./documentation/install/)
 
 ---
 
