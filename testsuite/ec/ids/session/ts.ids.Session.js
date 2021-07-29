@@ -3,6 +3,9 @@ const
     path = require("path")
 ;
 
+// REM: wir halten die sesshion.json so flach wie möglich, um es so performant wie möglich
+// REM:     auf die Festplatte zu bekommen (und nicht eine VP).
+
 //region fn
 function timestamp() {
     return (new Date).toISOString();
@@ -47,6 +50,7 @@ function write_session(file_path, session) {
 }
 
 //endregion fn
+
 class Session {
 
     #applicant         = "";

@@ -8,7 +8,60 @@ const
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
     LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
-    amec           = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js'));
+    amec           = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js'))
+;
+
+//region new style
+// TODO: get schemata
+// TODO: get agents (testbed) data
+const
+    testbed_domain     = {
+        '@id':         "http://testbed.nicos-rd.com/domain/",
+        'users':       { // REM: as ldp:Basiccontainer
+            '@id': "http://testbed.nicos-rd.com/domain/users/"
+        },
+        'groups':      { // REM: as ldp:Basiccontainer
+            '@id': "http://testbed.nicos-rd.com/domain/groups/"
+        },
+        'roles':       { // REM: as ldp:Basiccontainer
+            '@id': "http://testbed.nicos-rd.com/domain/roles/"
+        },
+        'memberships': { // REM: as ldp:Basiccontainer
+            '@id': "http://testbed.nicos-rd.com/domain/memberships/"
+        },
+        'credentials': { // REM: as ldp:Basiccontainer
+            '@id': "http://testbed.nicos-rd.com/domain/credentials/"
+        }
+    }, // testbed_domain
+    testbed_agent_node = { // REM: ...is coming from generated graph.
+        '@id':       "http://testbed.nicos-rd.com/",
+        'domain':    testbed_domain, // domain
+        'testsuite': { // REM: as agent
+            '@id': "http://testbed.nicos-rd.com/testsuite/",
+            // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
+            'domain': "set by testbed (so we'll take 'testbed.domain')"
+        } // testsuite
+    }, // agent_node
+    {Testbed}          = require('./code/agent.Testbed.js'),// REM: as agent
+    // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
+    testbed_agent      = new Testbed({
+        'prefix': {
+            'testbed': "tb:",
+            'domain':  "domain:"
+        },
+        'fn':     undefined,
+        'node':   testbed_agent_node
+    }) //new Testbed()
+;
+//region new style :: TEST
+(async (/* TEST */) => {
+    let
+        testbed_presentation = await testbed_agent()
+    ;
+    debugger;
+})(/* TEST */).catch(console.error);
+//endregion new style :: TEST
+//endregion new style
 
 const
     // TODO build a proper agent amec with a concise api
