@@ -15,39 +15,49 @@ const
 // TODO: get schemata
 // TODO: get agents (testbed) data
 const
+    testbed_system     = {
+        '@id':   "http://testbed.nicos-rd.com/system/",
+        '@type': "http://www.nicos-rd.com/fua/agent/System#Device"
+    }, // testbed_system
     testbed_domain     = {
         '@id':         "http://testbed.nicos-rd.com/domain/",
-        'users':       { // REM: as ldp:Basiccontainer
+        'users':       { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/users/"
         },
-        'groups':      { // REM: as ldp:Basiccontainer
+        'groups':      { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/groups/"
         },
-        'roles':       { // REM: as ldp:Basiccontainer
+        'roles':       { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/roles/"
         },
-        'memberships': { // REM: as ldp:Basiccontainer
+        'memberships': { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/memberships/"
         },
-        'credentials': { // REM: as ldp:Basiccontainer
+        'credentials': { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/credentials/"
         }
     }, // testbed_domain
+    testbed_testsuite  = { // REM: as agent
+        '@id': "http://testbed.nicos-rd.com/testsuite/",
+        // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
+        'domain': "set by testbed (so we'll take 'testbed.domain')"
+    }, // testbed_testsuite
     testbed_agent_node = { // REM: ...is coming from generated graph.
         '@id':       "http://testbed.nicos-rd.com/",
-        'domain':    testbed_domain, // domain
-        'testsuite': { // REM: as agent
-            '@id': "http://testbed.nicos-rd.com/testsuite/",
-            // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
-            'domain': "set by testbed (so we'll take 'testbed.domain')"
-        } // testsuite
+        'system':    testbed_system,
+        'domain':    testbed_domain,
+        'testsuite': testbed_testsuite
     }, // agent_node
     {Testbed}          = require('./code/agent.Testbed.js'),// REM: as agent
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
     testbed_agent      = new Testbed({
         'prefix': {
-            'testbed': "tb:",
-            'domain':  "domain:"
+            'testbed':   "tb:",
+            'testsuite': "ts:",
+            'system':    "sys:",
+            'sys':       "sys:",
+            'domain':    "dom:",
+            'dom':       "dom:"
         },
         'fn':     undefined,
         'node':   testbed_agent_node
