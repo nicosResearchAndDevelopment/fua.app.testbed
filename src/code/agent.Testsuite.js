@@ -1,9 +1,10 @@
 const
-    path   = require('path'),
+    path     = require('path'),
     //
-    util   = require('@nrd/fua.core.util'),
+    util     = require('@nrd/fua.core.util'),
     //
-    {Self} = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js'))
+    {Self}   = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
+    {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
 ;
 
 //region error
@@ -17,7 +18,7 @@ class ErrorTestsuiteIdIsMissing extends Error {
 //endregion error
 
 function Testsuite({
-                       'prefix': prefix = {
+                       'prefix':                 prefix = {
                            'testsuite': "ts:",
                            'testbed':   "tb:",
                            'system':    "sys:",
@@ -25,7 +26,16 @@ function Testsuite({
                            'domain':    "dom:",
                            'dom':       "dom:"
                        },
-                       'type':   type = [],
+                       'prefix_system':          prefix_system = "",
+                       'prefix_system_model':    prefix_system_model = "",
+                       'prefix_domain':          prefix_domain = "",
+                       'prefix_domain_model':    prefix_domain_model = "",
+                       'prefix_testsuite':       prefix_testsuite = "",
+                       'prefix_testsuite_model': prefix_testsuite_model = "",
+                       'prefix_testbed':         prefix_testbed = "",
+                       'prefix_testbed_model':   prefix_testbed_model = "",
+
+                       'type': type = [],
                        //
                        'self':   self = true,
                        'system': system = undefined,
@@ -51,11 +61,11 @@ function Testsuite({
 
             let temp_predicate;
 
-            temp_predicate = `${prefix.system}system`;
+            temp_predicate = `${prefix_system_model}system`;
             if (testsuite[temp_predicate] && !presentation[temp_predicate])
                 presentation[temp_predicate] = await testsuite[temp_predicate]();
 
-            temp_predicate = `${prefix.domain}domain`;
+            temp_predicate = `${prefix_domain_model}domain`;
             if (testsuite[temp_predicate] && !presentation[temp_predicate])
                 presentation[temp_predicate] = await testsuite[temp_predicate]();
 
@@ -76,14 +86,16 @@ function Testsuite({
 
     if (/** boolean */ self) {
         Self({
-            'prefix': {
+            'prefix':              {
                 'self':   prefix.testsuite,
                 'system': prefix.system,
                 'sys':    prefix.sys,
                 'domain': prefix.domain,
                 'dom':    prefix.domain
             },
-            'type':   type,
+            'prefix_system':       prefix_system = "",
+            'prefix_system_model': prefix_system_model = "",
+            'type':                type,
             //
             'domain': domain,
             'system': system,
@@ -96,18 +108,18 @@ function Testsuite({
             const
                 {System} = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js'))
             ;
-            Object.defineProperty(fn, `${prefix['system']}system`, {
+            Object.defineProperty(fn, `${prefix_system}system`, {
                 value: system, enumerable: true
             });
             type.push(System);
         } else {
-            tmp_node = (node['system'] || node[`${prefix['system']}system`]);
+            tmp_node = (node['system'] || node[`${prefix_system}system`]);
             if (tmp_node) {
                 const
                     // TODO : BETA!!! :: agent.System/src/agent.System.beta.js
                     {System} = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js'))
                 ;
-                Object.defineProperty(fn, `${prefix['system']}system`, {
+                Object.defineProperty(fn, `${prefix_system}system`, {
                     value:      new System({
                         'type': [],
                         'node': tmp_node,
@@ -115,8 +127,9 @@ function Testsuite({
                     }),
                     enumerable: true
                 });
+                type.push(System);
             } // if ()
-            type.push(System);
+
         } // if ()
 
         if (domain) {
@@ -129,13 +142,13 @@ function Testsuite({
             });
             // TODO : type.push(Domain);
         } else {
-            tmp_node = (node['domain'] || node[`${prefix['domain']}domain`]);
+            tmp_node = (node['domain'] || node[`${prefix_domain}domain`]);
             if (tmp_node)
                 // TODO : require(Domain)?!?
                 //const
                 // TODO : {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
                 //;
-                Object.defineProperty(fn, `${prefix['domain']}domain`, {
+                Object.defineProperty(fn, `${prefix_domain}domain`, {
                     // TODO : this will burn!
                     value:        new Domain({
                         'type': [],

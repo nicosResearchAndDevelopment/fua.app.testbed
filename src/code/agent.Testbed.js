@@ -5,7 +5,9 @@ const
     //
     {Self}      = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
     // TODO : beta
+    {Time}      = require(path.join(util.FUA_JS_LIB, 'agent.Time/src/agent.Time.js')),
     {System}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
+    {Device}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     {Testsuite} = require('./agent.Testsuite.js')// REM: as agent
 ;
 
@@ -27,7 +29,7 @@ function timestamp() {
 //endregion fn
 
 function Testbed({
-                     'prefix': prefix = {
+                     'prefix':                 prefix = {
                          'testbed': "tb:",
                          'tb':      "tb:",
                          //'testsuite': "ts:",
@@ -37,9 +39,21 @@ function Testbed({
                          'domain': "dom:",
                          'dom':    "dom:"
                      },
-                     'type':   type = [],
-                     'fn':     fn = undefined,
-                     'node':   node = undefined
+                     'prefix_self':            prefix_self = "",
+                     'prefix_self_model':      prefix_self_model = "",
+                     'prefix_system':          prefix_system = "",
+                     'prefix_system_model':    prefix_system_model = "",
+                     'prefix_domain':          prefix_domain = "",
+                     'prefix_domain_model':    prefix_domain_model = "",
+                     'prefix_ldp_model':       prefix_ldp_model = "",
+                     'prefix_testsuite':       prefix_testsuite = "",
+                     'prefix_testsuite_model': prefix_testsuite_model = "",
+                     'prefix_testbed':         prefix_testbed = "",
+                     'prefix_testbed_model':   prefix_testbed_model = "",
+                     //
+                     'type': type = [],
+                     'fn':   fn = undefined,
+                     'node': node = undefined
                  }) {
 
     let tmp_node;
@@ -58,15 +72,15 @@ function Testbed({
 
             let temp_predicate;
 
-            temp_predicate = `${prefix.system}system`;
+            temp_predicate = `${prefix_system_model}system`;
             if (testbed[temp_predicate] && !presentation[temp_predicate])
                 presentation[temp_predicate] = await testbed[temp_predicate]();
 
-            temp_predicate = `${prefix.domain}domain`;
+            temp_predicate = `${prefix_domain_model}domain`;
             if (testbed[temp_predicate] && !presentation[temp_predicate])
                 presentation[temp_predicate] = await testbed[temp_predicate]();
 
-            temp_predicate = `${prefix.testbed}testsuite`;
+            temp_predicate = `${prefix_testbed_model}testsuite`;
             if (testbed[temp_predicate] && !presentation[temp_predicate])
                 presentation[temp_predicate] = await testbed[temp_predicate]();
 
@@ -85,43 +99,27 @@ function Testbed({
         });
     } // if ()
 
-    //if (system) {
-        const
-            // TODO : BETA!!! :: agent.System/src/agent.System.beta.js
-            {Device} = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js'))
-        ;
-    //    Object.defineProperty(fn, `${prefix['system']}system`, {
-    //        value: system, enumerable: true
-    //    });
-    //    type.push(System);
-    //} else {
-    //    tmp_node = (node['system'] || node[`${prefix['system']}system`]);
-    //    if (tmp_node) {
-    //        const
-    //            // TODO : BETA!!! :: agent.System/src/agent.System.beta.js
-    //            {System} = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js'))
-    //        ;
-    //        Object.defineProperty(fn, `${prefix['system']}system`, {
-    //            value:      new System({
-    //                'type': [],
-    //                'node': tmp_node,
-    //                'fn':   undefined
-    //            }),
-    //            enumerable: true
-    //        });
-    //        type.push(System);
-    //    } // if ()
-    //} // if ()
-
     Self({
-        'prefix': {
+        'prefix':                 {
             'self':   prefix.testbed,
             'system': prefix.sys,
             'sys':    prefix.sys,
             'domain': prefix.dom,
             'dom':    prefix.dom
         },
-        'type':   type,
+        'prefix_self':            prefix_self,
+        'prefix_self_model':      prefix_self_model,
+        'prefix_system':          prefix_system,
+        'prefix_system_model':    prefix_system_model,
+        'prefix_domain':          prefix_domain,
+        'prefix_domain_model':    prefix_domain_model,
+        'prefix_ldp_model':       prefix_ldp_model,
+        'prefix_testsuite':       prefix_testsuite,
+        'prefix_testsuite_model': prefix_testsuite_model,
+        'prefix_testbed':         prefix_testbed,
+        'prefix_testbed_model':   prefix_testbed_model,
+        //
+        'type': type,
         //
         'System': Device,
         'domain': undefined,
@@ -130,16 +128,27 @@ function Testbed({
         'node': node
     });
 
-    tmp_node = (node['testsuite'] || node[`${prefix['testbed']}testsuite`]);
+    tmp_node = (node['testsuite'] || node[`${prefix_testbed_model}testsuite`]);
     if (tmp_node)
         // REM : object-property 'testsuite' comes from testbed-model ('tbm')
-        Object.defineProperty(fn, `${prefix['testbed']}testsuite`, {
+        Object.defineProperty(fn, `${prefix_testbed_model}testsuite`, {
             value:      new Testsuite({
+                'prefix_self':            prefix_self,
+                'prefix_self_model':      prefix_self_model,
+                'prefix_system':          prefix_system,
+                'prefix_system_model':    prefix_system_model,
+                'prefix_domain':          prefix_domain,
+                'prefix_domain_model':    prefix_domain_model,
+                'prefix_testsuite':       prefix_testsuite,
+                'prefix_testsuite_model': prefix_testsuite_model,
+                'prefix_testbed':         prefix_testbed,
+                'prefix_testbed_model':   prefix_testbed_model,
+                //
                 'type': [],
                 //
                 'self':   false, // REM : to prevent testsuite to get self once again...
-                'system': fn[`${prefix.system}system`],
-                'domain': fn[`${prefix.domain}domain`],
+                'system': fn[`${prefix_system_model}system`],
+                'domain': fn[`${prefix_domain_model}domain`],
                 //
                 'node': tmp_node,
                 'fn':   undefined

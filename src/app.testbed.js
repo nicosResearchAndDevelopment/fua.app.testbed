@@ -16,8 +16,19 @@ const
 // TODO: get agents (testbed) data
 const
     testbed_system     = {
-        '@id':   "http://testbed.nicos-rd.com/system/",
-        '@type': "http://www.nicos-rd.com/fua/agent/System#Device"
+        '@id':       "http://testbed.nicos-rd.com/system/",
+        '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
+        'time':      {
+            '@type':  "fua.agent.Time",
+            'hasTRS': "http://dbpedia.org/resource/Unix_time"
+        },
+        'lifecycle': {
+            '@type':             "time:Instant",
+            'time:hasBeginning': {
+                '@type':                   "time:Instant",
+                'time:inXSDDateTimeStamp': "2019-12-14T12:35:25.047Z"
+            }
+        }
     }, // testbed_system
     testbed_domain     = {
         '@id':         "http://testbed.nicos-rd.com/domain/",
@@ -51,7 +62,7 @@ const
     {Testbed}          = require('./code/agent.Testbed.js'),// REM: as agent
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
     testbed_agent      = new Testbed({
-        'prefix': {
+        'prefix':                 {
             'testbed':   "tb:",
             'testsuite': "ts:",
             'system':    "sys:",
@@ -59,8 +70,19 @@ const
             'domain':    "dom:",
             'dom':       "dom:"
         },
-        'fn':     undefined,
-        'node':   testbed_agent_node
+        'prefix_self':            "tb:",
+        'prefix_self_model':      "selfm:",
+        'prefix_system':          "sys:",
+        'prefix_system_model':    "sysm:",
+        'prefix_domain':          "dom:",
+        'prefix_domain_model':    "domm:",
+        'prefix_ldp_model':       "ldp:",
+        'prefix_testsuite':       "ts:",
+        'prefix_testsuite_model': "tbm:", // REM : tbm!!!
+        'prefix_testbed':         "tb:",
+        'prefix_testbed_model':   "tbm:", // REM : tbm!!!
+        'fn':                     undefined,
+        'node':                   testbed_agent_node
     }) //new Testbed()
 ;
 //region new style :: TEST
