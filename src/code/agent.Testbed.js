@@ -26,63 +26,85 @@ function timestamp() {
     return (new Date).toISOString();
 }
 
+//function contextHasPrefix(contexts, prefix) {
+//    let result = false;
+//    for (let i = 0; ((!result) && (i < contexts.length)); i++) {
+//        result = ((contexts[i][prefix]) ? true : false)
+//    } // for (i)
+//    return result;
+//}
+
 //endregion fn
 
-function Testbed({
-                     'prefix':                 prefix = {
-                         'testbed': "tb:",
-                         'tb':      "tb:",
-                         //'testsuite': "ts:",
-                         //'ts':        "ts:",
-                         'system': "sys:",
-                         'sys':    "sys:",
-                         'domain': "dom:",
-                         'dom':    "dom:"
-                     },
-                     'prefix_self':            prefix_self = "",
-                     'prefix_self_model':      prefix_self_model = "",
-                     'prefix_system':          prefix_system = "",
-                     'prefix_system_model':    prefix_system_model = "",
-                     'prefix_domain':          prefix_domain = "",
-                     'prefix_domain_model':    prefix_domain_model = "",
-                     'prefix_ldp_model':       prefix_ldp_model = "",
-                     'prefix_testsuite':       prefix_testsuite = "",
-                     'prefix_testsuite_model': prefix_testsuite_model = "",
-                     'prefix_testbed':         prefix_testbed = "",
-                     'prefix_testbed_model':   prefix_testbed_model = "",
-                     //
-                     'type': type = [],
-                     'fn':   fn = undefined,
-                     'node': node = undefined
-                 }) {
+function TestbedAgent({
+                          '@context':               context_parent = [],
+                          '@id':                    id,
+                          'prefix':                 prefix = {
+                              'testbed': "tb:",
+                              'tb':      "tb:",
+                              //'testsuite': "ts:",
+                              //'ts':        "ts:",
+                              'system': "sys:",
+                              'sys':    "sys:",
+                              'domain': "dom:",
+                              'dom':    "dom:"
+                          },
+                          'prefix_self':            prefix_self = "",
+                          'prefix_self_model':      prefix_self_model = "",
+                          'prefix_system':          prefix_system = "",
+                          'prefix_system_model':    prefix_system_model = "",
+                          'prefix_domain':          prefix_domain = "",
+                          'prefix_domain_model':    prefix_domain_model = "",
+                          'prefix_ldp_model':       prefix_ldp_model = "",
+                          'prefix_testsuite':       prefix_testsuite = "",
+                          'prefix_testsuite_model': prefix_testsuite_model = "",
+                          'prefix_testbed':         prefix_testbed = "",
+                          'prefix_testbed_model':   prefix_testbed_model = "",
+                          //
+                          'type': type = [],
+                          'fn':   fn = undefined,
+                          'node': node = undefined,
+                          'app':  app,
+                          //
+                          'tb_util': tb_util
+                      }) {
 
-    let tmp_node;
+    const
+        context_self = context_parent.concat(TestbedAgent['@context']) // REM: self context
+    ;
+    let
+        tmp_prefix,
+        tmp_node
+    ;
 
-    type.push(Testbed);
+    id = ((id) ? (`${id}agent/`) : (`${tb_util['idAsBlankNode']()}/agent/`));
+    type.push(TestbedAgent);
 
-    fn = (fn || (async function testbed() {
+    fn = (fn || (async function testbedAgent() {
         try {
             let presentation = {
                 '@context': undefined,
-                '@id':      testbed['@id'],
-                '@type':    ((testbed['@type']) ? testbed['@type'].map((type) => {
+                '@id':      testbedAgent['@id'],
+                '@type':    ((testbedAgent['@type']) ? testbedAgent['@type'].map((type) => {
                     return (type['@id'] || type);
                 }) : undefined)
             };
 
             let temp_predicate;
 
-            temp_predicate = `${prefix_system_model}system`;
-            if (testbed[temp_predicate] && !presentation[temp_predicate])
-                presentation[temp_predicate] = await testbed[temp_predicate]();
+            //temp_predicate = `${prefix_system_model}system`;
+            temp_predicate = `system`;
+            if (testbedAgent[temp_predicate] && !presentation[temp_predicate])
+                presentation[temp_predicate] = await testbedAgent[temp_predicate]();
 
-            temp_predicate = `${prefix_domain_model}domain`;
-            if (testbed[temp_predicate] && !presentation[temp_predicate])
-                presentation[temp_predicate] = await testbed[temp_predicate]();
+            //temp_predicate = `${prefix_domain_model}domain`;
+            temp_predicate = `domain`;
+            if (testbedAgent[temp_predicate] && !presentation[temp_predicate])
+                presentation[temp_predicate] = await testbedAgent[temp_predicate]();
 
             temp_predicate = `${prefix_testbed_model}testsuite`;
-            if (testbed[temp_predicate] && !presentation[temp_predicate])
-                presentation[temp_predicate] = await testbed[temp_predicate]();
+            if (testbedAgent[temp_predicate] && !presentation[temp_predicate])
+                presentation[temp_predicate] = await testbedAgent[temp_predicate]();
 
             return presentation;
         } catch (jex) {
@@ -100,6 +122,10 @@ function Testbed({
     } // if ()
 
     Self({
+        '@context': context_self,
+        '@id':      id,
+        'type':     type,
+        //
         'prefix':                 {
             'self':   prefix.testbed,
             'system': prefix.sys,
@@ -118,14 +144,18 @@ function Testbed({
         'prefix_testsuite_model': prefix_testsuite_model,
         'prefix_testbed':         prefix_testbed,
         'prefix_testbed_model':   prefix_testbed_model,
+
         //
-        'type': type,
-        //
+        'holder': app,
         'System': Device,
         'domain': undefined,
         //
         'fn':   fn,
-        'node': node
+        'node': node,
+        //
+        'contextHasPrefix': tb_util['contextHasPrefix'],
+        'idAsBlankNode':    tb_util['idAsBlankNode'],
+        'randomLeaveId':    tb_util['randomLeaveId']
     });
 
     tmp_node = (node['testsuite'] || node[`${prefix_testbed_model}testsuite`]);
@@ -150,17 +180,35 @@ function Testbed({
                 'system': fn[`${prefix_system_model}system`],
                 'domain': fn[`${prefix_domain_model}domain`],
                 //
+                'fn':   undefined,
                 'node': tmp_node,
-                'fn':   undefined
+                //
+                'contextHasPrefix': tb_util['contextHasPrefix'],
+                'idAsBlankNode':    tb_util['idAsBlankNode']
             }),
             enumerable: true
         });
 
     return fn;
-} // Testbed
+} // TestbedAgent
 
-Object.defineProperties(Testbed, {
-    '@id': {value: "fua.agent.Testbed"}
+Object.defineProperties(TestbedAgent, {
+    '@context': {
+        value:          [{
+            '@base': "http://testbed.nicos-rd.com/",
+            'tb':    "http://testbed.nicos-rd.com/",
+            'tbm':   "http://testbed.nicos-rd.com/",
+            //
+            'sysm': "http://www.nicos-rd.com/fua/system#",
+            'domm': "http://www.nicos-rd.com/fua/domain#",
+            //
+            'system':    "http://www.nicos-rd.com/fua/system#system",
+            'domain':    "http://www.nicos-rd.com/fua/domain#domain",
+            // TODO : ha to be switched, when testsuite has its own app...
+            'testsuite': "http://testsuite.nicos-rd.com/"
+        }], enumerable: true
+    },
+    '@id':      {value: "http://www.nicos-rd.com/fua/testbed#TestbedAgent/"}
 });
 
-exports.Testbed = Testbed;
+exports.TestbedAgent = TestbedAgent;

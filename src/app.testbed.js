@@ -15,7 +15,14 @@ const
 // TODO: get schemata
 // TODO: get agents (testbed) data
 const
-    testbed_system     = {
+    testbed_app             = {
+        '@context': [],
+        '@id':      "http://testbed.nicos-rd.com/",
+        '@type':    "http_//www.nicos-rd.com/testbed/TestbedApp/",
+        'agent':    undefined, // REM : will be set later...
+        'service':  null
+    }, // testbed_app
+    testbed_system          = {
         '@id':       "http://testbed.nicos-rd.com/system/",
         '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
         'time':      {
@@ -30,7 +37,7 @@ const
             }
         }
     }, // testbed_system
-    testbed_domain     = {
+    testbed_domain          = {
         '@id':         "http://testbed.nicos-rd.com/domain/",
         'users':       { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/users/"
@@ -48,20 +55,40 @@ const
             '@id': "http://testbed.nicos-rd.com/domain/credentials/"
         }
     }, // testbed_domain
-    testbed_testsuite  = { // REM: as agent
+    testbed_agent_testsuite = { // REM: as agent
         '@id': "http://testbed.nicos-rd.com/testsuite/",
         // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
         'domain': "set by testbed (so we'll take 'testbed.domain')"
     }, // testbed_testsuite
-    testbed_agent_node = { // REM: ...is coming from generated graph.
+    testbed_agent_node      = { // REM: ...is coming from generated graph.
         '@id':       "http://testbed.nicos-rd.com/",
         'system':    testbed_system,
         'domain':    testbed_domain,
-        'testsuite': testbed_testsuite
+        'testsuite': testbed_agent_testsuite
     }, // agent_node
-    {Testbed}          = require('./code/agent.Testbed.js'),// REM: as agent
+    {TestbedAgent}          = require('./code/agent.Testbed.js'),// REM: as agent
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    testbed_agent      = new Testbed({
+    testbed_agent_util      = {
+        'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
+            // TODO : context is array?
+            let result = false;
+            for (let i = 0; ((!result) && (i < context.length)); i++) {
+                result = ((context[i][prefix]) ? true : false)
+            } // for (i)
+            return result;
+        },
+        'idAsBlankNode':    function (namespace = "") {
+            //return `_:${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
+            return `_:${namespace}${testbed_agent_util['randomLeaveId']()}`;
+        },
+        'randomLeaveId':    function () {
+            return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
+        }
+    },
+    testbed_agent_context   = [],
+    testbed_agent           = new TestbedAgent({
+        '@context':               testbed_agent_context,
+        '@id':                    testbed_agent_node['@id'],
         'prefix':                 {
             'testbed':   "tb:",
             'testsuite': "ts:",
@@ -82,14 +109,20 @@ const
         'prefix_testbed':         "tb:",
         'prefix_testbed_model':   "tbm:", // REM : tbm!!!
         'fn':                     undefined,
-        'node':                   testbed_agent_node
-    }) //new Testbed()
+        'node':                   testbed_agent_node,
+        'app':                    testbed_app, // REM : will be set later
+        //
+        'tb_util': testbed_agent_util
+    }) //new TestbedAgent()
 ;
+testbed_app['agent']        = testbed_agent;
+
 //region new style :: TEST
 (async (/* TEST */) => {
     let
-        testbed_presentation = await testbed_agent()
+        testbed_agent_presentation = await testbed_app['agent']()
     ;
+    testbed_agent;
     debugger;
 })(/* TEST */).catch(console.error);
 //endregion new style :: TEST

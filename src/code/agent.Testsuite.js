@@ -42,7 +42,9 @@ function Testsuite({
                        'domain': domain = undefined,
                        //
                        'fn':   fn = undefined,
-                       'node': node = undefined
+                       'node': node = undefined,
+                       'contextHasPrefix': contextHasPrefix,
+                       'idAsBlankNode':    idAsBlankNode
                    }) {
 
     let tmp_node;
@@ -101,7 +103,10 @@ function Testsuite({
             'system': system,
             //
             'fn':   fn,
-            'node': node
+            'node': node,
+            //
+            'contextHasPrefix': contextHasPrefix,
+            'idAsBlankNode':    idAsBlankNode
         });
     } else {
         if (system) {
@@ -132,32 +137,32 @@ function Testsuite({
 
         } // if ()
 
-        if (domain) {
-            //const
-            // TODO :    {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
-            //;
-            Object.defineProperty(fn, `${prefix['domain']}domain`, {
-                value:      domain,
-                enumerable: true
-            });
-            // TODO : type.push(Domain);
-        } else {
-            tmp_node = (node['domain'] || node[`${prefix_domain}domain`]);
-            if (tmp_node)
-                // TODO : require(Domain)?!?
-                //const
-                // TODO : {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
-                //;
-                Object.defineProperty(fn, `${prefix_domain}domain`, {
-                    // TODO : this will burn!
-                    value:        new Domain({
-                        'type': [],
-                        'node': tmp_node,
-                        'fn':   undefined
-                    })
-                    , enumerable: true
-                });
-        } // if ()
+        //if (domain) {
+        //    //const
+        //    // TODO :    {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
+        //    //;
+        //    Object.defineProperty(fn, `${prefix['domain']}domain`, {
+        //        value:      domain,
+        //        enumerable: true
+        //    });
+        //    // TODO : type.push(Domain);
+        //} else {
+        //    tmp_node = (node['domain'] || node[`${prefix_domain}domain`]);
+        //    if (tmp_node)
+        //        // TODO : require(Domain)?!?
+        //        //const
+        //        // TODO : {Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
+        //        //;
+        //        Object.defineProperty(fn, `${prefix_domain}domain`, {
+        //            // TODO : this will burn!
+        //            value:        new Domain({
+        //                'type': [],
+        //                'node': tmp_node,
+        //                'fn':   undefined
+        //            })
+        //            , enumerable: true
+        //        });
+        //} // if ()
 
     } // if ()
 
@@ -165,7 +170,7 @@ function Testsuite({
 } // Testsuite
 
 Object.defineProperties(Testsuite, {
-    '@id': {value: "fua.agent.Testsuite", enumerable: true}
+    '@id': {value: "http://www.nicos-rd.com/fua/testbed#Testsuite", enumerable: true}
 });
 
 exports.Testsuite = Testsuite;
