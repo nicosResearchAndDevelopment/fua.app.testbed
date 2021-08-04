@@ -16,15 +16,22 @@ const
 // TODO: get agents (testbed) data
 const
     testbed_app             = {
-        '@context': [],
-        '@id':      "http://testbed.nicos-rd.com/",
-        '@type':    "http_//www.nicos-rd.com/testbed/TestbedApp/",
-        'agent':    undefined, // REM : will be set later...
-        'service':  null
+        '@context':    [],
+        '@id':         "http://testbed.nicos-rd.com/",
+        '@type':       "http_//www.nicos-rd.com/testbed/TestbedApp/",
+        'owner':       "http://www.nicos-rd.com",
+        'domainOwner': "http://www.nicos-rd.com/DOMAINowner/",
+        'systemOwner': "http://www.nicos-rd.com/SYSEMTowner/",
+        'agent':       undefined, // REM : will be set later...
+        'service':     null
     }, // testbed_app
     testbed_system          = {
         '@id':       "http://testbed.nicos-rd.com/system/",
         '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
+        'owner':     {
+            '@id':   testbed_app.systemOwner,
+            '@type': "foaf:Agent"
+        },
         'time':      {
             '@type':  "fua.agent.Time",
             'hasTRS': "http://dbpedia.org/resource/Unix_time"
@@ -39,6 +46,10 @@ const
     }, // testbed_system
     testbed_domain          = {
         '@id':         "http://testbed.nicos-rd.com/domain/",
+        'owner':       {
+            '@id':   testbed_app.domainOwner,
+            '@type': "foaf:Agent"
+        },
         'users':       { // REM: as ldp:BasicContainer
             '@id': "http://testbed.nicos-rd.com/domain/users/"
         },
@@ -62,6 +73,9 @@ const
     }, // testbed_testsuite
     testbed_agent_node      = { // REM: ...is coming from generated graph.
         '@id':       "http://testbed.nicos-rd.com/",
+        'owner':     {
+            '@id': testbed_app.owner
+        },
         'system':    testbed_system,
         'domain':    testbed_domain,
         'testsuite': testbed_agent_testsuite

@@ -70,7 +70,8 @@ function TestbedAgent({
                       }) {
 
     const
-        context_self = context_parent.concat(TestbedAgent['@context']) // REM: self context
+        context_self = context_parent.concat(TestbedAgent['@context']), // REM: self context
+        owner        = app['owner'] // TODO : sollte auch eine async function sein, wenn die app implementiert ist...
     ;
     let
         tmp_prefix,
@@ -80,7 +81,7 @@ function TestbedAgent({
     id = ((id) ? (`${id}agent/`) : (`${tb_util['idAsBlankNode']()}/agent/`));
     type.push(TestbedAgent);
 
-    fn = (fn || (async function testbedAgent() {
+    fn = (fn || (async function /** as self */ testbedAgent() {
         try {
             let presentation = {
                 '@context': undefined,
@@ -91,6 +92,9 @@ function TestbedAgent({
             };
 
             let temp_predicate;
+            temp_predicate = `owner`;
+            if (testbedAgent[temp_predicate])
+                presentation[temp_predicate] = await testbedAgent[temp_predicate]();
 
             //temp_predicate = `${prefix_system_model}system`;
             temp_predicate = `system`;
@@ -144,9 +148,7 @@ function TestbedAgent({
         'prefix_testsuite_model': prefix_testsuite_model,
         'prefix_testbed':         prefix_testbed,
         'prefix_testbed_model':   prefix_testbed_model,
-
         //
-        'holder': app,
         'System': Device,
         'domain': undefined,
         //
@@ -195,17 +197,17 @@ function TestbedAgent({
 Object.defineProperties(TestbedAgent, {
     '@context': {
         value:          [{
-            '@base': "http://testbed.nicos-rd.com/",
-            'tb':    "http://testbed.nicos-rd.com/",
-            'tbm':   "http://testbed.nicos-rd.com/",
+            "@base": "http://testbed.nicos-rd.com/",
+            "tb":    "http://testbed.nicos-rd.com/",
+            "tbm":   "http://testbed.nicos-rd.com/",
             //
-            'sysm': "http://www.nicos-rd.com/fua/system#",
-            'domm': "http://www.nicos-rd.com/fua/domain#",
+            "sysm": "http://www.nicos-rd.com/fua/system#",
+            "domm": "http://www.nicos-rd.com/fua/domain#",
             //
-            'system':    "http://www.nicos-rd.com/fua/system#system",
-            'domain':    "http://www.nicos-rd.com/fua/domain#domain",
+            "system": "http://www.nicos-rd.com/fua/system#system",
+            "domain": "http://www.nicos-rd.com/fua/domain#domain",
             // TODO : ha to be switched, when testsuite has its own app...
-            'testsuite': "http://testsuite.nicos-rd.com/"
+            "testsuite": "http://testsuite.nicos-rd.com/"
         }], enumerable: true
     },
     '@id':      {value: "http://www.nicos-rd.com/fua/testbed#TestbedAgent/"}
