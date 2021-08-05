@@ -17,14 +17,25 @@ const
 const
     testbed_app             = {
         '@context':    [],
-        '@id':         "http://testbed.nicos-rd.com/",
-        '@type':       "http_//www.nicos-rd.com/testbed/TestbedApp/",
+        '@id':         "http://testbed.nicos-rd.com/app/",
+        '@type':       "http_//www.nicos-rd.com/fua/testbed#TestbedApp",
         'owner':       "http://www.nicos-rd.com",
-        'domainOwner': "http://www.nicos-rd.com/DOMAINowner/",
-        'systemOwner': "http://www.nicos-rd.com/SYSEMTowner/",
+        'domainOwner': "http://www.nicos-rd.com/DOMAIN/owner/",
+        'systemOwner': "http://www.nicos-rd.com/SYSTEM/owner/",
         'agent':       undefined, // REM : will be set later...
         'service':     null
     }, // testbed_app
+    testbed_scheduler       = {
+        '@id':   "http://testbed.nicos-rd.com/scheduler/",
+        '@type': "http://www.nicos-rd.com/fua/agent/scheduler#Scheduler",
+        'owner': {
+            '@id':   testbed_app.systemOwner,
+            '@type': "foaf:Agent"
+        },
+        // TODO : hier könnte man vielleicht auch duration "PT1.42S" gehen?!?
+        'idle_emit_threshold': {'@type': "xsd:decimal", '@value': /** seconds */ 1.0},
+        'hasTRS':              "http://dbpedia.org/resource/Unix_time"
+    }, // testbed_scheduler
     testbed_system          = {
         '@id':       "http://testbed.nicos-rd.com/system/",
         '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
@@ -72,10 +83,12 @@ const
         'domain': "set by testbed (so we'll take 'testbed.domain')"
     }, // testbed_testsuite
     testbed_agent_node      = { // REM: ...is coming from generated graph.
-        '@id':       "http://testbed.nicos-rd.com/",
+        '@id':       "http://testbed.nicos-rd.com/agent/",
         'owner':     {
             '@id': testbed_app.owner
         },
+        'holder':    testbed_app,
+        'scheduler': testbed_scheduler,
         'system':    testbed_system,
         'domain':    testbed_domain,
         'testsuite': testbed_agent_testsuite

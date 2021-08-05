@@ -6,6 +6,7 @@ const
     {Self}      = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
     // TODO : beta
     {Time}      = require(path.join(util.FUA_JS_LIB, 'agent.Time/src/agent.Time.js')),
+
     {System}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     {Device}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     {Testsuite} = require('./agent.Testsuite.js')// REM: as agent
@@ -96,6 +97,10 @@ function TestbedAgent({
             if (testbedAgent[temp_predicate])
                 presentation[temp_predicate] = await testbedAgent[temp_predicate]();
 
+            temp_predicate = `scheduler`;
+            if (testbedAgent[temp_predicate] && !presentation[temp_predicate])
+                presentation[temp_predicate] = await testbedAgent[temp_predicate]();
+
             //temp_predicate = `${prefix_system_model}system`;
             temp_predicate = `system`;
             if (testbedAgent[temp_predicate] && !presentation[temp_predicate])
@@ -149,8 +154,9 @@ function TestbedAgent({
         'prefix_testbed':         prefix_testbed,
         'prefix_testbed_model':   prefix_testbed_model,
         //
-        'System': Device,
-        'domain': undefined,
+        'System':    Device,
+        'domain':    undefined,
+        'scheduler': undefined,
         //
         'fn':   fn,
         'node': node,
@@ -164,7 +170,7 @@ function TestbedAgent({
     if (tmp_node)
         // REM : object-property 'testsuite' comes from testbed-model ('tbm')
         Object.defineProperty(fn, `${prefix_testbed_model}testsuite`, {
-            value:      new Testsuite({
+            value:          new Testsuite({
                 'prefix_self':            prefix_self,
                 'prefix_self_model':      prefix_self_model,
                 'prefix_system':          prefix_system,
@@ -187,9 +193,20 @@ function TestbedAgent({
                 //
                 'contextHasPrefix': tb_util['contextHasPrefix'],
                 'idAsBlankNode':    tb_util['idAsBlankNode']
-            }),
-            enumerable: true
+            }), enumerable: true
         });
+
+    fn['on'](fn['on_task']['scheduler_idle'], (data) => {
+        //debugger;
+        console.log(`fn['on'](fn['on_task']['scheduler_idle'] : data <${JSON.stringify(data)}>`);
+        return undefined;
+    });
+    fn['on'](fn['on_task']['scheduler_error'], (error) => {
+        //debugger;
+        console.log(`fn['on'](fn['on_task']['scheduler_error'] : data <${JSON.stringify(data)}>`);
+        return undefined;
+    });
+    Object.freeze(fn);
 
     return fn;
 } // TestbedAgent
@@ -197,15 +214,16 @@ function TestbedAgent({
 Object.defineProperties(TestbedAgent, {
     '@context': {
         value:          [{
-            "@base": "http://testbed.nicos-rd.com/",
+            "@base": "http://testbed.nicos-rd.com",
+            "vocab": "/",
             "tb":    "http://testbed.nicos-rd.com/",
             "tbm":   "http://testbed.nicos-rd.com/",
             //
-            "sysm": "http://www.nicos-rd.com/fua/system#",
-            "domm": "http://www.nicos-rd.com/fua/domain#",
+            "sysm": "http://www.nicos-rd.com/fua/agent/system#",
+            "domm": "http://www.nicos-rd.com/fua/agent/domain#",
             //
-            "system": "http://www.nicos-rd.com/fua/system#system",
-            "domain": "http://www.nicos-rd.com/fua/domain#domain",
+            "system": "http://www.nicos-rd.com/fua/agent/system#system",
+            "domain": "http://www.nicos-rd.com/fua/agent/domain#domain",
             // TODO : ha to be switched, when testsuite has its own app...
             "testsuite": "http://testsuite.nicos-rd.com/"
         }], enumerable: true
