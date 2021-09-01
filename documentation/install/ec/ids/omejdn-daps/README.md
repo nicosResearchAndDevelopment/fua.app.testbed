@@ -5,7 +5,14 @@
 - [GitHub / IDSA / Omejdn DAPS](https://github.com/International-Data-Spaces-Association/omejdn-daps)
 - [GitHub / NRD / Omejdn DAPS](https://github.com/nicosResearchAndDevelopment/omejdn-daps)
 
-## Instructions
+## Automated Instructions
+
+1. Make sure the docker daemon is up and running.
+2. Use `npm run install-omejdn-daps` to load the omejdn repository, build an image and create the container.
+   You might be confronted to give access to the config and keys folder in the newly cloned repository.
+3. Use `npm run launch-omejdn-daps` to start the container.
+
+## Manual instructions
 
 1. Clone Omejdn-DAPS repository to your favorite location.
 2. Open the cloned repository in your favorite command line terminal.

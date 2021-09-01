@@ -18,7 +18,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/app.testbed.js"
+    "start": "node src/app.testbed.js",
+    "install-omejdn-daps": "node ec/ids/src/scripts/setup-omejdn-daps.js install",
+    "launch-omejdn-daps": "node ec/ids/src/scripts/setup-omejdn-daps.js run"
   },
   "repository": {
     "type": "git",
