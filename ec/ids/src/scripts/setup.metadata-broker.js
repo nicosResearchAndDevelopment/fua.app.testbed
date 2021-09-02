@@ -1,10 +1,10 @@
 const
-    config                                 = require('./setup-config.js'),
-    {awaitMain, ignoreErr, joinPath}       = require('./setup-util.js'),
-    {mkdir, copyFile, readFile, writeFile} = require('fs/promises'),
-    git                                    = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
-    openssl                                = require('../../../../src/code/subprocess/openssl.js')(config.metadata_broker.cert_folder),
-    dockerCompose                          = require('../../../../src/code/subprocess/docker-compose.js')(config.metadata_broker.docker_compose_folder);
+    config                       = require('./setup-config.js'),
+    {awaitMain, ignoreErr}       = require('./setup-util.js'),
+    {mkdir, readFile, writeFile} = require('fs/promises'),
+    git                          = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
+    openssl                      = require('../../../../src/code/subprocess/openssl.js')(config.metadata_broker.cert_folder),
+    dockerCompose                = require('../../../../src/code/subprocess/docker-compose.js')(config.metadata_broker.docker_compose_folder);
 
 awaitMain(async function Main() {
     switch (process.argv[2]) {
