@@ -1,20 +1,23 @@
 const
-    config                 = require('./setup-config.js'),
-    {awaitMain, ignoreErr} = require('./setup-util.js'),
-    git                    = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
-    dockerCompose          = require('../../../../src/code/subprocess/docker-compose.js')(config.metadata_broker.docker_compose_file);
+    config                                 = require('./setup-config.js'),
+    {awaitMain, ignoreErr, joinPath}       = require('./setup-util.js'),
+    {mkdir, copyFile, readFile, writeFile} = require('fs/promises'),
+    git                                    = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
+    openssl                                = require('../../../../src/code/subprocess/openssl.js')(config.metadata_broker.cert_folder),
+    dockerCompose                          = require('../../../../src/code/subprocess/docker-compose.js')(config.metadata_broker.docker_compose_folder);
 
 awaitMain(async function Main() {
     switch (process.argv[2]) {
 
         case 'install':
             await _loadRepository();
-            // await _createImage();
-            // await _createContainer();
+            await _createTlsCertificate();
+            await _modifyDockerCompose();
+            await _createContainer();
             break;
 
         case 'launch':
-            // await _runApplication();
+            await _runApplication();
             break;
 
     }
@@ -23,3 +26,45 @@ awaitMain(async function Main() {
 async function _loadRepository() {
     await git.clone(config.metadata_broker.repo_url, config.metadata_broker.repo_folder);
 } // _loadRepository
+
+async function _createTlsCertificate() {
+    await mkdir(config.metadata_broker.cert_folder, {recursive: true});
+    await openssl.req({
+        '-x509':   null,
+        '-newkey': 'rsa:4096',
+        '-keyout': 'key.pem',
+        '-out':    'cert.pem',
+        '-days':   365,
+        '-nodes':  null,
+        '-batch':  null
+    });
+    await openssl.x509({
+        '-in':  'cert.pem',
+        '-out': 'server.crt'
+    });
+    await openssl.rsa({
+        '-in':  'key.pem',
+        '-out': 'server.key'
+    });
+} // _createTlsCertificate
+
+async function _modifyDockerCompose() {
+    const
+        dockerComposeFile = await readFile(config.metadata_broker.docker_compose_file, 'utf-8'),
+        editedComposeFile = dockerComposeFile
+            .replace(
+                /- \/etc\/idscert\/localhost:\/etc\/cert\//g,
+                `- ${config.metadata_broker.cert_folder.replace(/\\/g, '/')}:/etc/cert/`
+            )
+            .replace(/- "443:443"/g, '- "8443:443"')
+            .replace(/- "80:80"/g, '- "8480:80"');
+    await writeFile(config.metadata_broker.docker_compose_file, editedComposeFile);
+} // _modifyDockerCompose
+
+async function _createContainer() {
+    await dockerCompose.pull();
+} // _createContainer
+
+async function _runApplication() {
+    await dockerCompose.up({detach: null});
+} // _runApplication

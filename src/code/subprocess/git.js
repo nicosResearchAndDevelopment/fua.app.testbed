@@ -1,25 +1,10 @@
-const
-    {spawn}       = require('child_process'),
-    {flattenArgs} = require('./util.js');
+const SubProcess = require('./subprocess.js');
 
 module.exports = function Git(cwd = process.cwd()) {
-    if (!new.target) return new Git(cwd);
+    const git = SubProcess(cwd, 'git');
 
-    /**
-     * @param {...(string|Array<string>|{[key: string]: string})} args
-     * @returns {Promise<string>}
-     */
-    async function _exec(...args) {
-        const subprocess = spawn('git', flattenArgs(args), {cwd});
-        console.log(':$> ' + subprocess.spawnargs.join(' '));
-        let stdout = '', stderr = '';
-        subprocess.stdout.on('data', (data) => (stdout += data) && process.stdout.write(data));
-        subprocess.stderr.on('data', (data) => (stderr += data) && process.stderr.write(data));
-        const exitCode = await new Promise((resolve) => subprocess.on('close', resolve));
-        if (exitCode !== 0) throw new Error(stderr);
-        return stdout;
-    } // _exec
+    git.help  = (...args) => git(...args, '--help');
+    git.clone = (...args) => git('clone', ...args);
 
-    this.help  = (...args) => _exec(...args, '--help');
-    this.clone = (...args) => _exec('clone', ...args);
+    return git;
 };

@@ -1,25 +1,12 @@
-const
-    {spawn}                 = require('child_process'),
-    {flattenArgs} = require('./util.js');
+const SubProcess = require('./subprocess.js');
 
 module.exports = function DockerCompose(cwd = process.cwd()) {
-    if (!new.target) return new DockerCompose(cwd);
+    const dockerCompose = SubProcess(cwd, 'docker-compose');
 
-    /**
-     * @param {...(string|Array<string>|{[key: string]: string})} args
-     * @returns {Promise<string>}
-     */
-    async function _exec(...args) {
-        const subprocess = spawn('docker-compose', flattenArgs(args), {cwd});
-        console.log(':$> ' + subprocess.spawnargs.join(' '));
-        let stdout = '', stderr = '';
-        subprocess.stdout.on('data', (data) => (stdout += data) && process.stdout.write(data));
-        subprocess.stderr.on('data', (data) => (stderr += data) && process.stderr.write(data));
-        const exitCode = await new Promise((resolve) => subprocess.on('close', resolve));
-        if (exitCode !== 0) throw new Error(stderr);
-        return stdout;
-    } // _exec
+    dockerCompose.help = (...args) => dockerCompose(...args, '--help');
+    dockerCompose.pull = (...args) => dockerCompose('pull', ...args);
+    dockerCompose.up   = (...args) => dockerCompose('up', ...args);
+    dockerCompose.down = (...args) => dockerCompose('down', ...args);
 
-    this.help = (...args) => _exec(...args, '--help');
-    this.pull = (...args) => _exec('pull', ...args);
+    return dockerCompose;
 };
