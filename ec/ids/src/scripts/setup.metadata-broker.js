@@ -30,21 +30,21 @@ async function _loadRepository() {
 async function _createTlsCertificate() {
     await mkdir(config.metadata_broker.cert_folder, {recursive: true});
     await openssl.req({
-        '-x509':   null,
-        '-newkey': 'rsa:4096',
-        '-keyout': 'key.pem',
-        '-out':    'cert.pem',
-        '-days':   365,
-        '-nodes':  null,
-        '-batch':  null
+        x509:   null,
+        newkey: 'rsa:4096',
+        keyout: 'key.pem',
+        out:    'cert.pem',
+        days:   365,
+        nodes:  null,
+        batch:  null
     });
     await openssl.x509({
-        '-in':  'cert.pem',
-        '-out': 'server.crt'
+        in:  'cert.pem',
+        out: 'server.crt'
     });
     await openssl.rsa({
-        '-in':  'key.pem',
-        '-out': 'server.key'
+        in:  'key.pem',
+        out: 'server.key'
     });
 } // _createTlsCertificate
 
