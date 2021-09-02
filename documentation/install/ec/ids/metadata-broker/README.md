@@ -7,8 +7,9 @@
 # Automated Instructions
 
 1. Make sure the docker daemon is up and running.
-2. Use `npm run install-metadata-broker` to load the omejdn repository, build an image and create the container. You
-   might be confronted to give access to the config and keys folder in the newly cloned repository.
+2. Use `npm run install-metadata-broker` to load the metadata-broker-open-core repository, build an image and create the
+   container. You might be confronted to give access to the _certs_ folder in the newly cloned repository. A new
+   certificate will have been generated to enable TLS communication for the broker.
 3. Use `npm run launch-metadata-broker` to start the container.
 
 ## Manual instructions
