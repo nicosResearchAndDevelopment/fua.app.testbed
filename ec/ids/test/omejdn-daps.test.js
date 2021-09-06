@@ -26,7 +26,8 @@ describe('ec/ids/omejdn-daps', function () {
 
     test('the self-description should be available at /about', async function () {
         const
-            response = await fetch('http://localhost:4567/about', {agent}),
+            url      = 'http://localhost:4567/about',
+            response = await fetch(url, {agent}),
             about    = await response.json();
 
         expect(about).toMatchObject({
@@ -37,7 +38,8 @@ describe('ec/ids/omejdn-daps', function () {
 
     test('the jwks should be available at /.well-known/jwks.json', async function () {
         const
-            response = await fetch('http://localhost:4567/.well-known/jwks.json', {agent}),
+            url      = 'http://localhost:4567/.well-known/jwks.json',
+            response = await fetch(url, {agent}),
             jwks     = await response.json();
 
         expect(jwks).toMatchObject({

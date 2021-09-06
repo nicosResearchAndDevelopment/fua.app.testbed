@@ -56,6 +56,8 @@ async function _runApplication() {
 
 async function _addClientCertificate(subjectIRI, pemCertificate) {
     // TODO test this method
+    // TODO clientId might be {{SKI}}:keyid:{{AKI}} combination
+    // SEE https://github.com/International-Data-Spaces-Association/IDS-G/blob/main/Components/IdentityProvider/DAPS/README.md
     // TODO add option for scopes and attributes
     const certFileName = Buffer.from(subjectIRI).toString('base64') + '.cert';
     await openssl.x509({
