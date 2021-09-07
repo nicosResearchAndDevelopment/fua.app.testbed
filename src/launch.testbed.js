@@ -1,17 +1,15 @@
 const
-    path           = require('path'),
-    http           = require('http'),
-    express        = require('express'),
-    socket_io      = require('socket.io'),
-    config         = require('./config/config.testbed.js'),
-    util           = require('@nrd/fua.core.util'),
-    testbed        = require('./code/main.testbed.js'),
-    ExpressSession = require('express-session'),
-    LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
-    amec           = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js'))
 
+    path        = require('path'),
+    config      = require('./config/config.testbed.js'),
+    util        = require('@nrd/fua.core.util'),
+    testbed     = require('./code/main.testbed.js'),
+    LDPRouter   = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
+    amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
+    rdf         = require('@nrd/fua.module.rdf'),
+    persistence = require('@nrd/fua.module.persistence'),
+    Space       = require(path.join(util.FUA_JS_LIB, 'module.space/next/module.space.js'))
     //
-
 ;
 
 //region new style
@@ -98,7 +96,7 @@ const
     }, // agent_node
     {TestbedAgent}          = require('./code/agent.Testbed.beta.js'),// REM: as agent
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    testbed_agent_util      = {
+    testbed_agent_util    = {
         'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
             // TODO : context is array?
             let result = false;
@@ -115,37 +113,9 @@ const
             return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
         }
     },
-    testbed_agent_context   = [],
-    testbed_agent           = new TestbedAgent({
-        'id':        testbed_agent_node['@id'],
-        'scheduler': testbed_scheduler,
-        'system':    testbed_system,
-        'domain':    testbed_domain
-    }), // new TestbedAgent()
-    {Testsuite}             = require('./code/agent.Testsuite.js'), // REM: as agent
-    testsuite_agent         = new Testsuite({
-        'id':        testbed_agent_testsuite['@id'],
-        'system':    testbed_agent.system,
-        'scheduler': testbed_agent.scheduler,
-        'testbed':   testbed_agent
-    }) // new Testsuite()
-;
-testbed_app['agent']        = testbed_agent;
+    testbed_agent_context = []
+;const {Testsuite}        = require("./code/agent.Testsuite.js"); // const
 
-//region new style :: TEST
-(async (/* TEST */) => {
-    //let
-    //    testbed_agent_presentation = await testbed_app['agent']()
-    //;
-    testbed_agent;
-
-    let
-        scheduler_status   = testbed_agent.scheduler.status,
-        scheduler_isProper = testbed_agent.scheduler.isProper
-    ;
-    debugger;
-})(/* TEST */).catch(console.error);
-//endregion new style :: TEST
 //endregion new style
 
 const
@@ -188,89 +158,107 @@ amec.authMechanism('login-tfa', async function (request) {
     return {user};
 });
 
-(async (/* MAIN */) => {
-    try {
-        const
-            space        = await testbed.createSpace(config.space),
-            app          = express(),
-            server       = http.createServer(app),
-            io           = socket_io(server),
-            express_json = express.json(),
-            sessions     = ExpressSession(config.session);
+/**
+ * @param {object} config
+ * @param {object} config.datastore
+ * @param {string} config.datastore.module
+ * @param {object} [config.datastore.options]
+ * @param {Array<object>} [config.datastore.load]
+ * @param {object} [config.context]
+ * @param {Array<object>} [config.load]
+ * @returns {Space}
+ */
+async function createSpace(config) {
+    // 1. check input arguments
+    testbed.assert(util.isObject(config),
+        'createSpace : expected config to be an object', TypeError);
+    testbed.assert(util.isObject(config.datastore),
+        'createSpace : expected config.datastore to be an object', TypeError);
+    testbed.assert(util.isString(config.datastore.module),
+        'createSpace : expected config.datastore.module to be a string', TypeError);
+    testbed.assert(util.isNull(config.datastore.options) || util.isObject(config.datastore.options),
+        'createSpace : expected config.datastore.options to be an object', TypeError);
+    testbed.assert(util.isNull(config.datastore.load) || util.isObjectArray(config.datastore.load),
+        'createSpace : expected config.datastore.load to be an array of objects', TypeError);
+    testbed.assert(util.isNull(config.context) || util.isObject(config.context),
+        'createSpace : expected config.context to be an object', TypeError);
+    testbed.assert(util.isNull(config.load) || util.isObjectArray(config.load),
+        'createSpace : expected config.load to be an array of objects', TypeError);
 
-        app.disable('x-powered-by');
+    // 2. require the persistence module, to be able to make the persistence configurable
+    // (this is an exception, normally you would try to avoid requiring in any place other than the top of the script)
+    const DataStore = require(config.datastore.module);
+    testbed.assert(persistence.DataStore.isPrototypeOf(DataStore),
+        'createSpace : expected DataStore to be a subclass of persistence.DataStore', TypeError);
 
-        app.use(sessions);
-        io.use((socket, next) => sessions(socket.request, socket.request.res, next));
+    // 3. create the necessary components for the space, like factory and datastore
+    const
+        context   = config.context || {},
+        factory   = new persistence.DataFactory(context),
+        // local protected data for data models
+        dataset   = new persistence.Dataset(null, factory),
+        // persistent data that can be manipulated by resources
+        dataStore = new DataStore(config.datastore.options, factory);
 
-        // REM: uncomment to enable authentication
-        //app.use('/login', testbed.createLogin(config.login, amec));
-        //app.use('/', (request, response, next) => {
-        //    if (request.session.auth) next();
-        //    else response.redirect('/login');
-        //});
-
-        app.use('/browse', testbed.createBrowser(config.browser));
-
-        config.ldp.space = space;
-
-        app.use([
-            //'/model',
-            '/data'
-        ], LDPRouter(config.ldp));
-
-        app.post('/inbox', express.json(), (request, response, next) => {
-            // TODO
-            console.log(request.body);
-            next();
-        });
-
-        // REM an alternative would be to use url-parameters
-        for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
-            for (let [fnName, fn] of Object.entries(ec.fn)) {
-                testbed.assert(util.isFunction(fn), `expected ${ecName}->${fnName} to be a function`);
-                const route = `/${ecName}/${fnName}`;
-                app.post(route, express_json, async function (request, response, next) {
-                    try {
-                        const
-                            param   = request.body,
-                            args    = [param], // TODO parameter mapping
-                            result  = await fn.apply(null, args),
-                            payload = JSON.stringify(result); // TODO result mapping
-                        response.type('json').send(payload);
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-            }
+    // 4. if a load is configured for the space, import available data files into the dataset
+    if (config.load) {
+        const resultArr = await rdf.loadDataFiles(config.load, factory);
+        for (let result of resultArr) {
+            if (result.dataset) dataset.add(result.dataset);
         }
+    }
+    // 5. if a load is configured for the datastore, import available data files into the datastore
+    //    this should only be done, if the datastore is an inmemory store
+    if (dataStore.dataset && config.datastore.load) {
+        const resultArr = await rdf.loadDataFiles(config.datastore.load, factory);
+        for (let result of resultArr) {
+            if (result.dataset) dataStore.dataset.add(result.dataset);
+        }
+    }
 
-        io.on('connection', (socket) => {
-            // REM uncomment to enable authentication
-            //if (!socket.request.session.auth) {
-            //    socket.emit('error', 'not authorized');
-            //    socket.disconnect(true);
-            //    return;
-            //}
+    // 6. make sure the datastore is available (ping) by requesting its size
+    await dataStore.size();
 
-            socket.emit('printMessage', {
-                'prov': '[Testbed]',
-                'msg':  'Welcome to NRD-Testbed!'
-            });
-        });
+    //const tmp = rdf.generateGraph(dataStore.dataset, undefined, {'compact': true, 'meshed': true, 'blanks': true});
+    //debugger;
+    //console.log(tmp);
 
-        app.get('/', (request, response) => {
-            response.redirect('/browse');
-        });
+    // 7. create a space out of the collected components and return it
+    return new Space({context, factory, dataset, dataStore});
+}
 
-        await new Promise((resolve) =>
-            server.listen(config.server.port, resolve));
+//region new style :: TEST
+(async (/* TEST */) => {
 
-        console.log('listening at http://localhost:' + config.server.port);
+    const
+        space = await createSpace(config.space),
+        testbed_agent   = new TestbedAgent({
+            'id':        testbed_agent_node['@id'],
+            'scheduler': testbed_scheduler,
+            'amec':      amec,
+            'space':     space,
+            'system':    testbed_system,
+            'domain':    testbed_domain
+        }), // new TestbedAgent()
+        {Testsuite}     = require('./code/agent.Testsuite.js'), // REM: as agent
+        testsuite_agent = new Testsuite({
+            'id':        testbed_agent_testsuite['@id'],
+            'system':    testbed_agent.system,
+            'scheduler': testbed_agent.scheduler,
+            'testbed':   testbed_agent
+        }) // new Testsuite()
+    ;
+    //let that = space;
+    //const persistence    = require("@nrd/fua.module.persistence");
+    //const rdf            = require("@nrd/fua.module.rdf");
+    testbed_app['agent'] = testbed_agent;
 
-    } catch (err) {
-        console.error(err?.stack ?? err);
-        debugger;
-        process.exit(1);
-    } // try
-})(/* MAIN */).catch(console.error);
+
+    let
+        scheduler_status   = testbed_agent.scheduler.status,
+        scheduler_isProper = testbed_agent.scheduler.isProper
+    ;
+    const APP_testbed     = require('./app.testbed.BETA.js')({'agent': testbed_agent, 'config': config});
+    debugger;
+})(/* TEST */).catch(console.error);
+//endregion new style :: TEST
