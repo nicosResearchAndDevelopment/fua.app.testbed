@@ -10,10 +10,10 @@
 
 @prefix nrd:             <https://www.nicos-rd.com/> .
 
-#@prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
+#@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
 #@prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
-@prefix tbm:             <https://www.nicos-rd.com.org/testbed#> .
+@prefix tbm:             <https://www.nicos-rd.com.org/fua/testbed#> .
 
 # REM : 90
 
@@ -64,7 +64,7 @@ appl:http_host
 
 appl:auth_info
     a                ids:AuthInfo ;
-    ids:authService  <https://testbed.nicos-rd.com/nrd-daps/> ;
+    ids:authService  <https://daps.nicos-rd.com/> ;
     ids:authStandard idsc:OAUTH2_JWT ;
 .
 

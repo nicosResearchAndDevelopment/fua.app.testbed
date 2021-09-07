@@ -66,8 +66,8 @@ function TestbedAgent({
         if (!id)
             throw new ErrorTestbedIdIsMissing(`id is missing on node`)
         Object.defineProperties(node, {
-            'id':        {value: id, enumerable: true},
-            'on':        {
+            'id':          {value: id, enumerable: true},
+            'on':          {
                 value:          Object.defineProperties((topic, callback) => {
                     let
                         error  = null,
@@ -94,14 +94,23 @@ function TestbedAgent({
                     'id': {value: `${id}on`, enumerable: true}
                 }), enumerable: true
             }, // on
-            'scheduler': {
+            'scheduler':   {
                 value: new Scheduler(scheduler), enumerable: true
             },
-            'amec':      {
+            'amec':        {
                 value: amec, enumerable: true
             },
-            'space':     {
+            'space':       {
                 value: space, enumerable: true
+            },
+            'executeTest': {
+                value:         async (param) => {
+                    try {
+                        throw new Error(`agent.Testbed : 'executeTest' NOT implemented now.`);
+                    } catch (jex) {
+                        throw jex;
+                    } // try
+                }, enumerable: true
             }
         });
         for (const [key, value] of Object.entries(task['scheduler'])) {

@@ -12,7 +12,7 @@
 
 @prefix nrd:               <https://www.nicos-rd.com/> .
 
-@prefix tbm:               <https://www.nicos-rd.com.org/testbed#> .
+@prefix tbm:               <https://www.nicos-rd.com.org/fua/testbed#> .
 
 @base <https://testbed.nicos-rd.com/domain/user#> .
 

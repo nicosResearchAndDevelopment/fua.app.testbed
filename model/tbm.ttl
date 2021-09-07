@@ -8,17 +8,17 @@
 @prefix voaf:      <http://purl.org/vocommons/voaf#> .
 @prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
 
-@prefix ecm:       <https://www.nicos-rd.com.org/ecosystem#> .
+@prefix ecm:       <https://www.nicos-rd.com.org/fua/ecosystem#> .
 @prefix idsecm:    <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
-@prefix tbm:       <https://www.nicos-rd.com.org/testbed#> .
+@prefix tbm:       <https://www.nicos-rd.com.org/fua/testbed#> .
 
 tbm:
     a                             owl:Ontology ;
     owl:versionInfo               "0.0.1" ;
     dct:creator                   <https://github.com/jlangkau> ;
     dct:publisher                 <https://www.nicos-rd.com/> ;
-    vann:preferredNamespaceUri    "https://www.nicos-rd.com.org/ecosystem#" ;
+    vann:preferredNamespaceUri    "https://www.nicos-rd.com.org/fua/ecosystem#" ;
     vann:preferredNamespacePrefix "tbm" ;
 .
 

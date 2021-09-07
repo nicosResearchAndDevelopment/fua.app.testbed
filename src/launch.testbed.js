@@ -253,7 +253,6 @@ async function createSpace(config) {
     //const rdf            = require("@nrd/fua.module.rdf");
     testbed_app['agent'] = testbed_agent;
 
-
     let
         scheduler_status   = testbed_agent.scheduler.status,
         scheduler_isProper = testbed_agent.scheduler.isProper

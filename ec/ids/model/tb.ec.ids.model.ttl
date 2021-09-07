@@ -10,7 +10,7 @@
 
 @prefix domain:                   <https://www.nicos-rd.com.org/fua/domain#> .
 
-@prefix tbm:                      <https://www.nicos-rd.com.org/testbed#> .
+@prefix tbm:                      <https://www.nicos-rd.com.org/fua/testbed#> .
 
 #@base <tb:users/> .
 @base <https://testbed.nicos-rd.com/domain/user#> .

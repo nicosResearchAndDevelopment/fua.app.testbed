@@ -66,7 +66,10 @@ exports.persistence = {
         {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'}
+        {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
+        //region applicant
+        {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'}
+        //endregion applicant
     ]
 };
 
@@ -93,10 +96,18 @@ exports.rdf = {
         'voaf': "http://purl.org/vocommons/voaf#",
         'xsd':  'http://www.w3.org/2001/XMLSchema#',
 
+        'ids':  "https://w3id.org/idsa/core/",
+        'idsc': "https://w3id.org/idsa/code/",
+
         'ids3cm': 'http://localhost/data/ids3cm/',
         //'ids3c-co': 'http://localhost/data/ids3c-co/',
 
-        'fua':        'http://localhost/fua#',
+        'fua':        'https://www.nicos-rd.com.org/fua#',
+        'dom':        'https://www.nicos-rd.com.org/fua/domain#',
+        'ecm':        'https://www.nicos-rd.com.org/fua/ecosystem#',
+        'idsecm':     'https://www.internationaldataspaces.org/IDS-IM/ecosystem#',
+        'tb':         'https://testbed.nicos-rd.com/',
+        'tbm':        'https://www.nicos-rd.com.org/fua/testbed#',
         'fua-lang':   'http://localhost/data/language/',
         'fua-nation': 'http://localhost/data/nation/',
         'currency':   'http://localhost/data/currency/',

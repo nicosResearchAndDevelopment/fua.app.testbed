@@ -4,7 +4,7 @@ const
     express        = require('express'),
     socket_io      = require('socket.io'),
     //config         = require('./config/config.testbed.js'),
-    rdf         = require('@nrd/fua.module.rdf'),
+    rdf            = require('@nrd/fua.module.rdf'),
     util           = require('@nrd/fua.core.util'),
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
@@ -19,14 +19,28 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 app          = express(),
                 server       = http.createServer(app),
                 io           = socket_io(server),
+                io_test      = io.of('/test'),
                 express_json = express.json(),
                 sessions     = ExpressSession(config.session);
 
-            let that = rdf.generateGraph(agent.space.dataStore.dataset);
+            let that = rdf.generateGraph(
+                agent.space.dataStore.dataset,
+                'minimal'
+                //{'compact': true, 'meshed': true, 'blanks': false}
+            );
+
+            //const graph = new Map((compactDoc['@graph'] || [compactDoc]).map((node) => [node['@id'], node]));
+            //that.get("https://testbed.nicos-rd.com/");
+
+            let executeTestResult = await agent.executeTest({}).catch((err) => {
+                err;
+                debugger;
+            });
 
             app.disable('x-powered-by');
 
             app.use(sessions);
+
             io.use((socket, next) => sessions(socket.request, socket.request.res, next));
 
             // REM: uncomment to enable authentication
@@ -82,6 +96,31 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 socket.emit('printMessage', {
                     'prov': '[Testbed]',
                     'msg':  'Welcome to NRD-Testbed!'
+                });
+            });
+
+            io_test.on('connection', (socket) => {
+                socket.on("execute", async (request, callback) => {
+                    let
+                        ec        = request['ec'],
+                        command   = request['command'],
+                        parameter = request['parameter']
+                    ;
+                    //agent.executeTest().then((result) => {
+                    //    callback(null, result);
+                    //}).catch((err) => {
+                    //    callback(err, undefined);
+                    //});
+                    try {
+                        const result = await agent.executeTest({
+                            'ec':        ec,
+                            'command':   command,
+                            'parameter': parameter
+                        });
+                        callback(null, result);
+                    } catch (jex) {
+                        callback(jex, undefined);
+                    } // try
                 });
             });
 

@@ -9,8 +9,8 @@
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
 
-@prefix ecm:            <https://www.nicos-rd.com.org/ecosystem#> .
-@prefix tbm:            <https://www.nicos-rd.com.org/testbed#> .
+@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix tbm:            <https://www.nicos-rd.com.org/fua/testbed#> .
 
 @base <https://localhost:8081/> .
 @prefix tb:             <https://testbed.nicos-rd.com/> .
