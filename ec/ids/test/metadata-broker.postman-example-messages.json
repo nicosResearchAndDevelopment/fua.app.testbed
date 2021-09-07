@@ -1,0 +1,704 @@
+{
+  "info": {
+    "_postman_id": "c31c7b31-0a60-4c2f-bb1f-f3d9ecdd7a89",
+    "name": "IDS HTTP Multipart Exercises",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Usage Control Negotiation Sequence",
+      "item": [
+        {
+          "name": "GET Selfdescription",
+          "id": "14e77284-35a4-46b4-a62c-afef9d2082c8",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "connection": true,
+              "accept-encoding": true,
+              "user-agent": true,
+              "accept": true
+            }
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Date",
+                "type": "text",
+                "value": "Tue, 11 Feb 2020 08:12:31 GMT",
+                "disabled": true
+              },
+              {
+                "key": "MessageType",
+                "type": "text",
+                "value": "ids:SelfDescriptionRequestMessage",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "type": "text",
+                "value": "application/ld+json"
+              },
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              },
+              {
+                "key": "IssuerConnector",
+                "type": "text",
+                "value": "http://localhost/client/"
+              },
+              {
+                "key": "SecurityToken",
+                "type": "text",
+                "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJzZWN1cml0eV9sZXZlbCI6Nywic2NvcGVzIjpbImlkc19jb25uZWN0b3IiLCJzZWN1cml0eV9sZXZlbCJdLCJhdWQiOiJJRFNfQ29ubmVjdG9yIiwiaXNzIjoiaHR0cHM6Ly9kYXBzLmFpc2VjLmZyYXVuaG9mZXIuZGUiLCJzdWIiOiI3MTgxMGZmZi00MTM5LTQ5ZDAtYjBhNC03ZDAyYjliNTRkMTUiLCJuYmYiOjE1NTk3MzAyNTAsImV4cCI6MTU1OTczMzg1MH0.oS5kZtFhqn1jUSBtmCKSU0MzcVAxhfW7BCa4oIo_aQi6Qcc-FN-bBhmx1fXgD57HqXaV7r0kxJrDsoDGo4AE1qG384HhSzFJOqA6Nws7n0OorkjsOIFMM4ulPYNKy2srUAb9EeDaAWb6uGA5bbk5E1yKM73ub_U8OF1W4OmgUCOFizxOPY8HEnklsk6eiqrAFFCebp-BtuaVp1p7U9SotpcFxoq235OwRWz2aFiAr9v53VLJzlBYPGsuqdBZ1lpOUQXCMbDfqWXfyNSa0uDPeHKP_Xj1tUug0g-WXjGsZIMzXHPvAM-syw1SweYq_c4ulpZyABSYPSwEfufdtaO_Iw"
+              }
+            ],
+            "url": "https://eis-idsplus:6443/"
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve Self-Description",
+          "id": "4a18051e-992f-495c-b011-d6a0ddd55a58",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/mixed; boundary=msgpart",
+                "type": "text"
+              },
+              {
+                "key": "",
+                "value": "",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": "Connector_register.txt"
+              }
+            },
+            "url": "https://localhost/infrastructure"
+          },
+          "response": []
+        }
+      ],
+      "id": "81589924-9a65-432b-92e9-e3c2fd97cdde"
+    },
+    {
+      "name": "GET Selfdescription",
+      "id": "e3714987-235c-48bd-af5a-b742fefeb816",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Date",
+            "value": "Tue, 11 Feb 2020 08:12:31 GMT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "MessageType",
+            "value": "ids:SelfDescriptionRequestMessage",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "IssuerConnector",
+            "value": "http://localhost/client/",
+            "type": "text"
+          },
+          {
+            "key": "SecurityToken",
+            "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJzZWN1cml0eV9sZXZlbCI6Nywic2NvcGVzIjpbImlkc19jb25uZWN0b3IiLCJzZWN1cml0eV9sZXZlbCJdLCJhdWQiOiJJRFNfQ29ubmVjdG9yIiwiaXNzIjoiaHR0cHM6Ly9kYXBzLmFpc2VjLmZyYXVuaG9mZXIuZGUiLCJzdWIiOiI3MTgxMGZmZi00MTM5LTQ5ZDAtYjBhNC03ZDAyYjliNTRkMTUiLCJuYmYiOjE1NTk3MzAyNTAsImV4cCI6MTU1OTczMzg1MH0.oS5kZtFhqn1jUSBtmCKSU0MzcVAxhfW7BCa4oIo_aQi6Qcc-FN-bBhmx1fXgD57HqXaV7r0kxJrDsoDGo4AE1qG384HhSzFJOqA6Nws7n0OorkjsOIFMM4ulPYNKy2srUAb9EeDaAWb6uGA5bbk5E1yKM73ub_U8OF1W4OmgUCOFizxOPY8HEnklsk6eiqrAFFCebp-BtuaVp1p7U9SotpcFxoq235OwRWz2aFiAr9v53VLJzlBYPGsuqdBZ1lpOUQXCMbDfqWXfyNSa0uDPeHKP_Xj1tUug0g-WXjGsZIMzXHPvAM-syw1SweYq_c4ulpZyABSYPSwEfufdtaO_Iw",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": "https://broker.ids.isst.fraunhofer.de/"
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve Selfdescription",
+      "id": "ca52305e-9c0c-4534-ba6b-470396659119",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Date",
+            "value": "Tue, 11 Feb 2020 08:12:31 GMT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "MessageType",
+            "value": "ids:SelfDescriptionRequestMessage",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Accept",
+            "value": "multipart/mixed",
+            "type": "text"
+          },
+          {
+            "key": "IssuerConnector",
+            "value": "http://localhost/client/",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "SecurityToken",
+            "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJzZWN1cml0eV9sZXZlbCI6Nywic2NvcGVzIjpbImlkc19jb25uZWN0b3IiLCJzZWN1cml0eV9sZXZlbCJdLCJhdWQiOiJJRFNfQ29ubmVjdG9yIiwiaXNzIjoiaHR0cHM6Ly9kYXBzLmFpc2VjLmZyYXVuaG9mZXIuZGUiLCJzdWIiOiI3MTgxMGZmZi00MTM5LTQ5ZDAtYjBhNC03ZDAyYjliNTRkMTUiLCJuYmYiOjE1NTk3MzAyNTAsImV4cCI6MTU1OTczMzg1MH0.oS5kZtFhqn1jUSBtmCKSU0MzcVAxhfW7BCa4oIo_aQi6Qcc-FN-bBhmx1fXgD57HqXaV7r0kxJrDsoDGo4AE1qG384HhSzFJOqA6Nws7n0OorkjsOIFMM4ulPYNKy2srUAb9EeDaAWb6uGA5bbk5E1yKM73ub_U8OF1W4OmgUCOFizxOPY8HEnklsk6eiqrAFFCebp-BtuaVp1p7U9SotpcFxoq235OwRWz2aFiAr9v53VLJzlBYPGsuqdBZ1lpOUQXCMbDfqWXfyNSa0uDPeHKP_Xj1tUug0g-WXjGsZIMzXHPvAM-syw1SweYq_c4ulpZyABSYPSwEfufdtaO_Iw",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\",\n    \"xsd\":\"http://www.w3.org/2001/XMLSchema#\"\n  },\n  \"@type\" : \"ids:DescriptionRequestMessage\",\n  \"@id\" : \"http://industrialdataspace.org/1a421b8c-3407-44a8-aeb9-253f145c869a\",\n  \"ids:issued\" : {\"@value\":\"2021-05-25T15:35:34.589Z\",\"@type\":\"xsd:dateTimeStamp\"},\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:senderAgent\":{\"@id\":\"https://localhost/agent\"},\n  \"ids:issuerConnector\":{\"@id\":\"https://localhost/59a68243\"},\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/2bd53efc-5995-d75590476820\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"https://w3id.org/idsa/code/JWT\"\n    },\n    \"ids:tokenValue\" : \"{{dat}}\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Registration",
+      "id": "589427b2-14f3-4e43-a529-d7dd24781112",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ConnectorUpdateMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:BaseConnector\",\n  \"@id\" : \"https://test.connector.de/\",\n  \"ids:outboundModelVersion\" : \"3.0.0\",\n  \"ids:description\" : [ {\n    \"@value\" : \"This is a dummy description from the Interaction Library\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:maintainer\" : {\n    \"@id\" : \"https://example.org/\"\n  },\n  \"ids:securityProfile\" : {\n    \"@id\" : \"idsc:BASE_SECURITY_PROFILE\"\n  },\n  \"ids:curator\" : {\n    \"@id\" : \"https://example.org/\"\n  },\n  \"ids:resourceCatalog\" : {\n    \"@type\" : \"ids:ResourceCatalog\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/catalog/fa535e30-8cb0-4ede-b5a9-def664d69556\",\n    \"ids:offer\" : [ {\n      \"@type\" : \"ids:Resource\",\n      \"@id\" : \"https://w3id.org/idsa/autogen/resource/f559500f-b668-4351-a1b1-50f712a6d368\",\n      \"ids:description\" : [ {\n        \"@value\" : \"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur\\n        unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate numquam\\n        dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:created\" : {\n        \"@value\" : \"2003-01-10T00:00Z\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n      },\n      \"ids:contentType\" : {\n        \"@id\" : \"idsc:INTERFACE_DEFINITION\"\n      },\n      \"ids:author\" : [ {\n        \"@type\" : \"ids:Person\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/person/8b51a76a-7316-4285-b96a-722bf7a944f8\",\n        \"ids:phoneNumber\" : [ \"012345678891\" ],\n        \"ids:givenName\" : \"Max\",\n        \"ids:emailAddress\" : [ \"info@example.org\" ],\n        \"ids:familyName\" : \"Mustermensch\",\n        \"ids:homepage\" : \"http://example.org\"\n      } ],\n      \"ids:dataCreator\" : {\n        \"@value\" : \"Data creator/Owner\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      },\n      \"ids:contentStandard\" : {\n        \"@id\" : \"http://contentstandard.org\"\n      },\n      \"ids:rawData\" : false,\n      \"ids:standardLicense\" : {\n        \"@id\" : \"idsc:OTHERFREEWARELICENSE\"\n      },\n      \"ids:mainTitle\" : [ {\n        \"@value\" : \"Energy Conservation with Open Source Ad Blockers\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:customLicense\" : {\n        \"@id\" : \"http://customlicense.org\"\n      },\n      \"ids:keyword\" : [ {\n        \"@value\" : \"energy\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"energy\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"conservation\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"ad\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"open\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:representation\" : [ {\n        \"@type\" : \"ids:TextRepresentation\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/textRepresentation/8a23edb5-be86-4722-afd4-fd2276c9bc18\",\n        \"ids:created\" : {\n          \"@value\" : \"2013-11-14T00:00Z\",\n          \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n        },\n        \"ids:modified\" : {\n          \"@value\" : \"2020-01-15T00:00Z\",\n          \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n        },\n        \"ids:domainVocabulary\" : {\n          \"@type\" : \"ids:VocabularyData\",\n          \"@id\" : \"https://w3id.org/idsa/autogen/vocabularyData/bbe50ee4-5033-4c13-bf43-35c733a7b781\",\n          \"ids:vocabulary\" : {\n            \"@id\" : \"http://textVovabulary.com\"\n          }\n        },\n        \"ids:representationStandard\" : {\n          \"@id\" : \"http://textRepresentation.org\"\n        },\n        \"ids:mediaType\" : {\n          \"@type\" : \"ids:IANAMediaType\",\n          \"@id\" : \"idsc:APPLICATION_PDF\"\n        },\n        \"ids:instance\" : [ {\n          \"@type\" : \"ids:Artifact\",\n          \"@id\" : \"https://w3id.org/idsa/autogen/artifact/aa1cf3d9-8aa1-42ef-9f85-08ce0f48005b\",\n          \"ids:creationDate\" : {\n            \"@value\" : \"2020-06-23T17:27:18.599+02:00\",\n            \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n          },\n          \"ids:byteSize\" : 2678,\n          \"ids:fileName\" : \"data.pdf\"\n        } ]\n      } ],\n      \"ids:modified\" : {\n        \"@value\" : \"2020-01-29T00:00Z\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n      },\n      \"ids:title\" : [ {\n        \"@value\" : \"Energy Conservation with Open Source Ad Blockers\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:version\" : \"version 3.0.0\",\n      \"ids:researchDataType\" : {\n        \"@id\" : \"idsc:OBSERVATIONAL_DATA\"\n      },\n      \"ids:domainVocabulary\" : {\n        \"@type\" : \"ids:VocabularyData\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/vocabularyData/2d98d466-52ce-48b8-a29e-936f7f4efa9e\",\n        \"ids:vocabulary\" : {\n          \"@id\" : \"http://vocabulary.org\"\n        }\n      },\n      \"ids:language\" : [ {\n        \"@id\" : \"idsc:EN\"\n      }, {\n        \"@id\" : \"idsc:ES\"\n      } ]\n    } ]\n  },\n  \"ids:mainTitle\" : [ {\n    \"@value\" : \"dummy\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:title\" : [ {\n    \"@value\" : \"This is a dummy title from the Interaction Library\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:hasDefaultEndpoint\": {\n\t\"@id\":\"https://test.connector.de/data/\",\n\t\"@type\":\"ids:ConnectorEndpoint\",\n\t\"ids:path\" : \"/infrastructure\",\n    \"ids:endpointInformation\" : [ {\n      \"@value\" : \"This endpoint provides IDS Connector information and IDS Resources.\",\n      \"@language\" : \"en\"\n    } ], \n    \"ids:endpointDocumentation\" : [ {\n      \"@id\" : \"https://app.swaggerhub.com/apis/idsa/IDS-Broker/1.3.1#/Multipart%20Interactions/post_infrastructure\"\n    } ],\n    \"ids:accessURL\" : {\n      \"@id\" : \"https://exmple.org/infrastructure\"\n    }\n  },\n  \"ids:maintainer\": {\"@id\":\"https://connector.de/agent/\"},\n  \"ids:curator\": {\"@id\":\"https://connector.de/agent/\"},\n  \"ids:inboundModelVersion\" : [ \"4.0.0\" ],\n  \"ids:outboundModelVersion\" : \"4.0.0\",\n  \"ids:securityProfile\" : {\n    \"@id\" : \"https://w3id.org/idsa/code/BASE_SECURITY_PROFILE\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Artifact Request Message",
+      "id": "44d0bb47-7152-4e2a-8588-1f4133a34e9d",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "type": "text",
+            "value": "multipart/mixed; boundary=msgpart",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "type": "text",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\",\n    \"xsd\":\"http://www.w3.org/2001/XMLSchema#\"\n  },\n  \"@type\" : \"ids:DescriptionRequestMessage\",\n  \"@id\" : \"http://industrialdataspace.org/1a421b8c-3407-44a8-aeb9-253f145c869a\",\n  \"ids:issued\" : {\"@value\":\"2021-05-25T15:35:34.589Z\",\"@type\":\"xsd:dateTimeStamp\"},\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:senderAgent\":{\"@id\":\"https://localhost/agent\"},\n  \"ids:issuerConnector\":{\"@id\":\"https://localhost/59a68243\"},\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/2bd53efc-5995-d75590476820\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"https://w3id.org/idsa/code/JWT\"\n    },\n    \"ids:tokenValue\" : \"{{dat}}\"\n  },\n  \"ids:requestedElement\": {\n    \"@id\":\"https://broker.ids.isst.fraunhofer.de/connectors/\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "MDMConnector Artifact Request Message",
+      "id": "af345aba-af76-46f0-9cd6-81b277a13af0",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "type": "text",
+            "value": "multipart/mixed; boundary=msgpart",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "type": "text",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\",\n    \"xsd\":\"http://www.w3.org/2001/XMLSchema#\"\n  },\n  \"@type\" : \"ids:DescriptionRequestMessage\",\n  \"@id\" : \"http://industrialdataspace.org/1a421b8c-3407-44a8-aeb9-253f145c869a\",\n  \"ids:issued\" : {\"@value\":\"2021-05-25T15:35:34.589Z\",\"@type\":\"xsd:dateTimeStamp\"},\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:senderAgent\":{\"@id\":\"https://localhost/agent\"},\n  \"ids:issuerConnector\":{\"@id\":\"https://localhost/59a68243\"},\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/2bd53efc-5995-d75590476820\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"https://w3id.org/idsa/code/JWT\"\n    },\n    \"ids:tokenValue\" : \"{{dat}}\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://mdm-connector.ids.isst.fraunhofer.de/data"
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Query",
+      "id": "ded8b27b-3639-4a58-890c-c1ec0e66132c",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\",\n    \"xsd\":\"http://www.w3.org/2001/XMLSchema#\"\n  },\n  \"@type\" : \"ids:QueryMessage\",\n  \"@id\" : \"http://industrialdataspace.org/1a421b8c-3407-44a8-aeb9-253f145c869a\",\n  \"ids:issued\" : {\"@value\":\"2021-05-25T15:35:34.589Z\",\"@type\":\"xsd:dateTimeStamp\"},\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:senderAgent\":{\"@id\":\"https://localhost/agent\"},\n  \"ids:issuerConnector\":{\"@id\":\"https://localhost/59a68243\"},\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/2bd53efc-5995-d75590476820\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"https://w3id.org/idsa/code/JWT\"\n    },\n    \"ids:tokenValue\" : \"{{dat}}\"\n  },\n  \"ids:queryLanguage\" : {\n    \"@id\" : \"idsc:SPARQL\"\n  },\n  \"ids:queryScope\" : {\n    \"@id\" : \"idsc:ALL\"\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "PREFIX ids: <https://w3id.org/idsa/core/>\nSELECT ?s ?p ?o \nWHERE { ?s ?p ?o . }",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Update",
+      "id": "bc3f4ae8-89d3-4644-b680-2646cb4be68d",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ConnectorUpdateMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:BaseConnector\",\n  \"@id\" : \"https://test.connector.de/\",\n  \"ids:outboundModelVersion\" : \"3.0.0\",\n  \"ids:description\" : [ {\n    \"@value\" : \"This is a dummy description from the Interaction Library\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:maintainer\" : {\n    \"@id\" : \"https://example.org/\"\n  },\n  \"ids:securityProfile\" : {\n    \"@id\" : \"idsc:BASE_SECURITY_PROFILE\"\n  },\n  \"ids:curator\" : {\n    \"@id\" : \"https://example.org/\"\n  },\n  \"ids:resourceCatalog\" : {\n    \"@type\" : \"ids:ResourceCatalog\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/catalog/fa535e30-8cb0-4ede-b5a9-def664d69556\",\n    \"ids:offer\" : [ {\n      \"@type\" : \"ids:Resource\",\n      \"@id\" : \"https://w3id.org/idsa/autogen/resource/f559500f-b668-4351-a1b1-50f712a6d368\",\n      \"ids:description\" : [ {\n        \"@value\" : \"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur\\n        unde suscipit, quam beatae rerum inventore consectetur, neque doloribus, cupiditate numquam\\n        dignissimos laborum fugiat deleniti? Eum quasi quidem quibusdam.\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:created\" : {\n        \"@value\" : \"2003-01-10T00:00Z\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n      },\n      \"ids:contentType\" : {\n        \"@id\" : \"idsc:INTERFACE_DEFINITION\"\n      },\n      \"ids:author\" : [ {\n        \"@type\" : \"ids:Person\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/person/8b51a76a-7316-4285-b96a-722bf7a944f8\",\n        \"ids:phoneNumber\" : [ \"012345678891\" ],\n        \"ids:givenName\" : \"Max\",\n        \"ids:emailAddress\" : [ \"info@example.org\" ],\n        \"ids:familyName\" : \"Mustermensch\",\n        \"ids:homepage\" : \"http://example.org\"\n      } ],\n      \"ids:dataCreator\" : {\n        \"@value\" : \"Data creator/Owner\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      },\n      \"ids:contentStandard\" : {\n        \"@id\" : \"http://contentstandard.org\"\n      },\n      \"ids:rawData\" : false,\n      \"ids:standardLicense\" : {\n        \"@id\" : \"idsc:OTHERFREEWARELICENSE\"\n      },\n      \"ids:mainTitle\" : [ {\n        \"@value\" : \"Energy Conservation with Open Source Ad Blockers\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:customLicense\" : {\n        \"@id\" : \"http://customlicense.org\"\n      },\n      \"ids:keyword\" : [ {\n        \"@value\" : \"energy\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"energy\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"conservation\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"ad\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      }, {\n        \"@value\" : \"open\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:representation\" : [ {\n        \"@type\" : \"ids:TextRepresentation\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/textRepresentation/8a23edb5-be86-4722-afd4-fd2276c9bc18\",\n        \"ids:created\" : {\n          \"@value\" : \"2013-11-14T00:00Z\",\n          \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n        },\n        \"ids:modified\" : {\n          \"@value\" : \"2020-01-15T00:00Z\",\n          \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n        },\n        \"ids:domainVocabulary\" : {\n          \"@type\" : \"ids:VocabularyData\",\n          \"@id\" : \"https://w3id.org/idsa/autogen/vocabularyData/bbe50ee4-5033-4c13-bf43-35c733a7b781\",\n          \"ids:vocabulary\" : {\n            \"@id\" : \"http://textVovabulary.com\"\n          }\n        },\n        \"ids:representationStandard\" : {\n          \"@id\" : \"http://textRepresentation.org\"\n        },\n        \"ids:mediaType\" : {\n          \"@type\" : \"ids:IANAMediaType\",\n          \"@id\" : \"idsc:APPLICATION_PDF\"\n        },\n        \"ids:instance\" : [ {\n          \"@type\" : \"ids:Artifact\",\n          \"@id\" : \"https://w3id.org/idsa/autogen/artifact/aa1cf3d9-8aa1-42ef-9f85-08ce0f48005b\",\n          \"ids:creationDate\" : {\n            \"@value\" : \"2020-06-23T17:27:18.599+02:00\",\n            \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n          },\n          \"ids:byteSize\" : 2678,\n          \"ids:fileName\" : \"data.pdf\"\n        } ]\n      } ],\n      \"ids:modified\" : {\n        \"@value\" : \"2020-01-29T00:00Z\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n      },\n      \"ids:title\" : [ {\n        \"@value\" : \"Energy Conservation with Open Source Ad Blockers\",\n        \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n      } ],\n      \"ids:version\" : \"version 3.0.0\",\n      \"ids:researchDataType\" : {\n        \"@id\" : \"idsc:OBSERVATIONAL_DATA\"\n      },\n      \"ids:domainVocabulary\" : {\n        \"@type\" : \"ids:VocabularyData\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/vocabularyData/2d98d466-52ce-48b8-a29e-936f7f4efa9e\",\n        \"ids:vocabulary\" : {\n          \"@id\" : \"http://vocabulary.org\"\n        }\n      },\n      \"ids:language\" : [ {\n        \"@id\" : \"idsc:EN\"\n      }, {\n        \"@id\" : \"idsc:ES\"\n      } ]\n    } ]\n  },\n  \"ids:mainTitle\" : [ {\n    \"@value\" : \"dummy\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:title\" : [ {\n    \"@value\" : \"This is a dummy title from the Interaction Library\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n  } ],\n  \"ids:hasDefaultEndpoint\": {\n\t\"@id\":\"https://test.connector.de/data/\",\n\t\"@type\":\"ids:ConnectorEndpoint\",\n\t\"ids:path\" : \"/infrastructure\",\n    \"ids:endpointInformation\" : [ {\n      \"@value\" : \"This endpoint provides IDS Connector information and IDS Resources.\",\n      \"@language\" : \"en\"\n    } ], \n    \"ids:endpointDocumentation\" : [ {\n      \"@id\" : \"https://app.swaggerhub.com/apis/idsa/IDS-Broker/1.3.1#/Multipart%20Interactions/post_infrastructure\"\n    } ],\n    \"ids:accessURL\" : {\n      \"@id\" : \"https://exmple.org/infrastructure\"\n    }\n  },\n  \"ids:maintainer\": {\"@id\":\"https://connector.de/agent/\"},\n  \"ids:curator\": {\"@id\":\"https://connector.de/agent/\"},\n  \"ids:inboundModelVersion\" : [ \"4.0.0\" ],\n  \"ids:outboundModelVersion\" : \"4.0.0\",\n  \"ids:securityProfile\" : {\n    \"@id\" : \"https://w3id.org/idsa/code/BASE_SECURITY_PROFILE\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://broker.ids.isst.fraunhofer.de/infrastructure",
+          "protocol": "https",
+          "host": [
+            "broker",
+            "ids",
+            "isst",
+            "fraunhofer",
+            "de"
+          ],
+          "path": [
+            "infrastructure"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": "",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Unregister",
+      "id": "bdafd5c3-ed2f-4b6a-b1a6-7287bd14b73a",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ConnectorUnavailableMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/cfea-4aad-979c-3515c2e71967\",\n  \"ids:affectedConnector\" : {\n    \"@id\":\"https://test.connector.de/\",\n    \"@type\":\"ids:BaseConnector\"\n  },\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-05T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema%23dateTimeStamp\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "Resource Available",
+      "id": "9f704497-6c9d-4e5e-a648-811f6b2c83e7",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ResourceUpdateMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedResource\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n      \"@type\" : \"ids:DataResource\",\n      \"@id\" : \"https://w3id.org/idsa/autogen/dataResource/afaafe22-fb63-4532-a1e1-15230cb99444\",\n      \"ids:representation\" : [ {\n        \"@type\" : \"ids:DataRepresentation\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/dataRepresentation/d5b72746-2302-4685-99b8-fc2be06fd23f\",\n        \"ids:instance\" : [ {\n          \"@type\" : \"ids:Artifact\",\n          \"@id\" : \"https://broker.ids.isst.fraunhofer.de/connectors/\"\n        } ]\n      } ]\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://broker.ids.isst.fraunhofer.de/infrastructure",
+          "protocol": "https",
+          "host": [
+            "broker",
+            "ids",
+            "isst",
+            "fraunhofer",
+            "de"
+          ],
+          "path": [
+            "infrastructure"
+          ],
+          "query": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ConnectorUpdateMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Resource Update",
+      "id": "81692d6c-73ea-4ed9-a710-f99580f11dde",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ResourceUpdateMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedResource\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n      \"@type\" : \"ids:DataResource\",\n      \"@id\" : \"https://w3id.org/idsa/autogen/dataResource/afaafe22-fb63-4532-a1e1-15230cb99444\",\n      \"ids:representation\" : [ {\n        \"@type\" : \"ids:DataRepresentation\",\n        \"@id\" : \"https://w3id.org/idsa/autogen/dataRepresentation/d5b72746-2302-4685-99b8-fc2be06fd23f\",\n        \"ids:instance\" : [ {\n          \"@type\" : \"ids:Artifact\",\n          \"@id\" : \"https://broker.ids.isst.fraunhofer.de/connectors/\"\n        } ]\n      } ]\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://broker.ids.isst.fraunhofer.de/infrastructure",
+          "protocol": "https",
+          "host": [
+            "broker",
+            "ids",
+            "isst",
+            "fraunhofer",
+            "de"
+          ],
+          "path": [
+            "infrastructure"
+          ],
+          "query": [
+            {
+              "key": "type",
+              "value": "",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Resource Delete",
+      "id": "346c79df-c5f8-46c0-9aea-02b7bb96f5f8",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/mixed; boundary=msgpart",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  \"@context\" : {\n    \"ids\" : \"https://w3id.org/idsa/core/\",\n    \"idsc\" : \"https://w3id.org/idsa/code/\"\n  },\n  \"@type\" : \"ids:ResourceUnavailableMessage\",\n  \"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",\n  \"ids:securityToken\" : {\n    \"@type\" : \"ids:DynamicAttributeToken\",\n    \"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",\n    \"ids:tokenValue\" : \"{{dat}}\",\n    \"ids:tokenFormat\" : {\n      \"@id\" : \"idsc:JWT\"\n    }\n  },\n  \"ids:senderAgent\" : {\n    \"@id\" : \"http://example.org\"\n  },\n  \"ids:modelVersion\" : \"4.0.0\",\n  \"ids:issuerConnector\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  },\n  \"ids:issued\" : {\n    \"@value\" : \"2021-06-23T17:27:23.566+02:00\",\n    \"@type\" : \"http://www.w3.org/2001/XMLSchema#dateTimeStamp\"\n  },\n  \"ids:affectedResource\" : {\n    \"@id\" : \"https://test.connector.de/\"\n  }\n}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://broker.ids.isst.fraunhofer.de/infrastructure"
+      },
+      "response": []
+    },
+    {
+      "name": "Connector Artifact Request Message (form-data)",
+      "id": "c0ac506a-a667-4c1e-b8c4-d032daa9ead5",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "type": "text",
+            "value": "multipart/mixed; boundary=msgpart"
+          },
+          {
+            "key": "",
+            "type": "text",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "header",
+              "value": "{\n  '@context' : 'https://w3id.org/idsa/contexts/context.json',\n  '@type' : 'ids:ArtifactRequestMessage',\n  '@id' : 'http://industrialdataspace.org/connectorUnavailableMessage/1a421b8c-3407-44a8-aeb9-253f145c869a',\n  'issued' : '2020-07-08T15:35:34.589+02:00',\n  'modelVersion' : '3.1.0',\n  'issuerConnector' : 'https://companyA.com/connector/59a68243-dd96-4c8d-88a9-0f0e03e13b1b',\n  'securityToken': {\n\t'@type' : 'ids:Token',\n    'tokenFormat' : {\n      '@id' : 'https://w3id.org/idsa/code/tokenformat/JWT'\n    },\n    'tokenValue' : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpZCI6IjlmN2RhZmQxN2NmNTRlZTBiYTFhODllMjk5MzQyYzVmYzg0ODZkMGYiLCJqdGkiOiI5ZjdkYWZkMTdjZjU0ZWUwYmExYTg5ZTI5OTM0MmM1ZmM4NDg2ZDBmIiwiaXNzIjoiIiwiYXVkIjoiOGMyYWNmZDAtMGExZC00MjgxLWJhOTQtNjM5Zjg5MTE2ODE4Iiwic3ViIjoiOGMyYWNmZDAtMGExZC00MjgxLWJhOTQtNjM5Zjg5MTE2ODE4IiwiZXhwIjoxNTQyODEyNDAxLCJpYXQiOjE1NDI4MDg4MDEsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJzY29wZSI6bnVsbH0.jzKo4JtRW98JQ4LR7pPUM3YUaKZ-veu60XfcOthhodELIJdUPfItTUh1INMpCA0Wr7mJRrrWjNLskY1pP6Lc_B0LrnRbuBgN3xxRaWnupkr-FInXoL3gI6m3Yn-t4PIC--BlK1v_EEvzudynOSktpR31s5FNCbrIM4gFkDMHLiSymZgEA4qRh7ftdgLlchhb8QwmIuFdHv_3TDFgfiWvEZnFn8kNxzbCD8_5kxDWpRIdBcN3EgV4FtcLcaFAbMLWfJhTQnAMAgZrBqVlKJfcuDcoL71GSEWxpkRPmRCkTHByZy5iGzZYJ6145RwH7sjL3VMCkpSw84MDjAeAZmVxnA'\n   },\n  'requestedArtifact' : 'http://iais.fraunhofer.de/ids/mdm-connector/artifact/1565331889811'\n}",
+              "type": "text"
+            },
+            {
+              "key": "payload",
+              "value": "",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "https://127.0.0.1:8000/api/ids/data"
+      },
+      "response": []
+    },
+    {
+      "name": "DAPS Request",
+      "id": "eecc3517-52eb-4667-b963-3c7765426596",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials",
+              "type": "text"
+            },
+            {
+              "key": "client_assertion_type",
+              "value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+              "type": "text"
+            },
+            {
+              "key": "client_assertion",
+              "value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIxNzo3QjpFRDoxODo3MzpFQjpEMDo0Nzo1QzpDMzoyNTo0OTo0NzowNDozRDpBMjo4Qjo3Mjo4NjpCRjprZXlpZDpDQjo4QzpDNzpCNjo4NTo3OTpBODoyMzpBNjpDQjoxNTpBQjoxNzo1MDoyRjpFNjo2NTo0Mzo1RDpFOCIsInN1YiI6IjE3OjdCOkVEOjE4OjczOkVCOkQwOjQ3OjVDOkMzOjI1OjQ5OjQ3OjA0OjNEOkEyOjhCOjcyOjg2OkJGOmtleWlkOkNCOjhDOkM3OkI2Ojg1Ojc5OkE4OjIzOkE2OkNCOjE1OkFCOjE3OjUwOjJGOkU2OjY1OjQzOjVEOkU4IiwiQGNvbnRleHQiOiJodHRwczovL3czaWQub3JnL2lkc2EvY29udGV4dHMvY29udGV4dC5qc29ubGQiLCJAdHlwZSI6ImlkczpEYXRSZXF1ZXN0VG9rZW4iLCJleHAiOjE2NTE4NDczOTcsImlhdCI6MTYyMDMxMTM5NywiYXVkIjoiaWRzYzpJRFNfQ09OTkVDVE9SU19BTEwiLCJuYmYiOjE2MjAzMTEzOTd9.dnk6tD-xj-cFxfNxVxrVf7SQ0oD0N4P5TPfrlc4sZ9Tj9Je2dWtcXhQ9t8kDo5OKouQc0vymuoSH4UeHpPdGp0SzB-BWhxTAgIFfXgb7QxBm9LktKG8RIKSHfqSEQc-YBGxyRoKmmcgTBkK4EMhb1jIYJSox2z-FUyWRbFe9VNkk6vV-gluKnEbgX9RNhUe3r2pkSeoa1jPchdBme5qDPa7xWOMSB9Cl_GeSYeWRN7EPI6Qj2iOoFs_mpsVKETI8tU5Ey6TyIujdAyVp1uWqd8ez7B7S6nMqnKN8RM9xS4bMc8ylZjyCWwbUnR4klK1H33rXnepyAyxjd65ZQwGATw",
+              "type": "text"
+            },
+            {
+              "key": "scope",
+              "value": "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://daps.aisec.fraunhofer.de/v2/token",
+          "protocol": "https",
+          "host": [
+            "daps",
+            "aisec",
+            "fraunhofer",
+            "de"
+          ],
+          "path": [
+            "v2",
+            "token"
+          ],
+          "query": [
+            {
+              "key": "grant_tape",
+              "value": "client_credentialtype:jwt-bearer",
+              "disabled": true
+            },
+            {
+              "key": "client_assertion",
+              "value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIxNzo3QjpFRDoxODo3MzpFQjpEMDo0Nzo1QzpDMzoyNTo0OTo0NzowNDozRDpBMjo4Qjo3Mjo4NjpCRjprZXlpZDpDQjo4QzpDNzpCNjo4NTo3OTpBODoyMzpBNjpDQjoxNTpBQjoxNzo1MDoyRjpFNjo2NTo0Mzo1RDpFOCIsInN1YiI6IjE3OjdCOkVEOjE4OjczOkVCOkQwOjQ3OjVDOkMzOjI1OjQ5OjQ3OjA0OjNEOkEyOjhCOjcyOjg2OkJGOmtleWlkOkNCOjhDOkM3OkI2Ojg1Ojc5OkE4OjIzOkE2OkNCOjE1OkFCOjE3OjUwOjJGOkU2OjY1OjQzOjVEOkU4IiwiQGNvbnRleHQiOiJodHRwczovL3czaWQub3JnL2lkc2EvY29udGV4dHMvY29udGV4dC5qc29ubGQiLCJAdHlwZSI6ImlkczpEYXRSZXF1ZXN0VG9rZW4iLCJleHAiOjE2MDEwNDY0NDgsImlhdCI6MTYwMDk2MDA0OCwiYXVkIjoiaWRzYzpJRFNfQ09OTkVDVE9SU19BTEwiLCJuYmYiOjE2MDA5NjAwMzh9.UxasnmSgQfSMbUjmsm2UnpXr75ee1bwlLww8KdK1dj9xfIE31Wvn7Z_bGCVhsWntQ33dsUvAnlxSsOAyRXkYZcASgCXEPpl7hTIgI0U0-84NWZ1xFWMxLC8_OnV_BisbboT4yrS40zbcVWLbTpj2fPfjbPaekDPf-BBfdFgQCPF2w8X_8KAWR3__aRjpb8HbiZkfgCWscffsknfQ5LBFOTf50RY87iJdXOROic8WinnNd475cTXRiEm2EUS945dgN5vuS0G-qYVpjmxjJ37kc5PhIkX7n_6o55W56908tokljnSVT-urgv8K-P4gPvEz1gTTPeP2o8RFde2OfSrG_Q",
+              "disabled": true
+            },
+            {
+              "key": "scope",
+              "value": "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "ad3e3b5a-415e-41e2-9074-152eb6088c3e",
+        "type": "text/javascript",
+        "exec": [
+          "const postRequest = {",
+          "    method: 'POST',",
+          "    url: 'https://daps.aisec.fraunhofer.de/v2/token',",
+          "    header: {",
+          "        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'",
+          "    },",
+          "    body : {",
+          "        mode: 'raw',",
+          "        raw: \"grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=\"+",
+          "            \"eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIxNzo3QjpFRDoxODo3MzpFQjpEMDo0Nzo1QzpDMzoyNTo0OTo0NzowNDozRDpBMjo4Qjo3Mjo4NjpCRjprZXlpZDpDQjo4QzpDNzpCNjo4NTo3OTpBODoyMzpBNjpDQjoxNTpBQjoxNzo1MDoyRjpFNjo2NTo0Mzo1RDpFOCIsInN1YiI6IjE3OjdCOkVEOjE4OjczOkVCOkQwOjQ3OjVDOkMzOjI1OjQ5OjQ3OjA0OjNEOkEyOjhCOjcyOjg2OkJGOmtleWlkOkNCOjhDOkM3OkI2Ojg1Ojc5OkE4OjIzOkE2OkNCOjE1OkFCOjE3OjUwOjJGOkU2OjY1OjQzOjVEOkU4IiwiQGNvbnRleHQiOiJodHRwczovL3czaWQub3JnL2lkc2EvY29udGV4dHMvY29udGV4dC5qc29ubGQiLCJAdHlwZSI6ImlkczpEYXRSZXF1ZXN0VG9rZW4iLCJleHAiOjE2NTE4NDczOTcsImlhdCI6MTYyMDMxMTM5NywiYXVkIjoiaWRzYzpJRFNfQ09OTkVDVE9SU19BTEwiLCJuYmYiOjE2MjAzMTEzOTd9.dnk6tD-xj-cFxfNxVxrVf7SQ0oD0N4P5TPfrlc4sZ9Tj9Je2dWtcXhQ9t8kDo5OKouQc0vymuoSH4UeHpPdGp0SzB-BWhxTAgIFfXgb7QxBm9LktKG8RIKSHfqSEQc-YBGxyRoKmmcgTBkK4EMhb1jIYJSox2z-FUyWRbFe9VNkk6vV-gluKnEbgX9RNhUe3r2pkSeoa1jPchdBme5qDPa7xWOMSB9Cl_GeSYeWRN7EPI6Qj2iOoFs_mpsVKETI8tU5Ey6TyIujdAyVp1uWqd8ez7B7S6nMqnKN8RM9xS4bMc8ylZjyCWwbUnR4klK1H33rXnepyAyxjd65ZQwGATw\"+",
+          "            \"&scope=idsc:IDS_CONNECTOR_ATTRIBUTES_ALL\"",
+          "    }",
+          "}    ",
+          "",
+          "pm.sendRequest(postRequest, (error, response) => {",
+          "    //console.log(error ? error : response.json().access_token);",
+          "    console.log('DAPS Response: ');",
+          "    console.log(response.json());",
+          "    pm.collectionVariables.set('dat', response.json().access_token)",
+          "    console.log('DAT: ' + pm.collectionVariables.get('dat'))",
+          "});",
+          "",
+          " pm.collectionVariables.set('now', (new Date()).toISOString())"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "a7c08448-7b8c-49d6-bfc8-0ea23cc1954b",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "abe91d1e-2f3b-4163-9775-20f3ae915d96",
+      "key": "dat",
+      "value": "eyJ0eXAiOiJKV1QiLCJraWQiOiJkZWZhdWx0IiwiYWxnIjoiUlMyNTYifQ.eyJzY29wZXMiOltdLCJhdWQiOiJpZHNjOklEU19DT05ORUNUT1JTX0FMTCIsImlzcyI6Imh0dHBzOi8vZGFwcy5haXNlYy5mcmF1bmhvZmVyLmRlIiwic3ViIjoiMTc6N0I6RUQ6MTg6NzM6RUI6RDA6NDc6NUM6QzM6MjU6NDk6NDc6MDQ6M0Q6QTI6OEI6NzI6ODY6QkY6a2V5aWQ6Q0I6OEM6Qzc6QjY6ODU6Nzk6QTg6MjM6QTY6Q0I6MTU6QUI6MTc6NTA6MkY6RTY6NjU6NDM6NUQ6RTgiLCJuYmYiOjE2MDEwMTY3ODQsImlhdCI6MTYwMTAxNjc4NCwianRpIjoiTVRrNE9UWTFOVGt5TmpFNU5qVXhOelkyTWc9PSIsImV4cCI6MTYwMTAyMDM4NH0.i2vaw7HCuPES5aT5hnvyq88mnXA-zihpfBf5foeJR35aZ8PA-eiTg70Po3vWIHI_OPDZpFvE5aKKHSYZNuzunogCM146jQpAa9_kdnnbwl08-k6v9Z2aAoMlg3Rm8WG5pS5dZPOz_4iClZU1KKNDTkEcoGtCPpIeG-_SAMUPGirWjYPX3vamqlTn-JtuzRyXypDnwIqAw00qudOFrQ0qEZQoKFBaSd_lIrO3sr29vY4h87QQ9uducLAgaxe8etpzYMsBWEeZEciwJ5d1i-spateHAniM_y9vnRAwRKJ9APVSqU80uHA0DWASQwzaGkLd7HCJ3yTEAB1TZZO-SOLXPg"
+    },
+    {
+      "id": "5e5f459f-9786-4b80-a4b8-992611fcfbb3",
+      "key": "now",
+      "value": "2020-09-25T06:53:04.291Z"
+    }
+  ]
+}

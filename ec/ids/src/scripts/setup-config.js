@@ -4,13 +4,16 @@ const
 
 config.ec_ids_folder = joinPath(__dirname, '../..');
 
-config.omejdn_daps                = {};
-config.omejdn_daps.repo_url       = 'https://github.com/nicosResearchAndDevelopment/omejdn-daps.git';
-config.omejdn_daps.repo_folder    = joinPath(config.ec_ids_folder, 'omejdn-daps');
-config.omejdn_daps.config_folder  = joinPath(config.omejdn_daps.repo_folder, 'config');
-config.omejdn_daps.keys_folder    = joinPath(config.omejdn_daps.repo_folder, 'keys');
-config.omejdn_daps.image_name     = 'omejdn-daps';
-config.omejdn_daps.container_name = 'omejdn-daps';
+config.omejdn_daps                  = {};
+config.omejdn_daps.repo_url         = 'https://github.com/nicosResearchAndDevelopment/omejdn-daps.git';
+config.omejdn_daps.repo_folder      = joinPath(config.ec_ids_folder, 'omejdn-daps');
+config.omejdn_daps.config_folder    = joinPath(config.omejdn_daps.repo_folder, 'config');
+config.omejdn_daps.clients_file     = joinPath(config.omejdn_daps.config_folder, 'clients.yml');
+config.omejdn_daps.users_file       = joinPath(config.omejdn_daps.config_folder, 'users.yml');
+config.omejdn_daps.keys_folder      = joinPath(config.omejdn_daps.repo_folder, 'keys');
+config.omejdn_daps.signing_key_file = joinPath(config.omejdn_daps.keys_folder, 'signing_key.pem');
+config.omejdn_daps.image_name       = 'omejdn-daps';
+config.omejdn_daps.container_name   = 'omejdn-daps';
 
 config.metadata_broker                       = {};
 config.metadata_broker.repo_url              = 'https://github.com/nicosResearchAndDevelopment/metadata-broker-open-core.git';
