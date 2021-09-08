@@ -100,6 +100,14 @@ function TestbedAgent({
             'amec':        {
                 value: amec, enumerable: true
             },
+            'login':       {
+                value:         async ({'type': type, 'user': user, 'passwor': passowrd}) => {
+                    return undefined;
+                }, enumerable: true
+            },
+            'domain':      {
+                value: null, enumerable: true
+            },
             'space':       {
                 value: space, enumerable: true
             },
