@@ -5,7 +5,7 @@ const
     util        = require('@nrd/fua.core.util'),
     testbed     = require('./code/main.testbed.js'),
     LDPRouter   = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
-    amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
+    //amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
     Space       = require(path.join(util.FUA_JS_LIB, 'module.space/next/module.space.js'))
@@ -96,7 +96,7 @@ const
     }, // agent_node
     {TestbedAgent}          = require('./code/agent.Testbed.beta.js'),// REM: as agent
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    testbed_agent_util    = {
+    testbed_agent_util      = {
         'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
             // TODO : context is array?
             let result = false;
@@ -113,8 +113,8 @@ const
             return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
         }
     },
-    testbed_agent_context = []
-;const {Testsuite}        = require("./code/agent.Testsuite.js"); // const
+    testbed_agent_context   = []
+;const {Testsuite}          = require("./code/agent.Testsuite.js"); // const
 
 //endregion new style
 
@@ -125,38 +125,6 @@ const
         ["spetrac@marzipan.com", "password123"],
         ["jlangkau@marzipan.com", "@8mT7Q@SPHvB6sYvy*M3"]
     ]);
-
-amec.authMechanism('login', async function (request) {
-    // 1. get identification data
-    const
-        user     = request.body?.user,
-        password = request.body?.password;
-
-    // 2. reject invalid authentication
-    if (!user || !password) return null;
-    if (!tmp_users.has(user)) return null;
-    if (password !== tmp_users.get(user)) return null;
-
-    // 3. return auth on success
-    return {user};
-});
-
-amec.authMechanism('login-tfa', async function (request) {
-    // 1. get identification data
-    const
-        user     = request.body?.user,
-        password = request.body?.password,
-        tfa      = request.body?.tfa;
-
-    // 2. reject invalid authentication
-    if (!user || !password || !tfa) return null;
-    if (!tmp_users.has(user)) return null;
-    if (tfa.replace(/\D/g, '') !== request.session.tfa) return null;
-    if (password !== tmp_users.get(user)) return null;
-
-    // 3. return auth on success
-    return {user};
-});
 
 /**
  * @param {object} config
@@ -231,14 +199,12 @@ async function createSpace(config) {
 (async (/* TEST */) => {
 
     const
-        space = await createSpace(config.space),
-        testbed_agent   = new TestbedAgent({
-            'id':        testbed_agent_node['@id'],
+        space           = await createSpace(config.space),
+        //testbed_agent   = new TestbedAgent({
+        testbed_agent   = await TestbedAgent({
+            'id':        "https://testbed.nicos-rd.com/",
             'scheduler': testbed_scheduler,
-            'amec':      amec,
-            'space':     space,
-            'system':    testbed_system,
-            'domain':    testbed_domain
+            'space':     space
         }), // new TestbedAgent()
         {Testsuite}     = require('./code/agent.Testsuite.js'), // REM: as agent
         testsuite_agent = new Testsuite({
@@ -257,7 +223,7 @@ async function createSpace(config) {
         scheduler_status   = testbed_agent.scheduler.status,
         scheduler_isProper = testbed_agent.scheduler.isProper
     ;
-    const APP_testbed     = require('./app.testbed.BETA.js')({'agent': testbed_agent, 'config': config});
+    const APP_testbed      = require('./app.testbed.BETA.js')({'agent': testbed_agent, 'config': config});
     debugger;
 })(/* TEST */).catch(console.error);
 //endregion new style :: TEST

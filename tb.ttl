@@ -8,7 +8,7 @@
 @prefix org:            <http://www.w3.org/ns/org#> .
 
 @prefix fua:            <https://www.nicos-rd.com.org/fua#> .
-@prefix domain:         <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix dom:            <https://www.nicos-rd.com.org/fua/domain#> .
 
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
@@ -27,7 +27,7 @@ tb:
 
     ecm:owner        nrd: ;
     ecm:provider     nrd: ;
-    ecm:domain       [ a domain:Domain ; ] ;
+    ecm:domain       tb:domain ;
 ##
     fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
 ##
@@ -45,22 +45,27 @@ tb:
 
 
 tb:domain
-    a                domain:Domain ;
+    a                dom:Domain ;
 #    domain:users    <https://testbed.local:8080/users/jlangkau> ;
 #    domain:users     [ a            domain:Users ;
 #                       ldp:contains ( <https://testbed.local:8080/users/jlangkau> ) ] ;
-    domain:users     tb:Users ;
+    dom:users        tb:Users ;
     rdfs:isDefinedBy nrd: ;
 .
 
 tb:Users
-    a                domain:Users ;
-    ldp:contains     ( <https://testbed.nicos-rd.com/domain/users/testsuite>
-                       ##  Order ALPHA
-                       <https://testbed.nicos-rd.com/domain/users/jlangkau>
-                       <https://testbed.nicos-rd.com/domain/users/spetrac> ) ;
+    a                dom:Users ;
+    ldp:member     <https://testbed.nicos-rd.com/domain/users/testsuite> ;
+##  Order ALPHA
+    ldp:member     <https://testbed.nicos-rd.com/domain/users/jlangkau> ;
+    ldp:member     <https://testbed.nicos-rd.com/domain/users/spetrac> ;
     rdfs:isDefinedBy nrd: ;
 .
+
+<https://testbed.nicos-rd.com/domain/users/spetrac>
+    a foaf:Person ;
+.
+
 #
 #ts:
 #    a                tbm:Testsuite ;
