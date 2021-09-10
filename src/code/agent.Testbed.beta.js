@@ -2,7 +2,7 @@ const
     path         = require('path'),
     //
     util         = require('@nrd/fua.core.util'),
-    rdf         = require('@nrd/fua.module.rdf'),
+    rdf          = require('@nrd/fua.module.rdf'),
 
     EventEmitter = require('events'),
     //{Self}      = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
@@ -10,6 +10,7 @@ const
     {Time}       = require(path.join(util.FUA_JS_LIB, 'agent.Time/src/agent.Time.js')),
     {Scheduler}  = require(path.join(util.FUA_JS_LIB, 'agent.Scheduler/src/agent.Scheduler.js')),
     {Domain}     = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js')),
+    {PEP}        = require(path.join(util.FUA_JS_LIB, 'module.PEP/src/module.PEP.beta.js')),
 
     //{System}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     //{Device}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
@@ -51,24 +52,28 @@ function timestamp() {
 
 async function TestbedAgent({
                                 //function TestbedAgent({
-                                'id':        id = undefined,
-                                'scheduler': scheduler,
-                                'space':     space
+                                'id':           id = undefined,
+                                'scheduler':    scheduler,
+                                'space':        space,
+                                'encodeSecret': encodeSecret = undefined
                             }) {
 
-
-    const that = rdf.generateGraph(space.dataStore.dataset, undefined, {'compact': true, 'meshed': true, 'blanks': true});
+    const that = rdf.generateGraph(space.dataStore.dataset, undefined, {
+        'compact': true,
+        'meshed':  true,
+        'blanks':  true
+    });
 
     const
-        testbed_config           = space.getNode(id),
-        testbed_config_data      = await testbed_config.read(),
-        implemented_task = {
+        testbed_config      = space.getNode(id),
+        testbed_config_data = await testbed_config.read(),
+        implemented_task    = {
             // self topics
             'error': "error"
         },
-        eventEmitter     = new EventEmitter()
+        eventEmitter        = new EventEmitter()
     ;
-    let node             = {};
+    let node                = {};
 
     //if (new.target) {
     if (!id)
@@ -77,52 +82,145 @@ async function TestbedAgent({
     //region system
     //endregion system
 
+    //region amec
+
+    let jlangkau = Buffer.from("jlangkau:marzipan").toString('base64');
+    jlangkau     = "amxhbmdrYXU6bWFyemlwYW4=";
+
+    function BasicAuthentication_Leave_Factory({
+                                                   'id':           id,
+                                                   'rootUri':      rootUri,
+                                                   'encodeSecret': encodeSecret = undefined
+                                               }) {
+
+        let fn = async (credentials, users) => {
+            let
+                //id      = undefined,
+                //secret  = undefined,
+                user    = undefined
+            ;
+            credentials = Buffer.from(credentials, 'base64').toString('ascii').split(":");
+            //id          = ;
+            // TODO : secret      = credentials[1];
+            //secret = credentials[1];
+            if (encodeSecret)
+                credentials[1] = encodeSecret(credentials[1]);
+            user = await users.get(`${rootUri}${credentials[0]}`);
+            if (!user['dom:active'] || (user['dom:active'] && (user['dom:active'][0]['@value'] === "true")))
+                if (user['dom:password'][0]['@value'] === credentials[1])
+                    return user;
+            return undefined;
+        };
+        Object.defineProperties(fn, {
+            'id': {value: id, enumerable: false}
+        });
+        Object.freeze(fn);
+        return fn;
+    } // BasicAuthentication_Name_Factory
+
+    function IDS_DAT_Authentication_Factory({
+                                                'id':           id,
+                                                'rootUri':      rootUri,
+                                                'encodeSecret': encodeSecret = undefined
+                                            }) {
+
+        // REM : this will authenticate/validate requesting IDS-Connector, so, returning the user means:
+        // REM :    it is a correct requester!!!
+        // REM :    So, we will NOT search it in our own registry...
+        // REM : If we DO search it in our own registry, we do it for the purpose of fetching
+        // REM :    its Access Control (or whatever)
+
+        let fn = async (DAT, users) => {
+            let
+                skiaki = undefined,
+                //secret  = undefined,
+                user   = undefined
+            ;
+            skiaki     = DAT['sub'];
+            skiaki     = (skiaki);
+
+            //id          = ;
+            // TODO : secret      = credentials[1];
+            //secret = credentials[1];
+            //if (encodeSecret)
+            //    credentials[1] = encodeSecret(credentials[1]);
+            //user = await users.get(`${rootUri}${credentials[0]}`);
+            //if (!user['dom:active'] || (user['dom:active'] && (user['dom:active'][0]['@value'] === "true")))
+            //    if (user['dom:password'][0]['@value'] === credentials[1])
+            //        return user;
+
+            return undefined;
+        }; // fn
+        Object.defineProperties(fn, {
+            'id': {value: id, enumerable: false}
+        });
+        Object.freeze(fn);
+        return fn;
+    } // IDS_DAT_Authentication_Factory
+
+    amec.authMechanism('BasicAuthentication_Leave', BasicAuthentication_Leave_Factory({
+        'id':           `${id}amec/BasicAuthentication_Leave`,
+        'rootUri':      "https://testbed.nicos-rd.com/domain/user#",
+        'encodeSecret': encodeSecret
+    }));
+    amec.authMechanism('BasicAuthentication_Leave', IDS_DAT_Authentication_Factory({
+        'id':           `${id}amec/IDS_DAT_Authentication`,
+        'rootUri':      "https://testbed.nicos-rd.com/domain/user#",
+        'encodeSecret': encodeSecret
+    }));
+    //amec.authMechanism('login', async function (request) {
+    //    // 1. get identification data
+    //    const
+    //        user     = request.body?.user,
+    //        password = request.body?.password;
+    //
+    //    // 2. reject invalid authentication
+    //    if (!user || !password) return null;
+    //    if (!tmp_users.has(user)) return null;
+    //    if (password !== tmp_users.get(user)) return null;
+    //
+    //    // 3. return auth on success
+    //    return {user};
+    //});
+    //
+    //amec.authMechanism('login-tfa', async function (request) {
+    //    // 1. get identification data
+    //    const
+    //        user     = request.body?.user,
+    //        password = request.body?.password,
+    //        tfa      = request.body?.tfa;
+    //
+    //    // 2. reject invalid authentication
+    //    if (!user || !password || !tfa) return null;
+    //    if (!tmp_users.has(user)) return null;
+    //    if (tfa.replace(/\D/g, '') !== request.session.tfa) return null;
+    //    if (password !== tmp_users.get(user)) return null;
+    //
+    //    // 3. return auth on success
+    //    return {user};
+    //});
+    //endregion amec
+
     //region domain
     let
-        domain_config = testbed_config['ecm:domain'][0],
-        domain_config_data = await domain_config.read()
-        ;
-    const domain = new Domain({
-        //'id':    `${id}domain/`,
-        'config': domain_config
-    });
+        domain_config = testbed_config['ecm:domain'][0]
+    ;
+    await domain_config.read();
+    const
+        pep    = PEP({'id': `${id}PEP`}),
+        domain = new Domain({
+            //'id':    `${id}domain/`,
+            'config': domain_config,
+            'amec':   amec
+        })
+    ;
     //endregion domain
     //region TEST
-    let user = await domain.users.get("https://testbed.nicos-rd.com/domain/users/spetrac");
+    //let
+    //    users = await domain.users()
+    //;
+    //let user = await domain.users.get("https://testbed.nicos-rd.com/domain/users/spetrac");
     //endregion TEST
-    //region amec
-    amec.authMechanism('login', async function (request) {
-        // 1. get identification data
-        const
-            user     = request.body?.user,
-            password = request.body?.password;
-
-        // 2. reject invalid authentication
-        if (!user || !password) return null;
-        if (!tmp_users.has(user)) return null;
-        if (password !== tmp_users.get(user)) return null;
-
-        // 3. return auth on success
-        return {user};
-    });
-
-    amec.authMechanism('login-tfa', async function (request) {
-        // 1. get identification data
-        const
-            user     = request.body?.user,
-            password = request.body?.password,
-            tfa      = request.body?.tfa;
-
-        // 2. reject invalid authentication
-        if (!user || !password || !tfa) return null;
-        if (!tmp_users.has(user)) return null;
-        if (tfa.replace(/\D/g, '') !== request.session.tfa) return null;
-        if (password !== tmp_users.get(user)) return null;
-
-        // 3. return auth on success
-        return {user};
-    });
-    //endregion amec
 
     Object.defineProperties(node, {
         'id':           {value: id, enumerable: true},
@@ -164,6 +262,9 @@ async function TestbedAgent({
             value:         async ({'type': type, 'user': user, 'password': password}) => {
                 return undefined;
             }, enumerable: true
+        },
+        'PEP':          {
+            value: pep, enumerable: false
         },
         'domain':       {
             value: domain, enumerable: true

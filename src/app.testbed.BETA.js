@@ -32,10 +32,10 @@ module.exports = ({'agent': agent, 'config': config}) => {
             //const graph = new Map((compactDoc['@graph'] || [compactDoc]).map((node) => [node['@id'], node]));
             //that.get("https://testbed.nicos-rd.com/");
 
-            let executeTestResult = await agent.executeTest({}).catch((err) => {
-                err;
-                debugger;
-            });
+            //let executeTestResult = await agent.executeTest({}).catch((err) => {
+            //    err;
+            //    //debugger;
+            //});
 
             app.disable('x-powered-by');
 
@@ -129,7 +129,13 @@ module.exports = ({'agent': agent, 'config': config}) => {
             });
 
             await new Promise((resolve) =>
-                server.listen(config.server.port, resolve));
+                server.listen(config.server.port, resolve)
+            );
+
+            //region TEST
+            let user = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave');
+            debugger;
+            //endregion TEST
 
             console.log('listening at http://localhost:' + config.server.port);
 

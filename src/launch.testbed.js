@@ -202,9 +202,12 @@ async function createSpace(config) {
         space           = await createSpace(config.space),
         //testbed_agent   = new TestbedAgent({
         testbed_agent   = await TestbedAgent({
-            'id':        "https://testbed.nicos-rd.com/",
-            'scheduler': testbed_scheduler,
-            'space':     space
+            'id':           "https://testbed.nicos-rd.com/",
+            'scheduler':    testbed_scheduler,
+            'space':        space,
+            'encodeSecret': (secret) => {
+                return `${secret}_salt`;
+            }
         }), // new TestbedAgent()
         {Testsuite}     = require('./code/agent.Testsuite.js'), // REM: as agent
         testsuite_agent = new Testsuite({
@@ -224,6 +227,6 @@ async function createSpace(config) {
         scheduler_isProper = testbed_agent.scheduler.isProper
     ;
     const APP_testbed      = require('./app.testbed.BETA.js')({'agent': testbed_agent, 'config': config});
-    debugger;
+    //debugger;
 })(/* TEST */).catch(console.error);
 //endregion new style :: TEST

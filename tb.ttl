@@ -46,24 +46,31 @@ tb:
 
 tb:domain
     a                dom:Domain ;
-#    domain:users    <https://testbed.local:8080/users/jlangkau> ;
+#    domain:users    <https://testbed.local:8080/user#jlangkau> ;
 #    domain:users     [ a            domain:Users ;
-#                       ldp:contains ( <https://testbed.local:8080/users/jlangkau> ) ] ;
+#                       ldp:contains ( <https://testbed.local:8080/user#jlangkau> ) ] ;
     dom:users        tb:Users ;
     rdfs:isDefinedBy nrd: ;
 .
 
 tb:Users
     a                dom:Users ;
-    ldp:member     <https://testbed.nicos-rd.com/domain/users/testsuite> ;
+    ldp:member       <https://testbed.nicos-rd.com/domain/user#testsuite> ;
 ##  Order ALPHA
-    ldp:member     <https://testbed.nicos-rd.com/domain/users/jlangkau> ;
-    ldp:member     <https://testbed.nicos-rd.com/domain/users/spetrac> ;
+    ldp:member       <https://testbed.nicos-rd.com/domain/user#jlangkau> ;
+    ldp:member       <https://testbed.nicos-rd.com/domain/user#spetrac> ;
     rdfs:isDefinedBy nrd: ;
 .
 
-<https://testbed.nicos-rd.com/domain/users/spetrac>
-    a foaf:Person ;
+<https://testbed.nicos-rd.com/domain/user#spetrac>
+    a            dom:User ;
+    dom:password "boxMeIn_salt"^^xsd:string ;
+.
+
+<https://testbed.nicos-rd.com/domain/user#jlangkau>
+    a            dom:User ;
+    dom:active   "true"^^xsd:boolean ;
+    dom:password "marzipan_salt"^^xsd:string ;
 .
 
 #
