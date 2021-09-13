@@ -67,6 +67,11 @@ exports.persistence = {
         {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
+        //region DAPS
+        //region DAPS :: user
+        {'dct:identifier': path.join(__root, 'ec/ids/resources/nrd-daps/user/nrd_gbx03.ttl'), 'dct:format': 'text/turtle'},
+        //endregion DAPS :: user
+        //endregion DAPS
         //region applicant
         {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'}
         //endregion applicant

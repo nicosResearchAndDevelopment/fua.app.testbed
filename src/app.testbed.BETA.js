@@ -83,7 +83,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         }
                     });
                 }
-            }
+            } // for ()
 
             io.on('connection', (socket) => {
                 // REM uncomment to enable authentication
@@ -97,9 +97,10 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     'prov': '[Testbed]',
                     'msg':  'Welcome to NRD-Testbed!'
                 });
-            });
+            }); // io.on('connection')
 
             io_test.on('connection', (socket) => {
+
                 socket.on("execute", async (request, callback) => {
                     let
                         ec        = request['ec'],
@@ -121,8 +122,9 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     } catch (jex) {
                         callback(jex, undefined);
                     } // try
-                });
-            });
+                }); // socket.on("execute")
+
+            }); // io_test.on('connection')
 
             app.get('/', (request, response) => {
                 response.redirect('/browse');
@@ -133,7 +135,38 @@ module.exports = ({'agent': agent, 'config': config}) => {
             );
 
             //region TEST
+
+            let
+                users = await agent.domain.users()
+            ;
+
+            //let jlangkau = Buffer.from("jlangkau:marzipan").toString('base64');
+            //jlangkau     = "amxhbmdrYXU6bWFyemlwYW4=";
+
             let user = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave');
+
+            let group = await agent.domain.groups.get("https://testbed.nicos-rd.com/domain/group#admin");
+            let is_in = await agent.domain.group.hasMember(group, user);
+            is_in     = await agent.domain.group.hasMember(group, "http//:unknown_user/");
+            is_in     = await agent.domain.user.memberOf(user, group);
+
+            //region DAPS
+
+            // nrd_gbx03
+            user = await agent.domain.users.get("https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4");
+
+
+            //const requestToken = DAPS.client.generateReqeustToken();
+
+            let DAT = await agent.DAPS.generateDAT({
+                //'assertion':                req['body']['assertion'],
+                'client_assertion':      'client_assertion',
+                'client_assertion_type': 'client_assertion_type',
+                'grant_type':            'grant_type',
+                //
+                'requesterPeerCertificate': 'requesterPeerCertificate'
+            });
+            //endregion DAPS
             debugger;
             //endregion TEST
 
@@ -144,6 +177,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
             debugger;
             process.exit(1);
         } // try
+
     })(/* MAIN */).catch(console.error);
 
 };

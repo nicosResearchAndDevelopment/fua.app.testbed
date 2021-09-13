@@ -30,6 +30,10 @@ const
             'scheduler_isProper':            "scheduler_isProper"
         }
     }
+    //
+    ,
+    {DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
+    //DAPS         = false
 ;
 //const testbed = require("./code/main.testbed.js");
 
@@ -58,13 +62,15 @@ async function TestbedAgent({
                                 'encodeSecret': encodeSecret = undefined
                             }) {
 
-    const that = rdf.generateGraph(space.dataStore.dataset, undefined, {
-        'compact': true,
-        'meshed':  true,
-        'blanks':  true
-    });
+    const
+        that = rdf.generateGraph(space.dataStore.dataset, undefined, {
+            'compact': true,
+            'meshed':  true,
+            'blanks':  true
+        });
 
     const
+        rootUri             = "https://testbed.nicos-rd.com/domain/user#",
         testbed_config      = space.getNode(id),
         testbed_config_data = await testbed_config.read(),
         implemented_task    = {
@@ -73,7 +79,7 @@ async function TestbedAgent({
         },
         eventEmitter        = new EventEmitter()
     ;
-    let node                = {};
+    let testbedAgent        = {};
 
     //if (new.target) {
     if (!id)
@@ -83,9 +89,6 @@ async function TestbedAgent({
     //endregion system
 
     //region amec
-
-    let jlangkau = Buffer.from("jlangkau:marzipan").toString('base64');
-    jlangkau     = "amxhbmdrYXU6bWFyemlwYW4=";
 
     function BasicAuthentication_Leave_Factory({
                                                    'id':           id,
@@ -108,7 +111,11 @@ async function TestbedAgent({
             user = await users.get(`${rootUri}${credentials[0]}`);
             if (!user['dom:active'] || (user['dom:active'] && (user['dom:active'][0]['@value'] === "true")))
                 if (user['dom:password'][0]['@value'] === credentials[1])
-                    return user;
+                    //return user;
+                    return {
+                        '@id':   user['@id'],
+                        '@type': user['@type']
+                    };
             return undefined;
         };
         Object.defineProperties(fn, {
@@ -125,19 +132,21 @@ async function TestbedAgent({
                                             }) {
 
         // REM : this will authenticate/validate requesting IDS-Connector, so, returning the user means:
-        // REM :    it is a correct requester!!!
+        // REM :    it is a correct requester!!! for this Connector-provider)
         // REM :    So, we will NOT search it in our own registry...
+        // REM :    So, if we want to express, that given requester has to ALSO in providers registry
+        // REM :        we have to implemented it, too!!!
         // REM : If we DO search it in our own registry, we do it for the purpose of fetching
         // REM :    its Access Control (or whatever)
 
         let fn = async (DAT, users) => {
-            let
-                skiaki = undefined,
-                //secret  = undefined,
-                user   = undefined
-            ;
-            skiaki     = DAT['sub'];
-            skiaki     = (skiaki);
+            //let
+            //    skiaki = undefined,
+            //    //secret  = undefined,
+            //    user   = undefined
+            //;
+            //skiaki     = DAT['sub'];
+            //skiaki     = (skiaki);
 
             //id          = ;
             // TODO : secret      = credentials[1];
@@ -160,14 +169,15 @@ async function TestbedAgent({
 
     amec.authMechanism('BasicAuthentication_Leave', BasicAuthentication_Leave_Factory({
         'id':           `${id}amec/BasicAuthentication_Leave`,
-        'rootUri':      "https://testbed.nicos-rd.com/domain/user#",
+        'rootUri':      rootUri,
         'encodeSecret': encodeSecret
     }));
-    amec.authMechanism('BasicAuthentication_Leave', IDS_DAT_Authentication_Factory({
+    amec.authMechanism('IDS_DAT_Authentication', IDS_DAT_Authentication_Factory({
         'id':           `${id}amec/IDS_DAT_Authentication`,
-        'rootUri':      "https://testbed.nicos-rd.com/domain/user#",
+        'rootUri':      rootUri,
         'encodeSecret': encodeSecret
     }));
+
     //amec.authMechanism('login', async function (request) {
     //    // 1. get identification data
     //    const
@@ -215,14 +225,8 @@ async function TestbedAgent({
         })
     ;
     //endregion domain
-    //region TEST
-    //let
-    //    users = await domain.users()
-    //;
-    //let user = await domain.users.get("https://testbed.nicos-rd.com/domain/users/spetrac");
-    //endregion TEST
 
-    Object.defineProperties(node, {
+    Object.defineProperties(testbedAgent, {
         'id':           {value: id, enumerable: true},
         'on':           {
             value:          Object.defineProperties((topic, callback) => {
@@ -257,12 +261,6 @@ async function TestbedAgent({
         'amec':         {
             value: amec, enumerable: true
         },
-        'authenticate': {
-            //'login':       {
-            value:         async ({'type': type, 'user': user, 'password': password}) => {
-                return undefined;
-            }, enumerable: true
-        },
         'PEP':          {
             value: pep, enumerable: false
         },
@@ -282,10 +280,22 @@ async function TestbedAgent({
             }, enumerable: true
         }
     });
+
+    if (DAPS)
+        Object.defineProperty(testbedAgent, 'DAPS', {
+            value:      new DAPS({
+                    'id':      `${id}daps/`,
+                    'rootUri': rootUri,
+                    'domain':  domain
+                }
+            ),
+            enumerable: false
+        });
+
     for (const [key, value] of Object.entries(task['scheduler'])) {
         implemented_task[key] = value;
         //let topic             = ((value.contains('_')) ? value.split('_')[1] : value);
-        node['scheduler']['on'](((value.includes('_')) ? value.split('_')[1] : value), (data) => {
+        testbedAgent['scheduler']['on'](((value.includes('_')) ? value.split('_')[1] : value), (data) => {
             eventEmitter['emit'](value, data);
         });
     } // for()
@@ -293,20 +303,20 @@ async function TestbedAgent({
 
     //
     //
-    node['on'](implemented_task['scheduler_idle'], (data) => {
+    testbedAgent['on'](implemented_task['scheduler_idle'], (data) => {
         //debugger;
         console.log(`'scheduler_idle' : data <${JSON.stringify(data)}>`);
         return undefined;
     });
-    node['on'](implemented_task['scheduler_error'], (error) => {
+    testbedAgent['on'](implemented_task['scheduler_error'], (error) => {
         //debugger;
         console.log(`'scheduler_error' : error <${JSON.stringify(error)}>`);
         return undefined;
     });
 
-    Object.freeze(node);
+    Object.freeze(testbedAgent);
 
-    return node;
+    return testbedAgent;
 } // TestbedAgent
 
 Object.defineProperties(TestbedAgent, {

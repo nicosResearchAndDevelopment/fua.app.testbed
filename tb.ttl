@@ -50,6 +50,7 @@ tb:domain
 #    domain:users     [ a            domain:Users ;
 #                       ldp:contains ( <https://testbed.local:8080/user#jlangkau> ) ] ;
     dom:users        tb:Users ;
+    dom:groups       tb:Groups ;
     rdfs:isDefinedBy nrd: ;
 .
 
@@ -59,6 +60,10 @@ tb:Users
 ##  Order ALPHA
     ldp:member       <https://testbed.nicos-rd.com/domain/user#jlangkau> ;
     ldp:member       <https://testbed.nicos-rd.com/domain/user#spetrac> ;
+## DAPS :: user
+# nrd_gbx03
+    ldp:member
+                     <https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4> ;
     rdfs:isDefinedBy nrd: ;
 .
 
@@ -71,6 +76,20 @@ tb:Users
     a            dom:User ;
     dom:active   "true"^^xsd:boolean ;
     dom:password "marzipan_salt"^^xsd:string ;
+.
+
+tb:Groups
+    a                dom:Groups ;
+## order ALPHA
+    ldp:member       <https://testbed.nicos-rd.com/domain/group#admin> ;
+    rdfs:isDefinedBy nrd: ;
+.
+
+<https://testbed.nicos-rd.com/domain/group#admin>
+    a          dom:Group ;
+## order ALPHA
+    ldp:member <https://testbed.nicos-rd.com/domain/user#jlangkau> ;
+    ldp:member <https://testbed.nicos-rd.com/domain/user#spetrac> ;
 .
 
 #
