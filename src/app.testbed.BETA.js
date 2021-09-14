@@ -152,22 +152,34 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
             //region DAPS
 
+
             // nrd_gbx03
             user = await agent.domain.users.get("https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4");
 
-
             //const requestToken = DAPS.client.generateReqeustToken();
 
-            let DAT = await agent.DAPS.generateDAT({
-                //'assertion':                req['body']['assertion'],
-                'client_assertion':      'client_assertion',
-                'client_assertion_type': 'client_assertion_type',
-                'grant_type':            'grant_type',
-                //
-                'requesterPeerCertificate': 'requesterPeerCertificate'
-            });
+            const
+                {ClientDaps}    = require(path.join(util.FUA_JS_LIB, 'ids/ids.client.daps/src/ids.client.DAPS.beta.js')),
+                crypto          = require("crypto"),
+                {client}        = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"),
+                clientDaps      = new ClientDaps({
+                    'id':          "http://nrd-ids-bc.nicos-rd.com/",
+                    'daps_host':   "http://nrd-daps.nicos-rd.com/",
+                    'private_key': crypto.createPrivateKey(client.private),
+                    'skiaki':      "11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4".replace(/_/g, ':')
+                })
+            ;
+            let
+                DATrequestToken = await clientDaps.produceDatRequestToken({
+                    'scope':  "this.is.not.a.scope",
+                    'format': "json"
+                }),
+                DAT             = await agent.DAPS.generateDAT(DATrequestToken)
+            ;
             //endregion DAPS
-            debugger;
+
+            debugger; // TEST
+
             //endregion TEST
 
             console.log('listening at http://localhost:' + config.server.port);
