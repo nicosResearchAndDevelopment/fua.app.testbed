@@ -1,26 +1,51 @@
 const
-    DATAgent          = require('./omejdn-daps.example-dat-agent.js'),
-    fetch             = require('node-fetch'),
-    FormData          = require('form-data'),
-    multiparty        = require('multiparty'),
-    https             = require('https'),
-    url               = require('url'),
-    {generateKeyPair} = require('jose/util/generate_key_pair');
+    DATAgent   = require('./omejdn-daps.example-dat-agent.js'),
+    fetch      = require('node-fetch'),
+    FormData   = require('form-data'),
+    multiparty = require('multiparty'),
+    url        = require('url'),
+    crypto     = require('crypto'),
+    path       = require('path'),
+    fs         = require('fs/promises'),
+    certs      = require('../resources/cert/index.js');
 
 (async function Main() {
 
+    // NOTE use the setup.omejdn-daps script to add the client:
+    // node ./setup.omejdn-daps.js add-client
+    //   --privateKey ../../resources/cert/client.key
+    //   --SKI DD:CB:FD:0B:93:84:33:01:11:EB:5D:94:94:88:BE:78:7D:57:FC:4A
+    //   --AKI keyid:CB:8C:C7:B6:85:79:A8:23:A6:CB:15:AB:17:50:2F:E6:65:43:5D:E8
+    //   --redirectUri http://localhost:8080
+
     const
-        {publicKey, privateKey} = await generateKeyPair('RS256'),
-        dat_agent               = new DATAgent({
+        privateKey = crypto.createPrivateKey(certs.client.private),
+        dat_agent  = new DATAgent({
             rejectUnauthorized:     false,
-            dapsUrl:                'https://daps.aisec.fraunhofer.de/v2/token',
-            subjectKeyIdentifier:   '17:7B:ED:18:73:EB:D0:47:5C:C3:25:49:47:04:3D:A2:8B:72:86:BF',
+            dapsUrl:                'http://localhost:4567',
+            subjectKeyIdentifier:   'DD:CB:FD:0B:93:84:33:01:11:EB:5D:94:94:88:BE:78:7D:57:FC:4A',
             authorityKeyIdentifier: 'keyid:CB:8C:C7:B6:85:79:A8:23:A6:CB:15:AB:17:50:2F:E6:65:43:5D:E8',
             clientPrivateKey:       privateKey
         }),
-        dat                     = await dat_agent.getAccessToken();
+        dat        = await dat_agent.getAccessToken();
 
-    console.log(dat);
+    // console.log(dat);
+
+    const
+        test_request  = {
+            method:  'POST',
+            agent:   dat_agent,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body:    JSON.stringify({
+                access_token: dat
+            })
+        },
+        test_response = await fetch('http://localhost:8080/test', test_request);
+
+    console.log(await test_response.text());
+    // debugger;
 
     // const
     //     broker_request_url              = 'https://localhost:8443/infrastructure',
