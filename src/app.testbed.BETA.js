@@ -66,24 +66,24 @@ module.exports = ({'agent': agent, 'config': config}) => {
             });
 
             // REM an alternative would be to use url-parameters
-            for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
-                for (let [fnName, fn] of Object.entries(ec.fn)) {
-                    testbed.assert(util.isFunction(fn), `expected ${ecName}->${fnName} to be a function`);
-                    const route = `/${ecName}/${fnName}`;
-                    app.post(route, express_json, async function (request, response, next) {
-                        try {
-                            const
-                                param   = request.body,
-                                args    = [param], // TODO parameter mapping
-                                result  = await fn.apply(null, args),
-                                payload = JSON.stringify(result); // TODO result mapping
-                            response.type('json').send(payload);
-                        } catch (err) {
-                            next(err);
-                        }
-                    });
-                }
-            } // for ()
+            //for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
+            //    for (let [fnName, fn] of Object.entries(ec.fn)) {
+            //        testbed.assert(util.isFunction(fn), `expected ${ecName}->${fnName} to be a function`);
+            //        const route = `/${ecName}/${fnName}`;
+            //        app.post(route, express_json, async function (request, response, next) {
+            //            try {
+            //                const
+            //                    param   = request.body,
+            //                    args    = [param], // TODO parameter mapping
+            //                    result  = await fn.apply(null, args),
+            //                    payload = JSON.stringify(result); // TODO result mapping
+            //                response.type('json').send(payload);
+            //            } catch (err) {
+            //                next(err);
+            //            }
+            //        });
+            //    }
+            //} // for ()
 
             io.on('connection', (socket) => {
                 // REM uncomment to enable authentication
@@ -136,6 +136,31 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
             //region TEST
 
+            //region TEST :: executeTest
+            // REM : so, coming from testsuite by socket.io
+            let test = {
+                'ec':      "ip",
+                'command': "ping",
+                'param':   {
+                    'endpoint': "127.0.0.1"
+                }
+            };
+            test     = {
+                'ec':      "ids",
+                'command': "getConnectorsSelfDescription",
+                'param':   {
+                    //'url': "https://127.0.0.1/about"
+                    'url': "https://www.nicos-ag.com/"
+                }
+            };
+            agent.executeTest(test, (error, result) => {
+                result;
+                debugger;
+            });
+            //endregion TEST :: executeTest
+
+            //region TEST :: space
+
             let
                 users = await agent.domain.users()
             ;
@@ -150,33 +175,34 @@ module.exports = ({'agent': agent, 'config': config}) => {
             is_in     = await agent.domain.group.hasMember(group, "http//:unknown_user/");
             is_in     = await agent.domain.user.memberOf(user, group);
 
-            //region DAPS
+            //endregion TEST :: space
 
-
-            // nrd_gbx03
-            user = await agent.domain.users.get("https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4");
-
-            //const requestToken = DAPS.client.generateReqeustToken();
-
-            const
-                {ClientDaps}    = require(path.join(util.FUA_JS_LIB, 'ids/ids.client.daps/src/ids.client.DAPS.beta.js')),
-                crypto          = require("crypto"),
-                {client}        = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"),
-                clientDaps      = new ClientDaps({
-                    'id':          "http://nrd-ids-bc.nicos-rd.com/",
-                    'daps_host':   "http://nrd-daps.nicos-rd.com/",
-                    'private_key': crypto.createPrivateKey(client.private),
-                    'skiaki':      "11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4".replace(/_/g, ':')
-                })
-            ;
-            let
-                DATrequestToken = await clientDaps.produceDatRequestToken({
-                    'scope':  "this.is.not.a.scope",
-                    'format': "json"
-                }),
-                DAT             = await agent.DAPS.generateDAT(DATrequestToken)
-            ;
-            //endregion DAPS
+            //region TEST :: DAPS
+            //
+            //// nrd_gbx03
+            //user = await agent.domain.users.get("https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4");
+            //
+            ////const requestToken = DAPS.client.generateReqeustToken();
+            //
+            //const
+            //    {ClientDaps}    = require(path.join(util.FUA_JS_LIB, 'ids/ids.client.daps/src/ids.client.DAPS.beta.js')),
+            //    crypto          = require("crypto"),
+            //    {client}        = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"),
+            //    clientDaps      = new ClientDaps({
+            //        'id':          "http://nrd-ids-bc.nicos-rd.com/",
+            //        'daps_host':   "http://nrd-daps.nicos-rd.com/",
+            //        'private_key': crypto.createPrivateKey(client.private),
+            //        'skiaki':      "11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4".replace(/_/g, ':')
+            //    })
+            //;
+            //let
+            //    DATrequestToken = await clientDaps.produceDatRequestToken({
+            //        'scope':  "this.is.not.a.scope",
+            //        'format': "json"
+            //    }),
+            //    DAT             = await agent.DAPS.generateDAT(DATrequestToken)
+            //;
+            //endregion TEST :: DAPS
 
             debugger; // TEST
 
