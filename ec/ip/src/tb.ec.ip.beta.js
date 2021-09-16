@@ -1,12 +1,11 @@
 const
-    fetch     = require("node-fetch")
+    ping = require("ping")
 ;
-let
-    connected = false,
-    ec        = {}
-;
+
+let ec = {};
+
 Object.defineProperty(ec, 'rc', {
-    value:              Object.defineProperty({},
+    value:      Object.defineProperty({},
         'connect', {
             value:         async (param) => {
                 try {
@@ -16,19 +15,21 @@ Object.defineProperty(ec, 'rc', {
                 } // try
             }, enumerable: false
         }, // connect
-        'getConnectorsSelfDescription', {
-            value:         async (param, callback) => {
+        'ping', {
+            value:         (param, callback) => {
                 try {
-                    let result = await fetch(param.url);
-                    callback(null, {
-                        'ok':     result['ok'],
-                        'status': result['status']
+                    ping.sys.probe(param.endpoint, (isAlive) => {
+                        callback(null, isAlive)
                     });
                 } catch (jex) {
                     callback(jex, undefined);
                 } // try
             }, enumerable: false
-        }), enumerable: true
-});
+        } // ping
+    ), // Object.defineProperty({})
+    enumerable: true
+}); // Object.defineProperty(ec)
+
 Object.freeze(ec);
-exports.ids = ec;
+
+exports.ip = ec;

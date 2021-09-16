@@ -64,12 +64,18 @@ exports.persistence = {
     options: {},
     load:    [
         {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
+        //region ids
         {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
+        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.ttl'), 'dct:format': 'text/turtle'},
+        //endregion ids
         {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
         //region DAPS
         //region DAPS :: user
-        {'dct:identifier': path.join(__root, 'ec/ids/resources/nrd-daps/user/nrd_gbx03.ttl'), 'dct:format': 'text/turtle'},
+        {
+            'dct:identifier': path.join(__root, 'ec/ids/resources/nrd-daps/user/nrd_gbx03.ttl'),
+            'dct:format':     'text/turtle'
+        },
         //endregion DAPS :: user
         //endregion DAPS
         //region applicant
@@ -124,8 +130,9 @@ exports.rdf = {
 
         'chem-elem': 'http://localhost/data/chemical_element/',
 
-        'gbxm': 'http://localhost/model/',
-        'gbxc': 'http://localhost/config/',
+        'dapsm': 'https://www.nicos-rd.com/model/daps#',
+        'gbxm':  'http://localhost/model/',
+        'gbxc':  'http://localhost/config/',
 
         'bo-time': 'http://localhost/data/bo/time/'
 

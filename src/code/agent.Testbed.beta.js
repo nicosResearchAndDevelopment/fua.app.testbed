@@ -17,7 +17,7 @@ const
     //{Testsuite}  = require('./agent.Testsuite.js'), // REM: as agent
 
     amec         = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
-    task         = {
+    task    = {
         'domain':    {},
         'scheduler': {
             'scheduler_error':               "scheduler_error",
@@ -32,10 +32,10 @@ const
     }
     //
     ,
-    {DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
+    {DAPS}  = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
 
     //DAPS         = false
-;
+;const {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
 //const testbed = require("./code/main.testbed.js");
 
 //region error
@@ -64,13 +64,11 @@ async function TestbedAgent({
                             }) {
 
     const
-        that = rdf.generateGraph(space.dataStore.dataset, undefined, {
+        that                = rdf.generateGraph(space.dataStore.dataset, undefined, {
             'compact': true,
             'meshed':  true,
             'blanks':  true
-        });
-
-    const
+        }),
         rootUri             = "https://testbed.nicos-rd.com/domain/user#",
         testbed_config      = space.getNode(id),
         testbed_config_data = await testbed_config.read(),
@@ -214,7 +212,8 @@ async function TestbedAgent({
 
     //region domain
     let
-        domain_config = testbed_config['ecm:domain'][0]
+        domain_config = testbed_config['ecm:domain'][0],
+        ec            = {}
     ;
     await domain_config.read();
     const
@@ -272,55 +271,68 @@ async function TestbedAgent({
             value: space, enumerable: true
         },
         'executeTest': {
-            value:         async (param) => {
+            value:         async (param, callback) => {
                 try {
-                    throw new Error(`agent.Testbed : 'executeTest' NOT implemented now.`);
+                    let
+                        ec = testbedAgent['ec'][param.ec],
+                        command
+                    ;
+                    if (!ec) {
+                        callback(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`), undefined);
+                    } else {
+                        command = ec['rc'][param.command];
+                        if (!command) {
+                            callback(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`), undefined);
+                        } else {
+                            command(param.param, (error, result) => {
+                                callback(error, result);
+                            });
+                        } // if ()
+                    } // if ()
                 } catch (jex) {
                     throw jex;
                 } // try
             }, enumerable: true
-        }
-    });
+        } // executeTest
+    }); // Object.defineProperties(testbedAgent)
 
-    if (DAPS)
+    //region ec.ip
+    let {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
+    ec['ip'] = ip;
+    //endregion ec.ip
+
+    //region ec.ids
+
+    let {ids} = require("../../ec/ids/src/tb.ec.ids.js");
+    ec['ids'] = ids;
+
+    if (DAPS) {
+        //Object.defineProperty(ec['ids'], 'ids', {
+        //
+        //});
+        let
+            daps_id              = "https://nrd-daps.nicos-rd.com/",
+            nrd_daps_config      = space.getNode(daps_id),
+            nrd_daps_config_data = await nrd_daps_config.read()
+        ;
         Object.defineProperty(testbedAgent, 'DAPS', {
             value:      new DAPS({
-                    'id':      `${id}daps/`,
+                    'id':      `${daps_id}agent/`,
                     'rootUri': rootUri,
                     'domain':  domain,
                     //
-                    'privateKey':      `-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEApLZgK4TFWJ9LNeYGtCjIRdMvcAszgODjnXjRwOK5O6qRXo4Z
-QWFPf2oSIOrSFbXQbDL6/X4UjYctkEAZYigvGUe0l4Q8aqGa7ie29JHacUJlS+bc
-z8vd/hISg1iD6Wr9SOB3OxCliT7iLdek3eJgxc/mFTKgt/ZQOJiHKaezUX/U7TMI
-hIMoNXvc9hLk16iub0ADfyzBoAqNKtadt9M897uNILtpxzPOySW+cXxlGYbQm5fH
-DDyIU0yZvULnW4bB1lGb2/HdbKeIYp06UepDxj0s1twVt2JkC+T0TaxOadJ5GmDb
-QJZdkZsmA6r4hrGFRGYUoNPBki8+g9+vWTb2hwIDAQABAoIBAEjVrKkRyQJrTiLD
-WOuJrSXTQQLWsSuoRn530qjsmORdhHK/e0OB+FlrWiDcNZIMF+IAmSRHAGelAuzq
-q07QXiNbpevqOZ0dYRk2zpxPcrzqk0iBCduJVtzmuPEDzzEEcoQrXg3sSobqG7IR
-zYGgfRJ74E43WQKAFPEx4XL2CUFcA/H9wHj5Sp7TNMBt1hnvfZMTWV4i8eRXLAAh
-e2h1GNKjV2+ie2fcPqxKb9vavbJixtEqQ4UoD+fLcRp3zbbhWVyIEst2g6BeXjb1
-fbSPabwO5GgGCq5i8+nTqTRM827Cqoid/cOKixacryuRS52H70boY/v61TA52i6L
-HUwO6IECgYEA0coRb40CyndgoyAPH/VnvyqlqSpVoqMChYyfqpzG9eImUEYmx8qE
-DM1I3E/wGD7KMPDNvTrTQ+flYHyunZNVYCdLqRQhqX2Pp+q8+uASrm3Bpot9ueLE
-6XF4WdOC4Q80T7KvZw3xH8XO+KobFMiNyvB7rZ9XnnsctFGFtMtE8vECgYEAyP5w
-VjsUxotZfUsORsa2vrIGwX7iyAAqsKpbUCkALpB5w6owwAA5HeJ7kfi/stIKUGly
-HpmWBucvvX5EAZHJJFyBBm5DeQXv7QAYCRTv8a4Owp7OvAsNL90Ir3di/WF9Uwki
-Al8F7eTjIQQMRmhZ0XJplPAKPjM+HyEGqS+ZkPcCgYA1GKp/DDZ3ne00fCm30fm3
-FYkmHpPb/NvnhybmHJXyp5FA4fBwwp3XS6G0OPswd7ve1SONUDUmS6vvVr8vHJoQ
-IwHwQise5auVOUEpUcsIoLjReR6SDIX/+3sVaQYIBjwcK8JfF9U+UGdI4mzGPtg8
-U89JqzmW39vs+3EWyBekUQKBgCBGm4t9WUy4u9oe32AGMPpWZDdWRNyRCknsUVWC
-AAF6OdNt1P5ACuv9npJGO6JfkEBxbl3zk9/v5/6p9Am8e2xXXnDF7BfXGDwas8Fh
-l1Zb+QrPrasMq0VwXSCwLzk5GoLnCIsQ70bQZpi6qa30u9eiY8oC8eIjIGqnRwaM
-GkDpAoGBAKVj3Khhj86zVz933vQzoT4/EE6tWTo0hmnzxFxR92D5woMe3KbkMQT1
-+ujajKnBK4uDkwpF7QWFqJbu3PB/EKgIo6ebD+p+WFeavbC5ibeS79Ng7SCOGXMR
-cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
------END RSA PRIVATE KEY-----`,
-                    'jwt_payload_iss': "https://nrd-daps.nicos-rd.com/"
+                    'privateKey':      nrd_daps_config['dapsm:privateKey'][0]['@value'],
+                    'jwt_payload_iss': daps_id
                 }
             ),
             enumerable: false
         });
+    } // if (DAPS)
+    //endregion ec.ids
+
+    Object.defineProperties(testbedAgent, {
+        'ec': {value: ec, enumerable: true}
+    });
 
     for (const [key, value] of Object.entries(task['scheduler'])) {
         implemented_task[key] = value;

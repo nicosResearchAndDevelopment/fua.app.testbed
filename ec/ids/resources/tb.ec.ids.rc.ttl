@@ -1,43 +1,43 @@
-@prefix rdf:             <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix owl:             <http://www.w3.org/2002/07/owl#> .
-@prefix dct:             <http://purl.org/dc/terms/> .
-@prefix foaf:            <http://xmlns.com/foaf/0.1/> .
-@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
-@prefix org:             <http://www.w3.org/ns/org#> .
-@prefix ids:             <https://w3id.org/idsa/core/> .
-@prefix idsc:            <https://w3id.org/idsa/code/> .
+@prefix rdf:                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:                 <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:                  <http://www.w3.org/2002/07/owl#> .
+@prefix dct:                  <http://purl.org/dc/terms/> .
+@prefix foaf:                 <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:                  <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:                  <http://www.w3.org/ns/org#> .
+@prefix ids:                  <https://w3id.org/idsa/core/> .
+@prefix idsc:                 <https://w3id.org/idsa/code/> .
 
-@prefix nrd:             <https://www.nicos-rd.com/> .
+@prefix nrd:                  <https://www.nicos-rd.com/> .
 
 #@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
 #@prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
-@prefix tbm:             <https://www.nicos-rd.com.org/fua/testbed#> .
+@prefix tbm:                  <https://www.nicos-rd.com.org/fua/testbed#> .
 
 # REM : 90
 
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
-@prefix agent:           <https://www.nicos-rd.com/> .
-@prefix appl:            <https://nicos-gbx-0-0-1.nicos-rd.com/> .
+@prefix agent:                <https://www.nicos-rd.com/> .
+@prefix connector:            <https://ids-rc.nicos-rd.com/> .
 
-appl:
+connector:
     a                      tbm:Applicant_IDS_Connector ;
     a                      ids:BaseConnector ;
     owl:sameAs             <https://10.10.33.21> ;
-    rdfs:label             "GAIAboX, v0-0-1" ;
+    rdfs:label             "IDS-RC" ;
 
 ##region IDS
-    ids:title              "GAIAboX, v0-0-1" ;
-    ids:description        "Mobile base connector operated by PART1" ;
+    ids:title              "IDS-RC" ;
+    ids:description        "Remote Control Connector for EcoSystem 'IDS'" ;
     ids:maintainer         agent: ;
     ids:curator            agent: ;
     ids:physicalLocation   [ a ids:Location ; ] ;
 #    ids:outboundModelVersion "4.1.0" ;
 #    ids:inboundModelVersion "4.1.0" ;
-    ids:hasDefaultEndpoint appl:http_host ;
-    ids:authInfo           appl:auth_info ;
+    ids:hasDefaultEndpoint connector:http_host ;
+    ids:authInfo           connector:auth_info ;
     ids:securityProfile    idsc:BASE_SECURITY_PROFILE ;
 #    ids:componentCertification appl:certification ;
     ids:resourceCatalog    [ a ids:ResourceCatalog ; ] ;
@@ -49,7 +49,7 @@ appl:
 
 # TODO: host
 # TODO: port (default)
-    rdfs:seeAlso           <https://nicos-gbx-0-0-0.nicos-rd.com/> ;
+#    rdfs:seeAlso           <https://nicos-gbx-0-0-0.nicos-rd.com/> ;
 ### OR
 #    tbm:history      <https://nicos-gbx-0-0-0.testbed.local/> ;
 ### OR
@@ -57,12 +57,12 @@ appl:
     rdfs:isDefinedBy       nrd: ;
 .
 
-appl:http_host
+connector:http_host
     a             ids:ConnectorEndpoint ;
-    ids:accessURL <https://marzipan.de> ;
+    ids:accessURL "https://ids-rc.nicos-rd.com/" ;
 .
 
-appl:auth_info
+connector:auth_info
     a                ids:AuthInfo ;
     ids:authService  <https://nrd-daps.nicos-rd.com/> ;
     ids:authStandard idsc:OAUTH2_JWT ;
