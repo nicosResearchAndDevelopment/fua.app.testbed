@@ -1,5 +1,6 @@
 const
     fetch                  = require('node-fetch'),
+    net                    = require('net'),
     http                   = require('http'),
     https                  = require('https'),
     {URL, URLSearchParams} = require('url'),
@@ -7,6 +8,47 @@ const
     {SignJWT}              = require('jose/jwt/sign'),
     // SEE https://github.com/panva/jose/blob/main/docs/functions/util_base64url.decode.md#readme
     {decode}               = require('jose/util/base64url');
+
+function _delayRequestUntilSocket(request) {
+    const
+        endFunction   = request.end,
+        writeFunction = request.write,
+        endArgs       = [],
+        writeArgs     = [];
+
+    request.end = function (...args) {
+        if (request.socket) {
+            endFunction.apply(request, args);
+        } else if (!endArgs.length) {
+            endArgs.push(args);
+            request.once('socket', function () {
+                if (!writeArgs.length) {
+                    endFunction.apply(request, endArgs.shift());
+                }
+            });
+        }
+    };
+
+    request.write = function (...args) {
+        if (request.socket) {
+            writeFunction.apply(request, args);
+        } else if (writeArgs.length) {
+            writeArgs.push(args);
+        } else {
+            writeArgs.push(args);
+            request.once('socket', function () {
+                while (writeArgs.length) {
+                    writeFunction.apply(request, writeArgs.shift());
+                }
+                if (endArgs.length) {
+                    endFunction.apply(request, endArgs.shift());
+                }
+            });
+        }
+    };
+
+    return request;
+}
 
 // SEE https://github.com/danielstjules/toragent/blob/5ff30591d788620c00acd05c302ff3dd86606aa3/lib/agent.js
 class DATAgent extends http.Agent {
@@ -83,13 +125,35 @@ class DATAgent extends http.Agent {
         return this.#accessToken;
     } // DATAgent#getAccessToken
 
+    createConnection(options, callback) {
+        console.log('----- REACHED: DATAgent#createConnection -----');
+        const socket = new net.Socket(options);
+        socket.connect(options, callback);
+        // socket.connecting = true;
+        // this.getAccessToken()
+        //     .then((accessToken) => socket.connect(options, callback))
+        //     .catch((err) => socket.destroy(err));
+        return socket;
+    } // DATAgent#createConnection
+
     addRequest(req, ...args) {
+        console.log('----- REACHED: DATAgent#addRequest -----');
+        // req.setHeader('Authorization', `Bearer ${this.#accessToken}`);
+        // super.addRequest(req, ...args);
+        // NOTE the hack to delay the requests end and write methods is necessary,
+        // because the header cannot be changed after one of those methods has been called,
+        // although a socket has not even been created.
+        _delayRequestUntilSocket(req);
         this.getAccessToken()
             .then((accessToken) => {
+                // req.addTrailers({'Authorization': `Bearer ${accessToken}`});
                 req.setHeader('Authorization', `Bearer ${accessToken}`);
                 super.addRequest(req, ...args);
             })
-            .catch((err) => req.destroy(err));
+            .catch((err) => {
+                req.destroy(err);
+                req.emit('error', err);
+            });
     } // DATAgent#addRequest
 
 } // DATAgent

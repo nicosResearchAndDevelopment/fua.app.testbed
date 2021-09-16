@@ -12,7 +12,7 @@ const
     app.use(express.urlencoded({extended: false}));
 
     app.use('/inbox', function (request, response) {
-        console.log(request.body);
+        // console.log(request.body);
         response.end();
     });
 
