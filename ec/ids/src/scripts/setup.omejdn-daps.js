@@ -1,13 +1,15 @@
 const
-    config                 = require('./setup-config.js'),
-    {awaitMain, ignoreErr} = require('./setup-util.js'),
-    {appendFile}           = require('fs/promises'),
-    git                    = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
-    docker                 = require('../../../../src/code/subprocess/docker.js')(config.omejdn_daps.repo_folder),
-    openssl                = require('../../../../src/code/subprocess/openssl.js')(config.omejdn_daps.keys_folder);
+    config  = require('./setup-config.js'),
+    util    = require('./setup-util.js'),
+    fs      = require('fs/promises'),
+    git     = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
+    docker  = require('../../../../src/code/subprocess/docker.js')(config.omejdn_daps.repo_folder),
+    openssl = require('../../../../src/code/subprocess/openssl.js')(config.omejdn_daps.keys_folder);
 
-awaitMain(async function Main() {
-    switch (process.argv[2]) {
+util.awaitMain(async function Main() {
+    const {param, args} = util.parseArgv();
+
+    switch (args.shift()) {
 
         case 'install':
             await _loadRepository();
@@ -19,8 +21,8 @@ awaitMain(async function Main() {
             await _runApplication();
             break;
 
-        case 'add-subject':
-            await _addClientCertificate(process.argv[3], process.argv[4]);
+        case 'add-client':
+            await _addClientCertificate(param, ...args);
             break;
 
     }
@@ -31,15 +33,15 @@ async function _loadRepository() {
 } // _loadRepository
 
 async function _createImage() {
-    await ignoreErr(docker.rm(config.omejdn_daps.container_name));
-    await ignoreErr(docker.rmi(config.omejdn_daps.image_name));
+    await util.ignoreErr(docker.rm(config.omejdn_daps.container_name));
+    await util.ignoreErr(docker.rmi(config.omejdn_daps.image_name));
     await docker.build({
         tag: config.omejdn_daps.image_name
     }, config.omejdn_daps.repo_folder);
 } // _createImage
 
 async function _createContainer() {
-    await ignoreErr(docker.rm(config.omejdn_daps.container_name));
+    await util.ignoreErr(docker.rm(config.omejdn_daps.container_name));
     await docker.create({
         name:    config.omejdn_daps.container_name,
         publish: '4567:4567',
@@ -54,21 +56,32 @@ async function _runApplication() {
     await docker.start(config.omejdn_daps.container_name);
 } // _runApplication
 
-async function _addClientCertificate(subjectIRI, pemCertificate) {
-    // TODO test this method
-    // TODO clientId might be {{SKI}}:keyid:{{AKI}} combination
+async function _addClientCertificate(param, ...args) {
+    util.assert(util.isString(param.privateKey), 'missing --privateKey');
+    util.assert(util.isString(param.SKI), 'missing --SKI');
+    util.assert(util.isString(param.AKI), 'missing --AKI');
+    util.assert(util.isString(param.redirectUri), 'missing --redirectUri');
     // SEE https://github.com/International-Data-Spaces-Association/IDS-G/blob/main/Components/IdentityProvider/DAPS/README.md
     // TODO add option for scopes and attributes
-    const certFileName = Buffer.from(subjectIRI).toString('base64') + '.cert';
-    await openssl.x509({
-        in:  pemCertificate,
-        out: certFileName
+    const
+        clientId    = `${param.SKI}:${param.AKI}`,
+        certFile    = Buffer.from(clientId).toString('base64') + '.cert',
+        clientEntry = `- client_id: ${clientId}\n` +
+            '  allowed_scopes:\n' +
+            '    - omejdn:api\n' +
+            `  redirect_uri: ${param.redirectUri}\n` +
+            '  attributes: []\n' +
+            `  certfile: ${certFile}`;
+
+    await openssl.req({
+        new:   null,
+        x509:  null,
+        nodes: null,
+        batch: null,
+        days:  param.days || 365,
+        key:   param.privateKey,
+        out:   certFile
     });
-    const clientEntry = `- ${subjectIRI}:\n` +
-        `  redirect_uri: ${subjectIRI}\n` +
-        '  allowed_scopes:\n' +
-        '    - omejdn:api\n' +
-        '  attributes: []\n' +
-        `  certfile: ${certFileName}`;
-    await appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
+
+    await fs.appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
 } // _addClientCertificate

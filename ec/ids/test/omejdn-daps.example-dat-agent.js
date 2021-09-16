@@ -1,63 +1,34 @@
 const
-    fetch             = require('node-fetch'),
-    net               = require('net'),
-    http              = require('http'),
-    tls               = require('tls'),
-    https             = require('https'),
-    {URLSearchParams} = require('url'),
+    fetch                  = require('node-fetch'),
+    http                   = require('http'),
+    https                  = require('https'),
+    {URL, URLSearchParams} = require('url'),
     // SEE https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#readme
-    {SignJWT}         = require('jose/jwt/sign'),
+    {SignJWT}              = require('jose/jwt/sign'),
     // SEE https://github.com/panva/jose/blob/main/docs/functions/util_base64url.decode.md#readme
-    {decode}          = require('jose/util/base64url');
-
-class DATSocket extends tls.TLSSocket {
-    // class DATSocket extends net.Socket {
-
-    #getAccessToken = null;
-    #accessToken    = '';
-
-    // SEE https://nodejs.org/docs/latest-v14.x/api/tls.html#tls_class_tls_tlssocket
-    constructor(options, getAccessToken) {
-        super(options);
-        this.#getAccessToken = getAccessToken;
-    } // DATSocket#constructor
-
-    // SEE https://nodejs.org/docs/latest-v14.x/api/net.html#net_socket_connect
-    // SEE https://nodejs.org/docs/latest-v14.x/api/tls.html#tls_tls_connect_options_callback
-    connect(...args) {
-        this.#getAccessToken()
-            .then((jwt) => {
-                this.#accessToken = jwt;
-                super.connect(...args);
-            })
-            .catch((err) => this.emit('error', err));
-        return this;
-    } // DATSocket#connect
-
-    addRequest(req, ...args) {
-        req.setHeader('Authorization', `Bearer ${this.#accessToken}`);
-        super.addRequest(req, ...args);
-    } // DATSocket#addRequest
-
-} // DATSocket
+    {decode}               = require('jose/util/base64url');
 
 // SEE https://github.com/danielstjules/toragent/blob/5ff30591d788620c00acd05c302ff3dd86606aa3/lib/agent.js
-class DATAgent extends https.Agent {
-    // class DATAgent extends http.Agent {
+class DATAgent extends http.Agent {
+    // class DATAgent extends https.Agent {
 
-    #basicAgent         = null;
-    #dapsUrl            = '';
-    #clientKeyId        = '';
-    #clientPrivateKey   = null;
-    #clientAssertion    = '';
-    #validAssertionTime = 0;
-    #accessToken        = '';
-    #validAccessTime    = 0;
+    #httpAgent           = null;
+    #httpsAgent          = null;
+    #dapsUrl             = '';
+    #clientKeyId         = '';
+    #clientPrivateKey    = null;
+    #clientAssertion     = '';
+    #validAssertionTime  = 0;
+    #expireAssertionTime = 300;
+    #accessToken         = '';
+    #validAccessTime     = 0;
+    #validTimeBuffer     = 60;
+    #accessAudience      = 'http://localhost:4567'; // 'idsc:IDS_CONNECTORS_ALL';
 
     constructor(options) {
         super(options);
-        this.#basicAgent       = new https.Agent(options);
-        // this.#basicAgent       = new http.Agent(options);
+        this.#httpAgent        = new http.Agent(options);
+        this.#httpsAgent       = new https.Agent(options);
         this.#dapsUrl          = options.dapsUrl;
         this.#clientKeyId      = `${options.subjectKeyIdentifier}:${options.authorityKeyIdentifier}`;
         this.#clientPrivateKey = options.clientPrivateKey;
@@ -66,14 +37,14 @@ class DATAgent extends https.Agent {
     async getAccessToken() {
         const currentTime = 1e-3 * Date.now();
 
-        if (!this.#accessToken || currentTime > this.#validAccessTime) {
-            if (!this.#clientAssertion || currentTime > this.#validAssertionTime) {
-                this.#validAssertionTime = currentTime + 300;
+        if (!this.#accessToken || currentTime + this.#validTimeBuffer > this.#validAccessTime) {
+            if (!this.#clientAssertion || currentTime + this.#validTimeBuffer > this.#validAssertionTime) {
+                this.#validAssertionTime = currentTime + this.#expireAssertionTime;
                 this.#clientAssertion    = await new SignJWT({})
                     .setProtectedHeader({alg: 'RS256'})
                     .setIssuer(this.#clientKeyId)
                     .setSubject(this.#clientKeyId)
-                    .setAudience('idsc:IDS_CONNECTORS_ALL')
+                    .setAudience(this.#accessAudience)
                     .setIssuedAt(currentTime)
                     .setNotBefore(currentTime)
                     .setExpirationTime(this.#validAssertionTime)
@@ -81,6 +52,7 @@ class DATAgent extends https.Agent {
             }
 
             const
+                dat_url      = new URL('/token', this.#dapsUrl).toString(),
                 dat_request  = {
                     method:  'POST',
                     headers: {
@@ -92,9 +64,9 @@ class DATAgent extends https.Agent {
                         client_assertion:      this.#clientAssertion,
                         scope:                 'idsc:IDS_CONNECTOR_ATTRIBUTES_ALL'
                     }).toString(),
-                    agent:   this.#basicAgent
+                    agent:   this.#dapsUrl.startsWith('https') ? this.#httpsAgent : this.#httpAgent
                 },
-                dat_response = await fetch(this.#dapsUrl, dat_request),
+                dat_response = await fetch(dat_url, dat_request),
                 dat_result   = await dat_response.json();
 
             if (dat_result.error) {
@@ -111,15 +83,14 @@ class DATAgent extends https.Agent {
         return this.#accessToken;
     } // DATAgent#getAccessToken
 
-    // SEE https://nodejs.org/docs/latest-v14.x/api/net.html#net_net_createconnection
-    // SEE https://nodejs.org/docs/latest-v14.x/api/http.html#http_agent_createconnection_options_callback
-    // SEE https://nodejs.org/docs/latest-v14.x/api/tls.html#tls_tls_connect_options_callback
-    // SEE https://nodejs.org/docs/latest-v14.x/api/https.html#https_class_https_agent
-    createConnection(options, callback) {
-        const socket = new DATSocket(options, this.getAccessToken.bind(this));
-        socket.connect(options, callback);
-        return socket;
-    } // DATAgent#createConnection
+    addRequest(req, ...args) {
+        this.getAccessToken()
+            .then((accessToken) => {
+                req.setHeader('Authorization', `Bearer ${accessToken}`);
+                super.addRequest(req, ...args);
+            })
+            .catch((err) => req.destroy(err));
+    } // DATAgent#addRequest
 
 } // DATAgent
 

@@ -1,11 +1,13 @@
 const
-    util = require("@nrd/fua.core.util"),
-    path = require('path');
+    util          = require("@nrd/fua.core.util"),
+    path          = require('path'),
+    commandParser = require('../../../../src/code/parsers/Commands.js');
 
 exports = module.exports = {
     ...util,
-    assert:   new util.Assert('nrd-testbed/ec/ids'),
-    joinPath: path.join
+    assert:    new util.Assert('nrd-testbed/ec/ids'),
+    joinPath:  path.join,
+    parseArgv: commandParser.parseArgv
 };
 
 exports.awaitMain = function (fn, ...args) {
