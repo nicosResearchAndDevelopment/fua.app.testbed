@@ -280,7 +280,7 @@ async function TestbedAgent({
                     if (!ec) {
                         callback(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`), undefined);
                     } else {
-                        command = ec['rc'][param.command];
+                        command = ec[param.command];
                         if (!command) {
                             callback(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`), undefined);
                         } else {

@@ -20,6 +20,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 server       = http.createServer(app),
                 io           = socket_io(server),
                 io_test      = io.of('/test'),
+                io_rc        = io.of('/rc'),
                 express_json = express.json(),
                 sessions     = ExpressSession(config.session);
 
@@ -136,29 +137,6 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
             //region TEST
 
-            //region TEST :: executeTest
-            // REM : so, coming from testsuite by socket.io
-            let test = {
-                'ec':      "ip",
-                'command': "ping",
-                'param':   {
-                    'endpoint': "127.0.0.1"
-                }
-            };
-            test     = {
-                'ec':      "ids",
-                'command': "getConnectorsSelfDescription",
-                'param':   {
-                    //'url': "https://127.0.0.1/about"
-                    'url': "https://www.nicos-ag.com/"
-                }
-            };
-            agent.executeTest(test, (error, result) => {
-                result;
-                debugger;
-            });
-            //endregion TEST :: executeTest
-
             //region TEST :: space
 
             let
@@ -177,7 +155,9 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
             //endregion TEST :: space
 
-            //region TEST :: DAPS
+            //region TEST :: IDS
+
+            //region TEST :: IDS :: DAPS
             //
             //// nrd_gbx03
             //user = await agent.domain.users.get("https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4");
@@ -202,9 +182,72 @@ module.exports = ({'agent': agent, 'config': config}) => {
             //    }),
             //    DAT             = await agent.DAPS.generateDAT(DATrequestToken)
             //;
-            //endregion TEST :: DAPS
+            //endregion TEST :: IDS :: DAPS
 
-            debugger; // TEST
+            //region TEST :: IDS :: bc-rc
+            const {exec} = require('child_process');
+            exec('node ../ec/ids/src/tb.ec.ids.bc-rc.js', (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+            });
+            //endregion TEST :: IDS :: bc-rc
+
+            //endregion TEST :: IDS
+            //region TEST :: executeTest
+            // REM : so, coming from testsuite by socket.io
+            let test = {
+                'ec':      "ip",
+                'command': "ping",
+                'param':   {
+                    'endpoint': "127.0.0.1"
+                }
+            };
+
+            agent.executeTest({
+                'ec':      "ids",
+                'command': "connect",
+                'param':   {
+                    'host': "https://127.0.0.1:8099/"
+                }
+            }, (error, result) => {
+                if (error)
+                    throw (error);
+                // TODO : route it to testsuite
+                //agent.executeTest({
+                //    'ec':      "ids",
+                //    'command': "getConnectorsSelfDescription",
+                //    'param':   {
+                //        //'url': "https://127.0.0.1:8099/about"
+                //        'url': "https://127.0.0.1:8099"
+                //    }
+                //}, (error, result) => {
+                // debugger;
+                //    if (error)
+                //        throw (error);
+                //    debugger;
+                // TODO : route it to testsuite
+                //});
+                agent.executeTest({
+                    'ec':      "ids",
+                    'command': "connectorSelfDescriptionRequest",
+                    'param':   {
+                        'requester_url': "https://127.0.0.1:8099"
+                    }
+                }, (error, result) => {
+                    debugger;
+                    if (error)
+                        throw (error);
+                    // TODO : route it to testsuite
+                });
+
+            });
+            //endregion TEST :: executeTest
+
+            //debugger; // TEST
 
             //endregion TEST
 
