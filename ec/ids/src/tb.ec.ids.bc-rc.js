@@ -17,20 +17,23 @@ function BaseConnector() {
     Object.defineProperties(connector, {
         'about':                               {
             value:          Object.defineProperties(async () => {
+                let
+                    requester_url         = "",
+                    about_waiter_callback = about_wait_map.get(requester_url)
+                ;
                 try {
-                    let
-                        requester_url         = "",
-                        about_waiter_callback = about_wait_map.get(requester_url)
-                    ;
 
                     if (about_waiter_callback) {
                         about_wait_map.delete(requester_url);
-                        about_waiter_callback({'requester_url': requester_url, 'SelfDescriptionFetched': true})
+                        about_waiter_callback(null, {'requester_url': requester_url, 'SelfDescriptionFetched': true});
                     } // if ()
 
                     return {'@type': "ids:SelfDescription"};
                 } catch (jex) {
-                    throw(jex);
+                    if (about_waiter_callback) {
+                        about_wait_map.delete(requester_url);
+                        about_waiter_callback(jex, undefined);
+                    } // if ()
                 } // try
             }, {
                 'on': {
@@ -70,10 +73,15 @@ function BaseConnector() {
                     if (!param.timeout)
                         param.timeout = selfDescription_timeout_default;
 
-                    connector.about['on'](param.requester_url, (data) => {
+                    connector.about['on'](param.requester_url, (error, data) => {
+
+                        if (error)
+                            callback(error, undefined);
+
                         clearTimeout(semaphore);
                         result.operationalResult = data;
                         result.end               = (new Date).toISOString();
+
                         callback(null, result);
                     });
 
@@ -90,14 +98,12 @@ function BaseConnector() {
     }); // Object.defineProperties(connector)
     Object.freeze(connector);
     return connector;
-}
+} // BaseConnector
 
 const
     app       = express(),
     server    = http.createServer(app),
     io        = socket_io(server)
-    //express_json = express.json(),
-    //sessions     = ExpressSession(config.session)
     ,
     connector = new BaseConnector({
         'app': app
@@ -124,39 +130,3 @@ try {
 } catch (jex) {
     throw (jex);
 } // try
-
-console.log("t.f.h.s. rulez 22222222222222222!");
-
-//(async (/* MAIN */) => {
-//    const
-//        app       = express(),
-//        server    = http.createServer(app),
-//        io        = socket_io(server)
-//        //express_json = express.json(),
-//        //sessions     = ExpressSession(config.session)
-//        ,
-//        connector = new BaseConnector({
-//            'app': app
-//        });
-//    try {
-//        await new Promise((resolve) => {
-//
-//            io.on('connection', (socket) => {
-//
-//                debugger;
-//            }); // io_test.on('connection')
-//
-//            server.listen(8099, (that) => {
-//                that;
-//                debugger;
-//            });
-//
-//        });
-//
-//        console.log("t.f.h.s. rulez!");
-//    } catch (jex) {
-//        throw (jex);
-//    } // try
-//})(/* MAIN */).catch(console.error);
-//
-//console.log("t.f.h.s. rulez 22222222222222222!");
