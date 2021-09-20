@@ -125,25 +125,30 @@ class DATAgent extends http.Agent {
         return this.#accessToken;
     } // DATAgent#getAccessToken
 
-    createConnection(options, callback) {
-        console.log('----- REACHED: DATAgent#createConnection -----');
-        const socket = new net.Socket(options);
-        socket.connect(options, callback);
-        // socket.connecting = true;
-        // this.getAccessToken()
-        //     .then((accessToken) => socket.connect(options, callback))
-        //     .catch((err) => socket.destroy(err));
-        return socket;
-    } // DATAgent#createConnection
+    // createConnection(options, callback) {
+    //     console.log('----- REACHED: DATAgent#createConnection -----');
+    //
+    //     const socket = new net.Socket(options);
+    //     socket.connect(options, callback);
+    //
+    //     // socket.connecting = true;
+    //     // this.getAccessToken()
+    //     //     .then((accessToken) => socket.connect(options, callback))
+    //     //     .catch((err) => socket.destroy(err));
+    //
+    //     return socket;
+    // } // DATAgent#createConnection
 
     addRequest(req, ...args) {
-        console.log('----- REACHED: DATAgent#addRequest -----');
+        // console.log('----- REACHED: DATAgent#addRequest -----');
         // req.setHeader('Authorization', `Bearer ${this.#accessToken}`);
         // super.addRequest(req, ...args);
+
         // NOTE the hack to delay the requests end and write methods is necessary,
         // because the header cannot be changed after one of those methods has been called,
         // although a socket has not even been created.
         _delayRequestUntilSocket(req);
+
         this.getAccessToken()
             .then((accessToken) => {
                 // req.addTrailers({'Authorization': `Bearer ${accessToken}`});

@@ -8,7 +8,11 @@ const
     crypto     = require('crypto'),
     path       = require('path'),
     fs         = require('fs/promises'),
-    certs      = require('../resources/cert/index.js');
+    certs      = require('../resources/cert/index.js'),
+    config     = {
+        // daps_url: 'http://localhost:4567'
+        daps_url: 'https://localhost:8081'
+    };
 
 (async function Main() {
 
@@ -23,7 +27,7 @@ const
         privateKey = crypto.createPrivateKey(certs.client.private),
         dat_agent  = new DATAgent({
             rejectUnauthorized:     false,
-            dapsUrl:                'http://localhost:4567',
+            dapsUrl:                config.daps_url,
             subjectKeyIdentifier:   'DD:CB:FD:0B:93:84:33:01:11:EB:5D:94:94:88:BE:78:7D:57:FC:4A',
             authorityKeyIdentifier: 'keyid:CB:8C:C7:B6:85:79:A8:23:A6:CB:15:AB:17:50:2F:E6:65:43:5D:E8',
             clientPrivateKey:       privateKey
