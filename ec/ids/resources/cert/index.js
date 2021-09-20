@@ -22,3 +22,8 @@ exports.client_tls = {
     private: load('client_tls.key'),
     public: load('client_tls.key.pub')
 };
+
+exports.daps = {
+    private: load('daps.key.pem'),
+    cert: load('daps.server.crt')
+};
