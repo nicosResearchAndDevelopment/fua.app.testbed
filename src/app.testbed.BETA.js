@@ -235,7 +235,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     'ec':      "ids",
                     'command': "connectorSelfDescriptionRequest",
                     'param':   {
-                        'requester_url': "https://127.0.0.1:8099"
+                        'requester_url': "https://127.0.0.1:8099/about"
                     }
                 }, (error, result) => {
                     debugger;
