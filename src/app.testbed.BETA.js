@@ -146,10 +146,11 @@ module.exports = ({'agent': agent, 'config': config}) => {
             //let jlangkau = Buffer.from("jlangkau:marzipan").toString('base64');
             //jlangkau     = "amxhbmdrYXU6bWFyemlwYW4=";
 
-            let user = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave');
-
-            let group = await agent.domain.groups.get("https://testbed.nicos-rd.com/domain/group#admin");
-            let is_in = await agent.domain.group.hasMember(group, user);
+            let
+                user  = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave'),
+                group = await agent.domain.groups.get("https://testbed.nicos-rd.com/domain/group#admin"),
+                is_in = await agent.domain.group.hasMember(group, user)
+            ;
             is_in     = await agent.domain.group.hasMember(group, "http//:unknown_user/");
             is_in     = await agent.domain.user.memberOf(user, group);
 
@@ -185,12 +186,14 @@ module.exports = ({'agent': agent, 'config': config}) => {
             //endregion TEST :: IDS :: DAPS
 
             //region TEST :: IDS :: bc-rc
-            const {exec} = require('child_process');
-            exec('node ../ec/ids/src/tb.ec.ids.bc-rc.js', (error, stdout, stderr) => {
+            const
+                {exec} = require('child_process')
+            ;
+            exec(`node ../ec/ids/src/tb.ec.ids.bc-rc.js privateKey="C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
-                }
+                } // error
                 console.log(`stdout: ${stdout}`);
                 console.error(`stderr: ${stderr}`);
             });
@@ -207,6 +210,10 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 }
             };
 
+            function data_consumer(data) {
+                console.log(data);
+                //debugger;
+            }
             agent.executeTest({
                 'ec':      "ids",
                 'command': "connect",
@@ -217,33 +224,53 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 if (error)
                     throw (error);
                 // TODO : route it to testsuite
-                //agent.executeTest({
+
+                //agent.executeTest({ // REM : getConnectorsSelfDescription
                 //    'ec':      "ids",
-                //    'command': "getConnectorsSelfDescription",
-                //    'param':   {
-                //        //'url': "https://127.0.0.1:8099/about"
-                //        'url': "https://127.0.0.1:8099"
-                //    }
-                //}, (error, result) => {
-                // debugger;
-                //    if (error)
-                //        throw (error);
-                //    debugger;
-                // TODO : route it to testsuite
-                //});
-                agent.executeTest({
+                //    'command': "on_RC_IDLE",
+                //    'param':   undefined
+                //}, data_consumer );
+
+                agent.executeTest({ // REM : getConnectorsSelfDescription
                     'ec':      "ids",
-                    'command': "connectorSelfDescriptionRequest",
+                    'command': "getConnectorsSelfDescription",
                     'param':   {
-                        'requester_url': "https://127.0.0.1:8099/about"
+                        //'url': "https://127.0.0.1:8099/about"
+                        'url': "https://127.0.0.1:8099"
                     }
                 }, (error, result) => {
-                    debugger;
                     if (error)
                         throw (error);
+                    console.log(result);
+                    //debugger;
                     // TODO : route it to testsuite
                 });
 
+                //agent.executeTest({ // REM : connectorSelfDescriptionRequest
+                //    'ec':      "ids",
+                //    'command': "connectorSelfDescriptionRequest",
+                //    'param':   {
+                //        'requester_url': "https://127.0.0.1:8099/about",
+                //        'timeout':       3 // REM : seconds
+                //    }
+                //}, (error, result) => {
+                //    debugger;
+                //    if (error)
+                //        throw (error);
+                //    console.log(result);
+                //    // TODO : route it to testsuite
+                //});
+
+                //agent.executeTest({ // REM : getSelfDescriptionFromRC
+                //    'ec':      "ids",
+                //    'command': "getSelfDescriptionFromRC",
+                //    'param':   undefined
+                //}, (error, result) => {
+                //    if (error)
+                //        throw (error);
+                //    console.log(result);
+                //    // TODO : route it to testsuite
+                //});
             });
             //endregion TEST :: executeTest
 

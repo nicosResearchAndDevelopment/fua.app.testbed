@@ -1,112 +1,164 @@
 const
-    path           = require('path'),
-    http           = require('http'),
-    express        = require('express'),
-    socket_io      = require('socket.io'),
-    ExpressSession = require('express-session')
+    crypto          = require("crypto"),
+    path            = require('path'),
+    http            = require('http'),
+    //
+    express         = require('express'),
+    socket_io       = require('socket.io'),
+    ExpressSession  = require('express-session'),
+    //
+    util            = require('@nrd/fua.core.util'),
+    {BaseConnector} = require(path.join(util.FUA_JS_LIB, 'ids/ids.agent.BaseConnector/src/ids.agent.BaseConnector.js'))
 ;
 
-function BaseConnector() {
+let
+    __privateKey__ = undefined
+;
+
+//region process.argv
+process['argv']['forEach']((val, index, array) => {
 
     let
-        selfDescriptionFetched          = false,
-        selfDescription_timeout_default = 1, // REM : seconds
-        about_wait_map                  = new Map(),
-        connector                       = {};
+        _argv_property,
+        _argv_value
+    ;
 
-    Object.defineProperties(connector, {
-        'about':                               {
-            value:          Object.defineProperties(async () => {
-                let
-                    requester_url         = "",
-                    about_waiter_callback = about_wait_map.get(requester_url)
-                ;
-                try {
+    if (val['indexOf']("=") !== -1) {
+        _argv_property = val['split']("=")[0];
+        _argv_value    = val['split']("=")[1];
+    } // if()
+    switch (_argv_property) {
+        case "privateKey":
+            const {client} = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js");
+            __privateKey__ = crypto.createPrivateKey(client.private);
+            break;
+        default:
+            break;
+    } // switch()
+});
 
-                    if (about_waiter_callback) {
-                        about_wait_map.delete(requester_url);
-                        about_waiter_callback(null, {'requester_url': requester_url, 'SelfDescriptionFetched': true});
-                    } // if ()
+//endregion process.argv
 
-                    return {'@type': "ids:SelfDescription"};
-                } catch (jex) {
-                    if (about_waiter_callback) {
-                        about_wait_map.delete(requester_url);
-                        about_waiter_callback(jex, undefined);
-                    } // if ()
-                } // try
-            }, {
-                'on': {
-                    value:         (requester_url, callback) => {
-                        about_wait_map.set(requester_url, callback);
-                    }, enumerable: false
-                }
-            }), enumerable: false
-        }, // about
-        '$rc_getConnectorsSelfDescription':    {
-            value:         (param, callback) => {
-                try {
-                    let result               = {
-                        'start':             (new Date).toISOString(),
-                        'operationalResult': undefined
-                    };
-                    result.operationalResult = {'mahl': "zeit"};
-                    result.end               = (new Date).toISOString();
-                    callback(null, result);
-                } catch (jex) {
-                    callback(jex, undefined);
-                } // try
-            }, enumerable: false
-        }, // $rc_getConnectorsSelfDescription
-        '$rc_connectorSelfDescriptionRequest': {
-            value:         (param, callback) => {
-                try {
+class RC_Connector extends BaseConnector {
 
-                    let
-                        result = {
-                            'start':             (new Date).toISOString(),
-                            'operationalResult': undefined
-                        },
-                        semaphore
-                    ;
+    #about_wait_map = new Map();
 
-                    if (!param.timeout)
-                        param.timeout = selfDescription_timeout_default;
+    constructor({
+                    'id':         id,
+                    'privateKey': privateKey,
+                    'DAPS':       DAPS = {'default': undefined}
+                }) {
 
-                    connector.about['on'](param.requester_url, (error, data) => {
+        super({
+            'id':         id,
+            'privateKey': privateKey,
+            'DAPS':       DAPS
+        });
 
-                        if (error)
-                            callback(error, undefined);
+        Object.defineProperties(this, {
+                'provideSelfDescription': {
+                    value:          Object.defineProperties(async ({'requester_url': requester_url = undefined}) => {
+                        let
+                            about_waiter_callback = this.#about_wait_map.get(requester_url)
+                        ;
+                        try {
 
-                        clearTimeout(semaphore);
-                        result.operationalResult = data;
-                        result.end               = (new Date).toISOString();
+                            if (about_waiter_callback) {
+                                this.#about_wait_map.delete(requester_url);
+                                about_waiter_callback(null, {
+                                    'requester_url':          requester_url,
+                                    'SelfDescriptionFetched': true
+                                });
+                            } // if ()
 
-                        callback(null, result);
-                    });
+                            return {'@type': "ids:SelfDescription"};
+                        } catch (jex) {
+                            if (about_waiter_callback) {
+                                this.#about_wait_map.delete(requester_url);
+                                about_waiter_callback(jex, undefined);
+                            } // if ()
+                        } // try
+                    }, {
+                        'on': {
+                            value:         (requester_url, callback) => {
+                                this.#about_wait_map.set(requester_url, callback);
+                            }, enumerable: false
+                        }
+                    }), enumerable: false
+                } // provideSelfDescription
+            }
+        );
 
-                    semaphore = setTimeout(() => {
-                        about_wait_map.delete(param.requester_url);
-                        callback({'message': `tb.ec.ids.rc : $rc_connectorSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
-                    }, (param.timeout * 1000));
+        if (this['__proto__']['constructor']['name'] === "RC_Connector") {
+            Object.seal(this);
+        } // if ()
 
-                } catch (jex) {
-                    callback(jex, undefined);
-                } // try
-            }, enumerable: false
-        } // $rc_connectorSelfDescriptionRequest
-    }); // Object.defineProperties(connector)
-    Object.freeze(connector);
-    return connector;
-} // BaseConnector
+        return this;
+    } // constructor()
+
+    //region rc
+    async rc_getConnectorsSelfDescription(param) {
+        try {
+            let result               = {
+                'start':             (new Date).toISOString(),
+                'operationalResult': undefined
+            };
+            result.operationalResult = {'mahl': "zeit"};
+            result.end               = (new Date).toISOString();
+            return result;
+        } catch (jex) {
+            throw(jex);
+        } // try
+    } // rc_getConnectorsSelfDescription()
+
+    async rc_connectorSelfDescriptionRequest(param, callback) {
+        try {
+
+            let
+                result = {
+                    'start':             (new Date).toISOString(),
+                    'operationalResult': undefined
+                },
+                semaphore
+            ;
+
+            if (!param.timeout)
+                param.timeout = 1; // selfDescription_timeout_default;
+
+            this.provideSelfDescription['on'](param.requester_url, (error, data) => {
+
+                if (error)
+                    callback(error, undefined);
+
+                clearTimeout(semaphore);
+                result.operationalResult = data;
+                result.end               = (new Date).toISOString();
+
+                callback(null, result);
+            }); // connector.about['on'](param.requester_url)
+
+            semaphore = setTimeout(() => {
+                this.#about_wait_map.delete(param.requester_url);
+                callback({'message': `tb.ec.ids.rc : rc_connectorSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
+            }, (param.timeout * 1000));
+
+        } catch (jex) {
+            callback(jex, undefined);
+        } // try
+    } // rc_connectorSelfDescriptionRequest
+    //endregion rc
+
+} // RC_Connector
 
 const
     app       = express(),
     server    = http.createServer(app),
     io        = socket_io(server)
     ,
-    connector = new BaseConnector({
-        'app': app
+    connector = new RC_Connector({
+        'id':         "https://ids-rc.nicos-rd.com/",
+        'privateKey': __privateKey__,
+        'DAPS':       {'default': "https://nrd-daps.nicos-rd.com/"}
     })
 ;
 
@@ -115,18 +167,31 @@ try {
 
         io.on('connection', (socket) => {
 
-            socket.on('getConnectorsSelfDescription', (param, callback) => {
-                connector.$rc_getConnectorsSelfDescription(param, callback);
+            socket.on('getConnectorsSelfDescription', async (param, callback) => {
+                let result = await connector.rc_getConnectorsSelfDescription(param).catch((error) => {
+                    callback(error, undefined);
+                });
+                callback(null, result);
             }); // socket.on('getConnectorsSelfDescription')
 
             socket.on('connectorSelfDescriptionRequest', (param, callback) => {
-                connector.$rc_connectorSelfDescriptionRequest(param, callback);
+                connector.rc_connectorSelfDescriptionRequest(param, callback);
             }); // socket.on('getConnectorsSelfDescription')
+
+            socket.on('getSelfDescriptionFromRC', async (param, callback) => {
+                let result = await connector.about().catch((error) => {
+                    callback(error, undefined);
+                });
+                callback(null, result);
+            }); // socket.on('getConnectorsSelfDescription')
+
+            //socket.on('on_RC_IDLE', (data, callback) => {
+            //    connector.on('idle', callback);
+            //});
         }); // io_test.on('connection')
 
     }); // server.listen()
 
-    console.log("t.f.h.s. rulez!");
 } catch (jex) {
     throw (jex);
 } // try

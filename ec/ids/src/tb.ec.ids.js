@@ -40,6 +40,18 @@ Object.defineProperties(ec, {
         },
         enumerable: false
     }, // connect
+    'getSelfDescriptionFromRC':    {
+        value:      async (param, callback) => {
+            try {
+                if (!connected && socket)
+                    callback({'message': `tb.ec.ids : getSelfdescriptionFromRC : io NOT connected.`}, undefined);
+                socket.emit('getSelfDescriptionFromRC', param, callback);
+            } catch (jex) {
+                callback(jex, undefined);
+            } // try
+        },
+        enumerable: false
+    }, // getSelfDescriptionFromRC
     'getConnectorsSelfDescription':    {
         value:      async (param, callback) => {
             try {
@@ -63,12 +75,23 @@ Object.defineProperties(ec, {
             } // try
         },
         enumerable: false
-    } // connectorSelfDescriptionRequest
+    }, // connectorSelfDescriptionRequest
+    //
+    //'on_RC_IDLE': {
+    //    value:      async (param, callback) => {
+    //        try {
+    //            if (!connected && socket)
+    //                callback({'message': `tb.ec.ids : on_RC_IDLE : io NOT connected.`}, undefined);
+    //            socket.emit('on_RC_IDLE', undefined, callback);
+    //        } catch (jex) {
+    //            callback(jex, undefined);
+    //        } // try
+    //    },
+    //    enumerable: false
+    //} // on_RC_IDLE
 });
 
 Object.freeze(ec);
 exports.ids = ec;
 
-/**
-
- */
+// EOF
