@@ -12,7 +12,9 @@ const
 ;
 
 let
-    __privateKey__ = undefined
+    __privateKey__   = undefined,
+    __port__         = undefined,
+    __idle_timeout__ = 60 // REM : seconds
 ;
 
 //region process.argv
@@ -29,8 +31,15 @@ process['argv']['forEach']((val, index, array) => {
     } // if()
     switch (_argv_property) {
         case "privateKey":
-            const {client} = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js");
+            //const {client} = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js");
+            const {client} = require(_argv_value);
             __privateKey__ = crypto.createPrivateKey(client.private);
+            break;
+        case "port":
+            __port__ = parseInt(_argv_value);
+            break;
+        case "idle_timeout":
+            __idle_timeout__ = parseInt(_argv_value);
             break;
         default:
             break;
@@ -56,7 +65,7 @@ class RC_Connector extends BaseConnector {
         });
 
         Object.defineProperties(this, {
-                'SelfDescription': {
+                'selfDescription': {
                     value:          Object.defineProperties(async ({'requester_url': requester_url = undefined}) => {
                         let
                             about_waiter_callback = this.#about_wait_map.get(requester_url)
@@ -99,10 +108,13 @@ class RC_Connector extends BaseConnector {
     //region rc
     async rc_getConnectorsSelfDescription(param) {
         try {
-            let result               = {
+            let result = {
                 'start':             (new Date).toISOString(),
                 'operationalResult': undefined
             };
+            // TODO : fetch
+            let that   = `${param.schema}${param.host}${param.path}`;
+
             result.operationalResult = {'mahl': "zeit"};
             result.end               = (new Date).toISOString();
             return result;
@@ -163,15 +175,19 @@ const
 ;
 
 try {
-    server.listen(8099, (that) => {
+    server.listen(__port__, () => {
 
         io.on('connection', (socket) => {
 
+            console.error("inside connection .............................................................................");
+
             socket.on('getConnectorsSelfDescription', async (param, callback) => {
-                let result = await connector.rc_getConnectorsSelfDescription(param).catch((error) => {
+                try {
+                    let result = await connector.rc_getConnectorsSelfDescription(param);
+                    callback(null, result);
+                } catch (error) {
                     callback(error, undefined);
-                });
-                callback(null, result);
+                } // try
             }); // socket.on('getConnectorsSelfDescription')
 
             socket.on('connectorSelfDescriptionRequest', (param, callback) => {
@@ -179,16 +195,21 @@ try {
             }); // socket.on('getConnectorsSelfDescription')
 
             socket.on('getSelfDescriptionFromRC', async (param, callback) => {
-                let result = await connector.about().catch((error) => {
+                try {
+                    let result = await connector.selfDescription({'requester_url': undefined});
+                    callback(null, result);
+                } catch (error) {
                     callback(error, undefined);
-                });
-                callback(null, result);
+                } // try
             }); // socket.on('getConnectorsSelfDescription')
 
             //socket.on('on_RC_IDLE', (data, callback) => {
             //    connector.on('idle', callback);
             //});
         }); // io_test.on('connection')
+        //io.on('error', (error) => {
+        //    error;
+        //});
 
     }); // server.listen()
 

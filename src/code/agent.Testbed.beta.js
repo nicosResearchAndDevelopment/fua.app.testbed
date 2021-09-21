@@ -17,7 +17,7 @@ const
     //{Testsuite}  = require('./agent.Testsuite.js'), // REM: as agent
 
     amec         = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
-    task    = {
+    task         = {
         'domain':    {},
         'scheduler': {
             'scheduler_error':               "scheduler_error",
@@ -32,10 +32,11 @@ const
     }
     //
     ,
-    {DAPS}  = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
-
+    {DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js')),
+    {ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
     //DAPS         = false
-;const {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
+;const {ids}     = require("../../ec/ids/src/tb.ec.ids.js"); // const
+
 //const testbed = require("./code/main.testbed.js");
 
 //region error
@@ -271,22 +272,21 @@ async function TestbedAgent({
             value: space, enumerable: true
         },
         'executeTest': {
-            value:         async (param, callback) => {
+            value:         async (param) => {
                 try {
                     let
                         ec = testbedAgent['ec'][param.ec],
                         command
                     ;
                     if (!ec) {
-                        callback(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`), undefined);
+                        throw(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`));
                     } else {
                         command = ec[param.command];
                         if (!command) {
-                            callback(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`), undefined);
+                            throw(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`));
                         } else {
-                            command(param.param, (error, result) => {
-                                callback(error, result);
-                            });
+                            let result = await command(param.param);
+                            return result;
                         } // if ()
                     } // if ()
                 } catch (jex) {
@@ -297,13 +297,17 @@ async function TestbedAgent({
     }); // Object.defineProperties(testbedAgent)
 
     //region ec.ip
+    // TODO : instance shield
     let {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
+    ip.uri   = `${id}ec/ids/`;
     ec['ip'] = ip;
     //endregion ec.ip
 
     //region ec.ids
-
+    // TODO : instance shield
     let {ids} = require("../../ec/ids/src/tb.ec.ids.js");
+    ids.uri   = `${id}ec/ids/`;
+    ids.ec    = ec;
     ec['ids'] = ids;
 
     if (DAPS) {
@@ -311,12 +315,12 @@ async function TestbedAgent({
         //
         //});
         let
-            daps_id              = "https://nrd-daps.nicos-rd.com/",
+            daps_id              = "https://nrd-daps.nicos-rd.com/", // TODO : config
             nrd_daps_config      = space.getNode(daps_id),
             nrd_daps_config_data = await nrd_daps_config.read()
         ;
         Object.defineProperty(testbedAgent, 'DAPS', {
-            value:      new DAPS({
+            value:         new DAPS({
                     'id':      `${daps_id}agent/`,
                     'rootUri': rootUri,
                     'domain':  domain,
@@ -324,8 +328,7 @@ async function TestbedAgent({
                     'privateKey':      nrd_daps_config['dapsm:privateKey'][0]['@value'],
                     'jwt_payload_iss': daps_id
                 }
-            ),
-            enumerable: false
+            ), enumerable: false
         });
     } // if (DAPS)
     //endregion ec.ids

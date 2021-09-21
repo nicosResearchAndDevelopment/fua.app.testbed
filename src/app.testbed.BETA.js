@@ -9,7 +9,7 @@ const
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
     LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js'))
-;
+;const {exec}      = require("child_process");
 
 module.exports = ({'agent': agent, 'config': config}) => {
 
@@ -108,11 +108,6 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         command   = request['command'],
                         parameter = request['parameter']
                     ;
-                    //agent.executeTest().then((result) => {
-                    //    callback(null, result);
-                    //}).catch((err) => {
-                    //    callback(err, undefined);
-                    //});
                     try {
                         const result = await agent.executeTest({
                             'ec':        ec,
@@ -121,6 +116,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         });
                         callback(null, result);
                     } catch (jex) {
+                        // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         callback(jex, undefined);
                     } // try
                 }); // socket.on("execute")
@@ -187,9 +183,38 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
             //region TEST :: IDS :: bc-rc
             const
-                {exec} = require('child_process')
+                {exec}         = require('child_process')
             ;
-            exec(`node ../ec/ids/src/tb.ec.ids.bc-rc.js privateKey="C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"`, (error, stdout, stderr) => {
+            let
+                exec_cmd,
+                exec_cmd_Alice = {
+                    'idle_timeout': 5,
+                    'port':         8099,
+                    'daps_default': "https://nrd-dps.nicos-rd.com:8082/",
+                    'privateKey':   "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+                },
+                exec_cmd_Bob   = {
+                    'idle_timeout': 5,
+                    'port':         8098,
+                    'daps_default': "https://nrd-dps.nicos-rd.com:8082/",
+                    'privateKey':   "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+                }
+            ;
+            exec_cmd           = `node ../ec/ids/src/tb.ec.ids.bc-rc.js idle_timeout=${exec_cmd_Alice.idle_timeout} port=${exec_cmd_Alice.port} daps_default="${exec_cmd_Alice.daps_default}" privateKey="${exec_cmd_Alice.privateKey}"`
+            const ALICE_PROC   = exec(exec_cmd, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                } // error
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+            });
+
+            //ALICE_PROC.stderr.on('data', (data) => {
+            //    console.warn(`ALICE_PROC : ${data}`);
+            //});
+            exec_cmd       = `node ../ec/ids/src/tb.ec.ids.bc-rc.js idle_timeout=${exec_cmd_Bob.idle_timeout} port=${exec_cmd_Bob.port} daps_default=${exec_cmd_Bob.daps_default} privateKey=${exec_cmd_Bob.privateKey}`
+            const BOB_PROC = exec(exec_cmd, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
@@ -214,37 +239,53 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 console.log(data);
                 //debugger;
             }
+
             agent.executeTest({
                 'ec':      "ids",
                 'command': "connect",
                 'param':   {
-                    'host': "https://127.0.0.1:8099/"
+                    //'url': `http://127.0.0.1:${exec_cmd_Alice.port}`
+                    'url': `http://127.0.0.1:${exec_cmd_Bob.port}`,
+                    //'url': `https://127.0.0.1:8099`
+                    'query': {'name': "simon", 'password': "simon"}
                 }
-            }, (error, result) => {
-                if (error)
-                    throw (error);
-                // TODO : route it to testsuite
+            }).then((result) => {
 
-                //agent.executeTest({ // REM : on_RC_IDLE
+                debugger;
+                //region ec :: ip
+                //agent.executeTest({ // REM : ping
+                //    'ec':      "ip",
+                //    'command': "ping",
+                //    'param':   {
+                //        'endpoint': "127.0.0.1"
+                //    }
+                //}).then((result) => {
+                //    result;
+                //    debugger;
+                //}).catch((error) => {
+                //    error;
+                //    debugger;
+                //});
+                //endregion ec :: ip
+
+                //region ec :: ids
+
+                //agent.executeTest({ // REM : getConnectorsSelfDescription
                 //    'ec':      "ids",
-                //    'command': "on_RC_IDLE",
-                //    'param':   undefined
-                //}, data_consumer );
-
-                agent.executeTest({ // REM : getConnectorsSelfDescription
-                    'ec':      "ids",
-                    'command': "getConnectorsSelfDescription",
-                    'param':   {
-                        //'url': "https://127.0.0.1:8099/about"
-                        'url': "https://127.0.0.1:8099"
-                    }
-                }, (error, result) => {
-                    if (error)
-                        throw (error);
-                    console.log(result);
-                    //debugger;
-                    // TODO : route it to testsuite
-                });
+                //    'command': "getConnectorsSelfDescription",
+                //    'param':   {
+                //        //'url': "https://127.0.0.1:8099/about"
+                //        'schema': "https://",
+                //        'host':   "127.0.0.1",
+                //        'path':   `:${exec_cmd_Alice.port}/about`
+                //    }
+                //}).then((result) => {
+                //    result;
+                //    debugger;
+                //}).catch((error) => {
+                //    error;
+                //    debugger;
+                //});
 
                 //agent.executeTest({ // REM : connectorSelfDescriptionRequest
                 //    'ec':      "ids",
@@ -253,25 +294,40 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 //        'requester_url': "https://127.0.0.1:8099/about",
                 //        'timeout':       3 // REM : seconds
                 //    }
-                //}, (error, result) => {
+                //}).then((result) => {
+                //    result;
                 //    debugger;
-                //    if (error)
-                //        throw (error);
-                //    console.log(result);
-                //    // TODO : route it to testsuite
+                //}).catch((error) => {
+                //    error;
+                //    debugger;
                 //});
 
                 //agent.executeTest({ // REM : getSelfDescriptionFromRC
                 //    'ec':      "ids",
                 //    'command': "getSelfDescriptionFromRC",
                 //    'param':   undefined
-                //}, (error, result) => {
-                //    if (error)
-                //        throw (error);
-                //    console.log(result);
-                //    // TODO : route it to testsuite
+                //}).then((result) => {
+                //    result;
+                //    debugger;
+                //}).catch((error) => {
+                //    error;
+                //    debugger;
                 //});
+
+                //endregion ec :: ids
+
+                //    //agent.executeTest({ // REM : on_RC_IDLE
+                //    //    'ec':      "ids",
+                //    //    'command': "on_RC_IDLE",
+                //    //    'param':   undefined
+                //    //}, data_consumer );
+
+            }).catch((error) => {
+                debugger;
+                error;
+                //io :: callback(error, undefined);
             });
+
             //endregion TEST :: executeTest
 
             //debugger; // TEST
