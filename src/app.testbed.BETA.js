@@ -225,7 +225,7 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     throw (error);
                 // TODO : route it to testsuite
 
-                //agent.executeTest({ // REM : getConnectorsSelfDescription
+                //agent.executeTest({ // REM : on_RC_IDLE
                 //    'ec':      "ids",
                 //    'command': "on_RC_IDLE",
                 //    'param':   undefined

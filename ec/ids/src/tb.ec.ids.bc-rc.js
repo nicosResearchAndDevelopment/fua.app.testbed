@@ -56,7 +56,7 @@ class RC_Connector extends BaseConnector {
         });
 
         Object.defineProperties(this, {
-                'provideSelfDescription': {
+                'SelfDescription': {
                     value:          Object.defineProperties(async ({'requester_url': requester_url = undefined}) => {
                         let
                             about_waiter_callback = this.#about_wait_map.get(requester_url)
@@ -125,7 +125,7 @@ class RC_Connector extends BaseConnector {
             if (!param.timeout)
                 param.timeout = 1; // selfDescription_timeout_default;
 
-            this.provideSelfDescription['on'](param.requester_url, (error, data) => {
+            this.selfDescription['on'](param.requester_url, (error, data) => {
 
                 if (error)
                     callback(error, undefined);
