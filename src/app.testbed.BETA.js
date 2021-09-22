@@ -226,9 +226,26 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     }
                 ;
                 //exec_cmd           = `node ../ec/ids/src/tb.ec.ids.bc-rc.js idle_timeout=${exec_cmd_Alice.idle_timeout} port=${exec_cmd_Alice.port} daps_default="${exec_cmd_Alice.daps_default}" privateKey="${exec_cmd_Alice.privateKey}"`
-                exec_cmd           = `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify(exec_cmd_Alice)).toString('base64')}"`
+                //exec_cmd           =
                 //exec_cmd           = `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify({'ge':"nau"})).toString('base64')}"`
-                const ALICE_PROC   = exec(exec_cmd, (error, stdout, stderr) => {
+                const ALICE_PROC   = exec(
+                    `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify(exec_cmd_Alice)).toString('base64')}"`,
+                    (error, stdout, stderr) => {
+                        if (error) {
+                            console.error(`exec error: ${error}`);
+                            return;
+                        } // error
+                        console.log(`stdout: ${stdout}`);
+                        console.error(`stderr: ${stderr}`);
+                    });
+                //ALICE_PROC.stderr.on('data', (data) => {
+                //    console.warn(`ALICE_PROC : ${data}`);
+                //});
+
+                //exec_cmd       =
+                const BOB_PROC = exec(
+                    `node ../ec/ids/src/rc/bob/launch.bob.js config=${Buffer.from(JSON.stringify(exec_cmd_Bob)).toString('base64')}"`,
+                    (error, stdout, stderr) => {
                     if (error) {
                         console.error(`exec error: ${error}`);
                         return;
@@ -236,19 +253,6 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     console.log(`stdout: ${stdout}`);
                     console.error(`stderr: ${stderr}`);
                 });
-
-                //ALICE_PROC.stderr.on('data', (data) => {
-                //    console.warn(`ALICE_PROC : ${data}`);
-                //});
-                //exec_cmd       = `node ../ec/ids/src/tb.ec.ids.bc-rc.js idle_timeout=${exec_cmd_Bob.idle_timeout} port=${exec_cmd_Bob.port} daps_default=${exec_cmd_Bob.daps_default} privateKey=${exec_cmd_Bob.privateKey}`
-                //const BOB_PROC = exec(exec_cmd, (error, stdout, stderr) => {
-                //    if (error) {
-                //        console.error(`exec error: ${error}`);
-                //        return;
-                //    } // error
-                //    console.log(`stdout: ${stdout}`);
-                //    console.error(`stderr: ${stderr}`);
-                //});
                 //endregion TEST :: IDS :: bc-rc
 
                 //endregion TEST :: IDS
@@ -304,20 +308,15 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         'command': "getConnectorsSelfDescription",
                         'param':   {
                             'rc': `${exec_cmd_Alice.schema}://${exec_cmd_Alice.host}:${exec_cmd_Alice.port}`,
-                            //'url': "https://127.0.0.1:8099/about"
                             'schema': `${exec_cmd_Bob.schema}://`,
                             'host':   exec_cmd_Bob.host,
-                            'path':   `:${exec_cmd_Bob.port}/about`,
-                            'query':  {
-                                'user':     exec_cmd_Alice.user.tb_ec_ids.name,
-                                'password': exec_cmd_Alice.user.tb_ec_ids.password
-                            }
+                            'path':   `:${exec_cmd_Bob.port}/about`
                         }
                     }).then((result) => {
-                        result;
+                        console.log(result);
                         debugger;
                     }).catch((error) => {
-                        error;
+                        console.error(error);
                         debugger;
                     });
 

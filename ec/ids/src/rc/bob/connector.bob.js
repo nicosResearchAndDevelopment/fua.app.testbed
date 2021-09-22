@@ -44,7 +44,10 @@ class BobConnector extends BaseConnector {
                                 });
                             } // if ()
 
-                            return {'@type': "ids:SelfDescription"};
+                            return {
+                                '@id':   this.id,
+                                '@type': "ids:SelfDescription"
+                            };
                         } catch (jex) {
                             if (about_waiter_callback) {
                                 this.#about_wait_map.delete(requester_url);

@@ -74,16 +74,18 @@ class AliceConnector extends BaseConnector {
     //region rc
     async rc_getConnectorsSelfDescription(param) {
         try {
-            let result = {
+            let result     = {
                 'id':                randomLeave(this.id),
                 'prov':              `${this.id}rc_getConnectorsSelfDescription`,
+                'target': `${param.schema}${param.host}${param.path}`,
                 'start':             (new Date).toISOString(),
                 'operationalResult': undefined
             };
-            // TODO : fetch
-            let that   = `${param.schema}${param.host}${param.path}`;
+            const response = await fetch(result.target);
+            const body     = await response.text();
 
-            result.operationalResult = {'prov': this.id};
+            // TODO :
+            result.operationalResult = JSON.parse(body);
             result.end               = (new Date).toISOString();
             return result;
         } catch (jex) {

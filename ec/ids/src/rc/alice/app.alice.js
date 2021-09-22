@@ -37,7 +37,7 @@ module.exports = ({
 
             app.get('/', (request, response) => {
                 //response.redirect('/browse');
-                response.send("test");
+                response.send("ALICE : test");
             });
 
             //await new Promise((resolve) =>

@@ -37,12 +37,11 @@ module.exports = ({
 
             app.get('/', (request, response) => {
                 //response.redirect('/browse');
-                response.send("test");
+                response.send("test 42");
             });
 
             app.get('/about', async (request, response) => {
-                //response.redirect('/browse');
-                let about = await agent.selfDescription();
+                let about = await agent.selfDescription({'requester_url': "none"});
                 response.send(JSON.stringify(about));
             });
 
@@ -51,6 +50,7 @@ module.exports = ({
             //);
 
             try {
+
                 server.listen(config.port, () => {
 
                     io.on('connection', (socket) => {
