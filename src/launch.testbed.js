@@ -1,5 +1,4 @@
 const
-
     path        = require('path'),
     config      = require('./config/config.testbed.js'),
     util        = require('@nrd/fua.core.util'),
@@ -10,7 +9,7 @@ const
     persistence = require('@nrd/fua.module.persistence'),
     Space       = require(path.join(util.FUA_JS_LIB, 'module.space/next/module.space.js'))
     //
-;
+; // const
 
 //region new style
 // TODO: get schemata

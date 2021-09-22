@@ -14,11 +14,12 @@ let
     emit          = undefined,
     connected     = false,
     //ec           = {}
-    ec_ids        = new EventEmitter()
+    ec_ids        = new EventEmitter(),
+    rc            = new Map()
 ;
 
 function randomLeave(pre) {
-    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 1000)}_${Math.floor(Math.random() * 1000)}`;
+    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
 }
 
 Object.defineProperties(ec_ids, {
@@ -53,20 +54,24 @@ Object.defineProperties(ec_ids, {
                 }
             ; // let
 
-            if (param.query)
-                options['query'] = param.query;
+            //if (param.query)
+            //    options['query'] = param.query;
 
             socket = io_bc_rc.connect(param.url, options);
 
             await new Promise((resolve, reject) => {
-                socket.on('connect', resolve); // socket.on('connect')
-                socket.on('error', reject); // socket.on('error')
+                socket.on('connect', (args) => {
+                    rc.set(param.url, util.promisify(socket.emit).bind(socket));
+                    resolve();
+                }); // socket.on('connect')
+                socket.on('error', (args) => {
+                    reject(args);
+                }); // socket.on('error')
             });
 
             result.end               = (new Date).toISOString();
             result.operationalResult = {'url': param.url, 'connected': true};
             connected                = true;
-            emit                     = util.promisify(socket.emit).bind(socket);
 
             return result;
 
@@ -78,16 +83,12 @@ Object.defineProperties(ec_ids, {
                 if (!connected && socket)
                     throw(new Error(`tb.ec.ids : getConnectorsSelfDescription : io NOT connected.`));
 
-                let
-                    ping_url,
-                    result
-                ;
-                result = await ec.ip.ping({'host': param.host});
-                if (result.operationalResult.alive) {
-                    result = await emit('getConnectorsSelfDescription', param)
-                } else {
+                let result = await ec.ip.ping({'host': param.host});
+
+                if (!result.operationalResult.alive)
                     throw(new Error(`tb.ec.ids : getConnectorsSelfDescription : connector NOT alive`));
-                } // if ()
+
+                result = await rc.get(param.rc)('getConnectorsSelfDescription', param);
                 return result;
             } catch (jex) {
                 throw(jex);
@@ -99,10 +100,7 @@ Object.defineProperties(ec_ids, {
             try {
                 if (!connected && socket)
                     throw(new Error(`tb.ec.ids : connectorSelfDescriptionRequest : io NOT connected.`));
-                let
-                    result
-                ;
-                result = await emit('connectorSelfDescriptionRequest', param)
+                const result = await rc.get(param.rc)('connectorSelfDescriptionRequest', param);
                 return result;
             } catch (jex) {
                 throw(jex);
@@ -114,10 +112,7 @@ Object.defineProperties(ec_ids, {
             try {
                 if (!connected && socket)
                     throw(new Error(`tb.ec.ids : getSelfDescriptionFromRC : io NOT connected.`));
-
-                let
-                    result = await emit('getSelfDescriptionFromRC', param)
-                ;
+                const result = await rc.get(param.rc)('getSelfDescriptionFromRC', param);
                 return result;
             } catch (jex) {
                 throw(jex);
@@ -140,6 +135,7 @@ Object.defineProperties(ec_ids, {
 });
 
 Object.freeze(ec_ids);
+
 exports.ids = ec_ids;
 
 // EOF

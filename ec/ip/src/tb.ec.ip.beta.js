@@ -11,7 +11,7 @@ let
 ;
 
 function randomLeave(pre) {
-    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 1000)}_${Math.floor(Math.random() * 1000)}`;
+    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
 }
 
 Object.defineProperties(ec_ip, {
