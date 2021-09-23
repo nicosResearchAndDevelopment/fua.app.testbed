@@ -80,10 +80,12 @@ module.exports = ({
                 });
                 app.post('/token', express.json(), (request, response, next) => {
                     // TODO
+                    //agent.DAPS();
                     console.log(request.body);
                     next();
                 });
                 //endregion DAPS
+
                 // REM an alternative would be to use url-parameters
                 //for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
                 //    for (let [fnName, fn] of Object.entries(ec.fn)) {

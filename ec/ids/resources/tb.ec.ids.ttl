@@ -117,7 +117,8 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
 
 <https://omejdn-daps.nicos-rd.com/>
     a        idsecm:DAPS ;
-    fua:port "8083"^^xsd:nonNegativeInteger ; ## default = 80
+## REM: docker, local
+    fua:port "4567"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
 
