@@ -225,7 +225,11 @@ async function createSpace(config) {
         scheduler_status   = testbed_agent.scheduler.status,
         scheduler_isProper = testbed_agent.scheduler.isProper
     ;
-    const APP_testbed      = require('./app.testbed.BETA.js')({'agent': testbed_agent, 'config': config});
+    const APP_testbed      = require('./app.testbed.BETA.js')({
+        'space':  space,
+        'agent':  testbed_agent,
+        'config': config
+    });
     //debugger;
 })(/* TEST */).catch(console.error);
 //endregion new style :: TEST

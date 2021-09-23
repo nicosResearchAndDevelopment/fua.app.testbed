@@ -23,7 +23,7 @@ process['argv']['forEach']((val, index, array) => {
     } // if()
     switch (_argv_property) {
         case "config":
-            config = JSON.parse(new Buffer(_argv_value, 'base64').toString('ascii'));
+            config = JSON.parse(Buffer.from(_argv_value, 'base64').toString('utf8'));
             break;
         default:
             break;
@@ -40,6 +40,7 @@ config['cert_client'] = undefined;
     const
         alice_agent = new AliceConnector({
             'id':         config.id,
+            'SKIAKI':     config.SKIAKI,
             'DAPS':       config.DAPS,
             'privateKey': config.privateKey
         })

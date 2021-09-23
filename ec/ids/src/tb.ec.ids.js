@@ -67,7 +67,7 @@ Object.defineProperties(ec_ids, {
                 socket.on('error', (args) => {
                     reject(args);
                 }); // socket.on('error')
-            });
+            }); // await new Promise()
 
             result.end               = (new Date).toISOString();
             result.operationalResult = {'url': param.url, 'connected': true};

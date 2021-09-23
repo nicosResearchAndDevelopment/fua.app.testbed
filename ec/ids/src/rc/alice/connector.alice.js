@@ -20,12 +20,14 @@ class AliceConnector extends BaseConnector {
 
     constructor({
                     'id':         id,
+                    'SKIAKI':     SKIAKI,
                     'privateKey': privateKey,
                     'DAPS':       DAPS = {'default': undefined}
                 }) {
 
         super({
             'id':         id,
+            'SKIAKI':     SKIAKI,
             'privateKey': privateKey,
             'DAPS':       DAPS
         });
@@ -77,7 +79,7 @@ class AliceConnector extends BaseConnector {
             let result     = {
                 'id':                randomLeave(this.id),
                 'prov':              `${this.id}rc_getConnectorsSelfDescription`,
-                'target': `${param.schema}${param.host}${param.path}`,
+                'target':            `${param.schema}${param.host}${param.path}`,
                 'start':             (new Date).toISOString(),
                 'operationalResult': undefined
             };

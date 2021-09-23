@@ -20,7 +20,7 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:                <https://www.nicos-rd.com/> .
-@prefix connector:            <https://ids-rc.nicos-rd.com/> .
+@prefix connector:            <https://ids-rca.nicos-rd.com/> .
 
 connector:
     a                      tbm:Applicant_IDS_Connector ;
@@ -59,7 +59,7 @@ connector:
 
 connector:http_host
     a             ids:ConnectorEndpoint ;
-    ids:accessURL "https://ids-rc.nicos-rd.com/" ;
+    ids:accessURL "https://ids-rca.nicos-rd.com/" ;
 .
 
 connector:auth_info

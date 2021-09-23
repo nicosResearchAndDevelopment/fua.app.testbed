@@ -11,7 +11,11 @@ const
     LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js'))
 ;const {exec}      = require("child_process");
 
-module.exports = ({'agent': agent, 'config': config}) => {
+module.exports = ({
+                      'space':  space = null,
+                      'agent':  agent,
+                      'config': config
+                  }) => {
 
     (async (/* MAIN */) => {
             try {
@@ -60,12 +64,26 @@ module.exports = ({'agent': agent, 'config': config}) => {
                     '/data'
                 ], LDPRouter(config.ldp));
 
+                //region LDN
                 app.post('/inbox', express.json(), (request, response, next) => {
                     // TODO
                     console.log(request.body);
                     next();
                 });
+                //endregion LDN
 
+                //region DAPS
+                app.post('/keystore.json', express.json(), (request, response, next) => {
+                    // TODO
+                    console.log(request.body);
+                    next();
+                });
+                app.post('/token', express.json(), (request, response, next) => {
+                    // TODO
+                    console.log(request.body);
+                    next();
+                });
+                //endregion DAPS
                 // REM an alternative would be to use url-parameters
                 //for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
                 //    for (let [fnName, fn] of Object.entries(ec.fn)) {
@@ -183,15 +201,25 @@ module.exports = ({'agent': agent, 'config': config}) => {
 
                 //region TEST :: IDS :: bc-rc
                 const
-                    {exec}         = require('child_process')
+                    {exec}     = require('child_process'),
+                    node_alice = space.getNode("https://alice.nicos-rd.com/"),
+                    node_bob   = space.getNode("https://bob.nicos-rd.com/")
                 ;
+
+                await node_alice.read();
+                await node_bob.read();
+
                 let
+
                     exec_cmd,
                     exec_cmd_Alice = {
                         'id':     "https://alice.nicos-rd.com/",
                         'schema': "http",
                         'host':   "127.0.0.1",
-                        'port':   8099,
+                        //'port':   8099,
+                        'port': parseInt(node_alice['fua:port'][0]['@value']),
+                        // TODO: SKIAKI
+                        'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
                         //
                         'user': {
                             'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
@@ -210,7 +238,9 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         //
                         'schema': "http",
                         'host':   "127.0.0.1",
-                        'port':   8098,
+                        'port':   parseInt(node_bob['fua:port'][0]['@value']),
+                        // TODO: SKIAKI
+                        'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
                         //
                         'user': {
                             "tb_ec_ids": {'name': "tb_ec_ids", 'password': "marzipan"}
@@ -228,7 +258,8 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 //exec_cmd           = `node ../ec/ids/src/tb.ec.ids.bc-rc.js idle_timeout=${exec_cmd_Alice.idle_timeout} port=${exec_cmd_Alice.port} daps_default="${exec_cmd_Alice.daps_default}" privateKey="${exec_cmd_Alice.privateKey}"`
                 //exec_cmd           =
                 //exec_cmd           = `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify({'ge':"nau"})).toString('base64')}"`
-                const ALICE_PROC   = exec(
+
+                const ALICE_PROC = exec(
                     `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify(exec_cmd_Alice)).toString('base64')}"`,
                     (error, stdout, stderr) => {
                         if (error) {
@@ -246,13 +277,13 @@ module.exports = ({'agent': agent, 'config': config}) => {
                 const BOB_PROC = exec(
                     `node ../ec/ids/src/rc/bob/launch.bob.js config=${Buffer.from(JSON.stringify(exec_cmd_Bob)).toString('base64')}"`,
                     (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(`exec error: ${error}`);
-                        return;
-                    } // error
-                    console.log(`stdout: ${stdout}`);
-                    console.error(`stderr: ${stderr}`);
-                });
+                        if (error) {
+                            console.error(`exec error: ${error}`);
+                            return;
+                        } // error
+                        console.log(`stdout: ${stdout}`);
+                        console.error(`stderr: ${stderr}`);
+                    });
                 //endregion TEST :: IDS :: bc-rc
 
                 //endregion TEST :: IDS
@@ -307,7 +338,9 @@ module.exports = ({'agent': agent, 'config': config}) => {
                         'ec':      "ids",
                         'command': "getConnectorsSelfDescription",
                         'param':   {
-                            'rc': `${exec_cmd_Alice.schema}://${exec_cmd_Alice.host}:${exec_cmd_Alice.port}`,
+                            'operator': "simon petrac",
+                            'rc':       `${exec_cmd_Alice.schema}://${exec_cmd_Alice.host}:${exec_cmd_Alice.port}`,
+                            // REM : Bob as applicant
                             'schema': `${exec_cmd_Bob.schema}://`,
                             'host':   exec_cmd_Bob.host,
                             'path':   `:${exec_cmd_Bob.port}/about`

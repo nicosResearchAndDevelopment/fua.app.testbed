@@ -18,12 +18,14 @@ class BobConnector extends BaseConnector {
 
     constructor({
                     'id':         id,
+                    'SKIAKI':     SKIAKI,
                     'privateKey': privateKey,
                     'DAPS':       DAPS = {'default': undefined}
                 }) {
 
         super({
             'id':         id,
+            'SKIAKI':     SKIAKI,
             'privateKey': privateKey,
             'DAPS':       DAPS
         });

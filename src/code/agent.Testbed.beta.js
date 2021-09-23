@@ -296,6 +296,8 @@ async function TestbedAgent({
         } // executeTest
     }); // Object.defineProperties(testbedAgent)
 
+    //region ec
+
     //region ec.ip
     // TODO : instance shield
     let {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
@@ -332,6 +334,7 @@ async function TestbedAgent({
         });
     } // if (DAPS)
     //endregion ec.ids
+    //endregion ec
 
     Object.defineProperties(testbedAgent, {
         'ec': {value: ec, enumerable: true}

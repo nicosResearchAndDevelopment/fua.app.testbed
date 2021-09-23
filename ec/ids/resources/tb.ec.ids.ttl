@@ -62,7 +62,8 @@ ec-ids:
     idsecm:participants                     nicos-ag: ;
 ##endregion participants
 #    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
-    idsecm:connectors       <https://ids-rc.nicos-rd.com/> ;
+    idsecm:connectors                       <https://alice.nicos-rd.com/> ;
+    idsecm:connectors                       <https://bob.nicos-rd.com/> ;
 ##region ecosystems
 #    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
 #    idsecm:ecosystems                       <https://testbed.nicos-rd.com/> ;
@@ -125,6 +126,20 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
     fua:port "8084"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
+##region connectors
+<https://alice.nicos-rd.com/>
+    a           idsecm:BaseConnector ;
+    fua:port    "8099"^^xsd:nonNegativeInteger ; ## default = 80
+    idsecm:daps <https://nrd-daps.nicos-rd.com/> ;
+.
+
+<https://bob.nicos-rd.com/>
+    a                   idsecm:BaseConnector ;
+    fua:port            "8098"^^xsd:nonNegativeInteger ; ## default = 80
+    idsecm:daps         <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps_default <https://nrd-daps.nicos-rd.com/> ;
+.
+##endregion connectors
 
 #@base <https://w3id.org/idsa/3cm/> .
 #@prefix fn:             <tests/getDATfromDAPS/> .
