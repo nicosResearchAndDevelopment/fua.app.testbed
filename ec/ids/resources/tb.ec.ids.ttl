@@ -129,9 +129,12 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
 
 ##region connectors
 <https://alice.nicos-rd.com/>
-    a           idsecm:BaseConnector ;
-    fua:port    "8099"^^xsd:nonNegativeInteger ; ## default = 80
-    idsecm:daps <https://nrd-daps.nicos-rd.com/> ;
+    a                   idsecm:BaseConnector ;
+    fua:port            "8099"^^xsd:nonNegativeInteger ; ## default = 80
+    idsecm:daps         <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps_default <https://nrd-daps.nicos-rd.com/> ;
+##
+    idsecm:idle_timeout "30"^^xsd:nonNegativeInteger ;
 .
 
 <https://bob.nicos-rd.com/>
@@ -139,6 +142,8 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
     fua:port            "8098"^^xsd:nonNegativeInteger ; ## default = 80
     idsecm:daps         <https://nrd-daps.nicos-rd.com/> ;
     idsecm:daps_default <https://nrd-daps.nicos-rd.com/> ;
+##
+    idsecm:idle_timeout "30"^^xsd:nonNegativeInteger ;
 .
 ##endregion connectors
 

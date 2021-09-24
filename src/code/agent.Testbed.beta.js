@@ -33,9 +33,10 @@ const
     //
     ,
     {DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js')),
+    {ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
     {ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
     //DAPS         = false
-;const {ids}     = require("../../ec/ids/src/tb.ec.ids.js"); // const
+;
 
 //const testbed = require("./code/main.testbed.js");
 
@@ -54,11 +55,15 @@ function timestamp() {
     return (new Date).toISOString();
 }
 
+function randomLeave(pre) {
+    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
+    //return pre + Buffer.from(`${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`).toString('base64');
+}
+
 //endregion fn
 
 async function TestbedAgent({
-                                //function TestbedAgent({
-                                'id':           id = undefined,
+                                'testbed_id':   id = "asdf",
                                 'scheduler':    scheduler,
                                 'space':        space,
                                 'encodeSecret': encodeSecret = undefined
@@ -70,12 +75,15 @@ async function TestbedAgent({
             'meshed':  true,
             'blanks':  true
         }),
+
         rootUri             = "https://testbed.nicos-rd.com/domain/user#",
         testbed_config      = space.getNode(id),
         testbed_config_data = await testbed_config.read(),
+        id_agent            = `${id}agent/`,
         implemented_task    = {
             // self topics
-            'error': "error"
+            'error': "error",
+            'event': "event"
         },
         eventEmitter        = new EventEmitter()
     ;
@@ -278,6 +286,7 @@ async function TestbedAgent({
                         ec = testbedAgent['ec'][param.ec],
                         command
                     ;
+
                     if (!ec) {
                         throw(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`));
                     } else {
@@ -285,7 +294,8 @@ async function TestbedAgent({
                         if (!command) {
                             throw(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`));
                         } else {
-                            let result = await command(param.param);
+                            param.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
+                            let result         = await command(param.param);
                             return result;
                         } // if ()
                     } // if ()
@@ -302,7 +312,16 @@ async function TestbedAgent({
     // TODO : instance shield
     let {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
     ip.uri   = `${id}ec/ids/`;
+    ip.on('event', (error, data) => {
+        //eventEmitter.emit('event', error, data);
+        //debugger;
+    });
+    ip.on('error', (error) => {
+        //eventEmitter.emit('event', error, data);
+        debugger;
+    });
     ec['ip'] = ip;
+    Object.freeze(ec['ip']);
     //endregion ec.ip
 
     //region ec.ids
@@ -310,7 +329,15 @@ async function TestbedAgent({
     let {ids} = require("../../ec/ids/src/tb.ec.ids.js");
     ids.uri   = `${id}ec/ids/`;
     ids.ec    = ec;
+    ids.on('event', (error, data) => {
+        eventEmitter.emit('event', error, data);
+    });
+    ids.on('error', (error) => {
+        eventEmitter.emit('error', error);
+        //debugger;
+    });
     ec['ids'] = ids;
+    Object.freeze(ec['ids']);
 
     if (DAPS) {
         //Object.defineProperty(ec['ids'], 'ids', {

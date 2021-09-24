@@ -1,8 +1,8 @@
 const
-    path             = require('path'),
-    crypto           = require("crypto"),
+    path           = require('path'),
+    crypto         = require("crypto"),
     //
-    util             = require('@nrd/fua.core.util'),
+    util           = require('@nrd/fua.core.util'),
     //
     {BobConnector} = require('./connector.bob.js')
 ; // const
@@ -41,14 +41,19 @@ config['cert_client'] = undefined;
         bob_agent = new BobConnector({
             'id':         config.id,
             'SKIAKI':     config.SKIAKI,
+            'privateKey': config.privateKey,
             'DAPS':       config.DAPS,
-            'privateKey': config.privateKey
+            //
+            'idle_timeout': config.idle_timeout
         })
     ; // const
 
     require('./app.bob.js')({
         'agent':  bob_agent,
-        'config': {'port': config.port}
+        'config': {
+            'port': config.port,
+            'user': config.user
+        }
     });
 
 })({'config': config}).catch(console.error);

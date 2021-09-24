@@ -22,7 +22,9 @@ module.exports = ({
                 express_json = express.json()
                 //sessions     = ExpressSession(config.session)
             ; // const
-
+            let
+                socket_controller = null
+            ;
             app.disable('x-powered-by');
 
             //app.use(sessions);
@@ -53,29 +55,42 @@ module.exports = ({
 
                 server.listen(config.port, () => {
 
+                    agent.on('event', (error, data) => {
+                        if (socket_controller) {
+                            if (error)
+                                socket_controller.emit('event', error, undefined);
+                            socket_controller.emit('event', null, data);
+                        } // if ()
+                    });
+
                     io.on('connection', (socket) => {
 
-                        socket.on('getConnectorsSelfDescription', async (param, callback) => {
+                        if (!((config.user[socket.handshake.query.user]) && (socket.handshake.query.password === config.user[socket.handshake.query.user].password)))
+                            throw new Error(``);
+
+                        socket_controller = socket;
+                        //debugger;
+                        socket.on('rc_requestConnectorSelfDescription', async (param, callback) => {
                             try {
-                                let result = await agent.rc_getConnectorsSelfDescription(param);
+                                let result = await agent.rc_requestConnectorSelfDescription(param);
                                 callback(null, result);
                             } catch (error) {
                                 callback(error, undefined);
                             } // try
-                        }); // socket.on('getConnectorsSelfDescription')
+                        }); // socket.on('rc_requestConnectorSelfDescription')
 
-                        socket.on('connectorSelfDescriptionRequest', (param, callback) => {
+                        socket.on('rc_connectorSelfDescriptionRequest', (param, callback) => {
                             agent.rc_connectorSelfDescriptionRequest(param, callback);
-                        }); // socket.on('getConnectorsSelfDescription')
+                        }); // socket.on('rc_connectorSelfDescriptionRequest')
 
-                        socket.on('getSelfDescriptionFromRC', async (param, callback) => {
+                        socket.on('rc_getSelfDescriptionFromRC', async (param, callback) => {
                             try {
                                 let result = await agent.selfDescription({'requester_url': undefined});
                                 callback(null, result);
                             } catch (error) {
                                 callback(error, undefined);
                             } // try
-                        }); // socket.on('getConnectorsSelfDescription')
+                        }); // socket.on('rc_connectorSelfDescriptionRequest')
 
                         //socket.on('on_RC_IDLE', (data, callback) => {
                         //    agent.on('idle', callback);

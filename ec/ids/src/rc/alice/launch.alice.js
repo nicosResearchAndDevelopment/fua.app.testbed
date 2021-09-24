@@ -41,14 +41,20 @@ config['cert_client'] = undefined;
         alice_agent = new AliceConnector({
             'id':         config.id,
             'SKIAKI':     config.SKIAKI,
-            'DAPS':       config.DAPS,
-            'privateKey': config.privateKey
+            'privateKey': config.privateKey,
+            //
+            'idle_timeout': config.idle_timeout,
+            //
+            'DAPS': config.DAPS
         })
     ; // const
 
     require('./app.alice.js')({
         'agent':  alice_agent,
-        'config': {'port': config.port}
+        'config': {
+            'port': config.port,
+            'user': config.user
+        }
     });
 
 })({'config': config}).catch(console.error);

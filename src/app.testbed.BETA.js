@@ -23,16 +23,20 @@ module.exports = ({
                     app          = express(),
                     server       = http.createServer(app),
                     io           = socket_io(server),
-                    io_test      = io.of('/test'),
-                    io_rc        = io.of('/rc'),
+                    io_testsuite = io.of('/execute'),
+
                     express_json = express.json(),
                     sessions     = ExpressSession(config.session);
 
-                let that = rdf.generateGraph(
-                    agent.space.dataStore.dataset,
-                    'minimal'
-                    //{'compact': true, 'meshed': true, 'blanks': false}
-                );
+                let
+                    testsuite_socket = null
+                    //,
+                    //that             = rdf.generateGraph(
+                    //    agent.space.dataStore.dataset,
+                    //    'minimal'
+                    //    //{'compact': true, 'meshed': true, 'blanks': false}
+                    //)
+                ;
 
                 //const graph = new Map((compactDoc['@graph'] || [compactDoc]).map((node) => [node['@id'], node]));
                 //that.get("https://testbed.nicos-rd.com/");
@@ -107,6 +111,7 @@ module.exports = ({
                 //} // for ()
 
                 io.on('connection', (socket) => {
+
                     // REM uncomment to enable authentication
                     //if (!socket.request.session.auth) {
                     //    socket.emit('error', 'not authorized');
@@ -120,29 +125,52 @@ module.exports = ({
                     });
                 }); // io.on('connection')
 
-                io_test.on('connection', (socket) => {
-
-                    socket.on("execute", async (request, callback) => {
+                io_testsuite.on('connection', (socket) => {
+                    // TODO : testsuite connects user password
+                    testsuite_socket = socket;
+                    socket.on("test", async (test, callback) => {
                         let
-                            ec        = request['ec'],
-                            command   = request['command'],
-                            parameter = request['parameter']
+                            ec      = test['ec'],
+                            command = test['command'],
+                            param   = test['param']
                         ;
                         try {
                             const result = await agent.executeTest({
-                                'ec':        ec,
-                                'command':   command,
-                                'parameter': parameter
+                                'ec':      ec,
+                                'command': command,
+                                'param':   param
                             });
                             callback(null, result);
                         } catch (jex) {
                             // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             callback(jex, undefined);
                         } // try
-                    }); // socket.on("execute")
+                    }); // socket.on("test")
 
-                }); // io_test.on('connection')
+                }); // io_testsuite.on('connection')
 
+                agent.on('event', (error, data) => {
+                    console.log("app.testbed :: agent : event :: >>>");
+                    if (error)
+                        console.error(error);
+                    console.log(data);
+                    console.log("app.testbed :: agent : event :: <<<");
+                    if (testsuite_socket) {
+                        debugger;
+                        // TODO : streamline
+                        testsuite_socket.emit('event', error, data);
+                    } // if ()
+                });
+                agent.on('error', (error) => {
+                    console.log("app.testbed :: agent : error :: >>>");
+                    console.error(error);
+                    console.log("app.testbed :: agent : error :: <<<");
+                    if (testsuite_socket) {
+                        debugger;
+                        // TODO : streamline
+                        testsuite_socket.emit('error', {'error': error});
+                    } // if ()
+                });
                 app.get('/', (request, response) => {
                     response.redirect('/browse');
                 });
@@ -227,11 +255,13 @@ module.exports = ({
                             'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
                         },
                         //
-                        'idle_timeout': 5,
+                        'idle_timeout': parseInt(node_alice['idsecm:idle_timeout'][0]['@value']),
+                        //'idle_timeout': 1,
                         //
                         'DAPS':        {
-                            'default':                           "https://nrd-dps.nicos-rd.com:8082/",
-                            'https://nrd-dps.nicos-rd.com:8082': "https://nrd-dps.nicos-rd.com:8082/"
+                            //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
+                            'default':                            node_alice['idsecm:daps_default'][0]['@id'],
+                            'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
                         },
                         'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
                     },
@@ -248,11 +278,13 @@ module.exports = ({
                             "tb_ec_ids": {'name': "tb_ec_ids", 'password': "marzipan"}
                         },
                         //
-                        'idle_timeout': 5,
+                        'idle_timeout': parseInt(node_bob['idsecm:idle_timeout'][0]['@value']),
+                        //'idle_timeout': 1,
                         //
                         'DAPS':        {
-                            'default':                           "https://nrd-dps.nicos-rd.com:8082/",
-                            'https://nrd-dps.nicos-rd.com:8082': "https://nrd-dps.nicos-rd.com:8082/"
+                            //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
+                            'default':                            node_bob['idsecm:daps_default'][0]['@id'],
+                            'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
                         },
                         'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
                     }
@@ -299,12 +331,12 @@ module.exports = ({
                     }
                 };
 
-                function data_consumer(data) {
-                    console.log(data);
-                    //debugger;
-                }
+                //function data_consumer(data) {
+                //    console.log(data);
+                //    //debugger;
+                //}
 
-                agent.executeTest({
+                agent.executeTest({ // REM : connect ALICE
                     'ec':      "ids",
                     'command': "connect",
                     'param':   {
@@ -316,79 +348,105 @@ module.exports = ({
                     }
                 }).then((result) => {
 
-                    //debugger;
-                    //region ec :: ip
-                    //agent.executeTest({ // REM : ping
-                    //    'ec':      "ip",
-                    //    'command': "ping",
-                    //    'param':   {
-                    //        'endpoint': "127.0.0.1"
-                    //    }
-                    //}).then((result) => {
-                    //    result;
-                    //    debugger;
-                    //}).catch((error) => {
-                    //    error;
-                    //    debugger;
-                    //});
-                    //endregion ec :: ip
+                    console.log("TEST : app.testbed :: agent.executeTest(connect ALICE).then :: >>>");
+                    console.log(result);
+                    console.log("TEST : app.testbed :: agent.executeTest(connect ALICE).then :: <<<");
 
-                    //region ec :: ids
-
-                    agent.executeTest({ // REM : getConnectorsSelfDescription
-                        'comment': "ec.ids : Alice will get Bobs selfDecription",
+                    agent.executeTest({ // REM : connect BOB
                         'ec':      "ids",
-                        'command': "getConnectorsSelfDescription",
+                        'command': "connect",
                         'param':   {
-                            'operator': "simon petrac",
-                            'rc':       `${exec_cmd_Alice.schema}://${exec_cmd_Alice.host}:${exec_cmd_Alice.port}`,
-                            // REM : Bob as applicant
-                            'schema': `${exec_cmd_Bob.schema}://`,
-                            'host':   exec_cmd_Bob.host,
-                            'path':   `:${exec_cmd_Bob.port}/about`
+                            'url':   `${exec_cmd_Bob.schema}://${exec_cmd_Bob.host}:${exec_cmd_Bob.port}`,
+                            'query': {
+                                'user':     exec_cmd_Bob.user.tb_ec_ids.name,
+                                'password': exec_cmd_Bob.user.tb_ec_ids.password
+                            }
                         }
                     }).then((result) => {
+
+                        console.log("TEST : app.testbed :: agent.executeTest(connect BOB).then :: >>>");
                         console.log(result);
-                        debugger;
+                        console.log("TEST : app.testbed :: agent.executeTest(connect BOB).then :: <<<");
+
+                        //debugger;
+                        //region ec :: ip
+                        //agent.executeTest({ // REM : ping
+                        //    'ec':      "ip",
+                        //    'command': "ping",
+                        //    'param':   {
+                        //        'endpoint': "127.0.0.1"
+                        //    }
+                        //}).then((result) => {
+                        //    result;
+                        //    debugger;
+                        //}).catch((error) => {
+                        //    error;
+                        //    debugger;
+                        //});
+                        //endregion ec :: ip
+
+                        //region ec :: ids
+
+                        agent.executeTest({ // REM : requestConnectorSelfDescription
+                            'comment': "ec.ids : Alice will get Bobs selfDescription",
+                            'ec':      "ids",
+                            'command': "requestConnectorSelfDescription",
+                            'param':   {
+                                //'operator': "simon petrac",
+                                'rc': `${exec_cmd_Alice.schema}://${exec_cmd_Alice.host}:${exec_cmd_Alice.port}`,
+                                // REM : Bob as applicant
+                                'schema': `${exec_cmd_Bob.schema}`,
+                                'host':   exec_cmd_Bob.host,
+                                'path':   `:${exec_cmd_Bob.port}/about`
+                            }
+                        }).then((result) => {
+                            console.log("TEST : app.testbed :: agent.executeTest(requestConnectorSelfDescription).then :: >>>");
+                            console.log(result);
+                            console.log("TEST : app.testbed :: agent.executeTest(requestConnectorSelfDescription).then :: <<<");
+                        }).catch((error) => {
+                            console.error(error);
+                            debugger;
+                        });
+
+                        //agent.executeTest({ // REM : connectorSelfDescriptionRequest
+                        //    'ec':      "ids",
+                        //    'command': "connectorSelfDescriptionRequest",
+                        //    'param':   {
+                        //        'requester_url': "https://127.0.0.1:8099/about",
+                        //        'timeout':       3 // REM : seconds
+                        //    }
+                        //}).then((result) => {
+                        //    result;
+                        //    debugger;
+                        //}).catch((error) => {
+                        //    error;
+                        //    debugger;
+                        //});
+
+                        //agent.executeTest({ // REM : getSelfDescriptionFromRC
+                        //    'ec':      "ids",
+                        //    'command': "getSelfDescriptionFromRC",
+                        //    'param':   undefined
+                        //}).then((result) => {
+                        //    result;
+                        //    debugger;
+                        //}).catch((error) => {
+                        //    error;
+                        //    debugger;
+                        //});
+
+                        //endregion ec :: ids
+
+                        //    //agent.executeTest({ // REM : on_RC_IDLE
+                        //    //    'ec':      "ids",
+                        //    //    'command': "on_RC_IDLE",
+                        //    //    'param':   undefined
+                        //    //}, data_consumer );
+
                     }).catch((error) => {
-                        console.error(error);
+                        error;
                         debugger;
                     });
-
-                    //agent.executeTest({ // REM : connectorSelfDescriptionRequest
-                    //    'ec':      "ids",
-                    //    'command': "connectorSelfDescriptionRequest",
-                    //    'param':   {
-                    //        'requester_url': "https://127.0.0.1:8099/about",
-                    //        'timeout':       3 // REM : seconds
-                    //    }
-                    //}).then((result) => {
-                    //    result;
-                    //    debugger;
-                    //}).catch((error) => {
-                    //    error;
-                    //    debugger;
-                    //});
-
-                    //agent.executeTest({ // REM : getSelfDescriptionFromRC
-                    //    'ec':      "ids",
-                    //    'command': "getSelfDescriptionFromRC",
-                    //    'param':   undefined
-                    //}).then((result) => {
-                    //    result;
-                    //    debugger;
-                    //}).catch((error) => {
-                    //    error;
-                    //    debugger;
-                    //});
-
-                    //endregion ec :: ids
-
-                    //    //agent.executeTest({ // REM : on_RC_IDLE
-                    //    //    'ec':      "ids",
-                    //    //    'command': "on_RC_IDLE",
-                    //    //    'param':   undefined
-                    //    //}, data_consumer );
 
                 }).catch((error) => {
                     debugger;

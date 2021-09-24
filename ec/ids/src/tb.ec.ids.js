@@ -18,9 +18,12 @@ let
     rc            = new Map()
 ;
 
+//region fn
 function randomLeave(pre) {
     return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
 }
+
+//endregion fn
 
 Object.defineProperties(ec_ids, {
     'uri':                             {
@@ -45,6 +48,7 @@ Object.defineProperties(ec_ids, {
             let
                 result  = {
                     'id':                `${randomLeave(`${_uri_}connect/`)}`,
+                    'thread':            param.thread,
                     'start':             (new Date).toISOString(),
                     'operationalResult': false
                 },
@@ -54,13 +58,17 @@ Object.defineProperties(ec_ids, {
                 }
             ; // let
 
-            //if (param.query)
-            //    options['query'] = param.query;
+            if (param.query)
+                options['query'] = param.query;
 
             socket = io_bc_rc.connect(param.url, options);
 
             await new Promise((resolve, reject) => {
                 socket.on('connect', (args) => {
+                    socket.on('event', (error, data) => {
+                        ec_ids.emit('event', error, data);
+                        //debugger;
+                    });
                     rc.set(param.url, util.promisify(socket.emit).bind(socket));
                     resolve();
                 }); // socket.on('connect')
@@ -77,64 +85,71 @@ Object.defineProperties(ec_ids, {
 
         }, enumerable: false
     }, // connect
-    'getConnectorsSelfDescription':    {
+    'selfTest':                        {
         value:         async (param) => {
             try {
                 if (!connected && socket)
-                    throw(new Error(`tb.ec.ids : getConnectorsSelfDescription : io NOT connected.`));
+                    throw(new Error(`tb.ec.ids : selfTest : io NOT connected.`));
 
-                let result = await ec.ip.ping({'host': param.host});
-
-                if (!result.operationalResult.alive)
-                    throw(new Error(`tb.ec.ids : getConnectorsSelfDescription : connector NOT alive`));
-
-                result = await rc.get(param.rc)('getConnectorsSelfDescription', param);
+                let result;
+                // TODO : selfTest
                 return result;
             } catch (jex) {
+                ec_ids.emit('error', jex);
                 throw(jex);
             } // try
         }, enumerable: false
     }, // getConnectorsSelfDescription
-    'connectorSelfDescriptionRequest': {
+    'requestConnectorSelfDescription': {
         value:         async (param) => {
             try {
                 if (!connected && socket)
-                    throw(new Error(`tb.ec.ids : connectorSelfDescriptionRequest : io NOT connected.`));
-                const result = await rc.get(param.rc)('connectorSelfDescriptionRequest', param);
+                    throw(new Error(`tb.ec.ids : requestConnectorSelfDescription : io NOT connected.`));
+
+                let result;
+
+                //let result = await ec.ip.ping({'host': param.host});
+                //
+                //if (!result.operationalResult.alive)
+                //    throw(new Error(`tb.ec.ids : requestConnectorSelfDescription : connector NOT alive`));
+
+                result = await rc.get(param.rc)('rc_requestConnectorSelfDescription', param);
+                //throw (new Error()); // TEST : only
                 return result;
             } catch (jex) {
+                ec_ids.emit('error', jex);
                 throw(jex);
             } // try
         }, enumerable: false
-    }, // connectorSelfDescriptionRequest
+    }, // getConnectorsSelfDescription
+    'waitForSelfDescriptionRequest':   {
+        value:         async (param) => {
+            try {
+                if (!connected && socket)
+                    throw(new Error(`tb.ec.ids : waitForSelfDescriptionRequest : io NOT connected.`));
+                const result = await rc.get(param.rc)('rc_waitForSelfDescriptionRequest', param);
+                return result;
+            } catch (jex) {
+                ec_ids.emit('error', jex);
+                throw(jex);
+            } // try
+        }, enumerable: false
+    }, // waitForSelfDescriptionRequest
     'getSelfDescriptionFromRC':        {
         value:         async (param) => {
             try {
                 if (!connected && socket)
                     throw(new Error(`tb.ec.ids : getSelfDescriptionFromRC : io NOT connected.`));
-                const result = await rc.get(param.rc)('getSelfDescriptionFromRC', param);
+                const result = await rc.get(param.rc)('rc_getSelfDescriptionFromRC', param);
                 return result;
             } catch (jex) {
+                ec_ids.emit('error', jex);
                 throw(jex);
             } // try
         }, enumerable: false
     } // getSelfDescriptionFromRC
 
-    //'on_RC_IDLE': {
-    //    value:      async (param, callback) => {
-    //        try {
-    //            if (!connected && socket)
-    //                callback({'message': `tb.ec.ids : on_RC_IDLE : io NOT connected.`}, undefined);
-    //            socket.emit('on_RC_IDLE', undefined, callback);
-    //        } catch (jex) {
-    //            callback(jex, undefined);
-    //        } // try
-    //    },
-    //    enumerable: false
-    //} // on_RC_IDLE
 });
-
-Object.freeze(ec_ids);
 
 exports.ids = ec_ids;
 

@@ -49,5 +49,5 @@ Object.defineProperties(ec_ip, {
     } // ping
 });
 
-Object.freeze(ec_ip);
+
 exports.ip = ec_ip;

@@ -201,7 +201,7 @@ async function createSpace(config) {
         space           = await createSpace(config.space),
         //testbed_agent   = new TestbedAgent({
         testbed_agent   = await TestbedAgent({
-            'id':           "https://testbed.nicos-rd.com/",
+            'testbed_id':   "https://testbed.nicos-rd.com/",
             'scheduler':    testbed_scheduler,
             'space':        space,
             'encodeSecret': (secret) => {
