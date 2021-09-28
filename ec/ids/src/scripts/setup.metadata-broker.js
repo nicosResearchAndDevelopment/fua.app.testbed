@@ -2,12 +2,24 @@ const
     config                       = require('./setup-config.js'),
     {awaitMain, ignoreErr}       = require('./setup-util.js'),
     {mkdir, readFile, writeFile} = require('fs/promises'),
-    git                          = require('../../../../src/code/subprocess/git.js')(config.ec_ids_folder),
-    openssl                      = require('../../../../src/code/subprocess/openssl.js')(config.metadata_broker.cert_folder),
-    dockerCompose                = require('../../../../src/code/subprocess/docker-compose.js')(config.metadata_broker.docker_compose_folder);
+    subprocess                   = require('@nrd/fua.module.subprocess'),
+    git                          = subprocess.ExecutionProcess('git', {
+        cwd:     config.ec_ids_folder,
+        verbose: true
+    }),
+    openssl                      = subprocess.ExecutionProcess('openssl', {
+        cwd:     config.metadata_broker.cert_folder,
+        verbose: true
+    }),
+    dockerCompose                = subprocess.ExecutionProcess('docker-compose', {
+        cwd:     config.metadata_broker.docker_compose_folder,
+        verbose: true
+    });
 
 awaitMain(async function Main() {
-    switch (process.argv[2]) {
+    const {param, args: [exe, script, ...args]} = subprocess.parseArgv();
+
+    switch (args.shift()) {
 
         case 'install':
             await _loadRepository();
@@ -24,25 +36,25 @@ awaitMain(async function Main() {
 }); // Main
 
 async function _loadRepository() {
-    await git.clone(config.metadata_broker.repo_url, config.metadata_broker.repo_folder);
+    await git('clone', config.metadata_broker.repo_url, config.metadata_broker.repo_folder);
 } // _loadRepository
 
 async function _createTlsCertificate() {
     await mkdir(config.metadata_broker.cert_folder, {recursive: true});
-    await openssl.req({
-        x509:   null,
+    await openssl('req', {
+        x509:   true,
         newkey: 'rsa:4096',
         keyout: 'key.pem',
         out:    'cert.pem',
         days:   365,
-        nodes:  null,
-        batch:  null
+        nodes:  true,
+        batch:  true
     });
-    await openssl.x509({
+    await openssl('x509', {
         in:  'cert.pem',
         out: 'server.crt'
     });
-    await openssl.rsa({
+    await openssl('rsa', {
         in:  'key.pem',
         out: 'server.key'
     });
@@ -62,9 +74,9 @@ async function _modifyDockerCompose() {
 } // _modifyDockerCompose
 
 async function _createContainer() {
-    await dockerCompose.pull();
+    await dockerCompose('pull');
 } // _createContainer
 
 async function _runApplication() {
-    await dockerCompose.up({detach: null});
+    await dockerCompose('up', {detach: true});
 } // _runApplication

@@ -1,7 +1,8 @@
 const
-    id         = "/windows-ping#",
-    version    = "0-0-1",
-    SubProcess = require('../../../../../src/code/SubProcess.js')
+    id                 = "/windows-ping#",
+    version            = "0-0-2",
+    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    cmd_ping           = ExecutionProcess('ping', {encoding: 'cp437'})
 ; // const
 
 async function fn_ping(param) {
@@ -9,8 +10,7 @@ async function fn_ping(param) {
         result = {
             isAlive: false
         },
-        //output = await SubProcess.execute('ping', {'n': 1}, param.address),
-        output = await SubProcess.execute('ping', {'n': 1}, param.host),
+        output = await cmd_ping({'n': 1}, param.host),
         parts  = output.split('\n\n');
 
     // TODO refine the result
