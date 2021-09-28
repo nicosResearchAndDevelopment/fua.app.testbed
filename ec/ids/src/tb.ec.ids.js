@@ -1,25 +1,26 @@
 const
-    EventEmitter  = require('events'),
-    fetch         = require("node-fetch"),
-    {exec}        = require("child_process"),
+    EventEmitter     = require('events'),
+    fetch            = require("node-fetch"),
+    {exec}           = require("child_process"),
     //
-    util          = require('@nrd/fua.core.util'),
+    util             = require('@nrd/fua.core.util'),
+    {RunningProcess} = require('@nrd/fua.module.subprocess'),
     //
-    io_client     = require("socket.io-client"),
-    _default_uri_ = "urn:tb:ec:ids:"
-;
+    io_client        = require("socket.io-client"),
+    _default_uri_    = "urn:tb:ec:ids:"
+; // const
 let
-    _uri_         = _default_uri_,
-    ec            = undefined,
-    socket        = undefined,
-    emit          = undefined,
-    connected     = false,
+    _uri_            = _default_uri_,
+    ec               = undefined,
+    socket           = undefined,
+    emit             = undefined,
+    connected        = false,
     //ec           = {}
-    ec_ids        = new EventEmitter(),
-    rc            = new Map(),
-    ALICE_PROC    = null,
-    BOB_PROC      = null
-;
+    ec_ids           = new EventEmitter(),
+    rc               = new Map(),
+    ALICE_PROC       = null,
+    BOB_PROC         = null
+; // let
 
 //region fn
 function randomLeave(pre) {
@@ -34,31 +35,26 @@ module.exports = ({
                       'BOB':   BOB = undefined
                   }) => {
 
-
     _uri_ = (uri || _default_uri_);
 
-    if (ALICE) {
-        ALICE_PROC = exec(
-            `node ../ec/ids/src/rc/alice/launch.alice.js config=${Buffer.from(JSON.stringify(ALICE)).toString('base64')}"`,
-            (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`exec error: ${error}`);
-                    return;
-                } // error
-                console.log(`stdout: ${stdout}`);
-                console.error(`stderr: ${stderr}`);
-            });
-        let url = `${ALICE.schema}://${ALICE.host}:${ALICE.port}/`;
-        let options    = {
-            reconnect:          true,
-            rejectUnauthorized: false,
-            auth:               {
-                user:     ALICE.user['tb_ec_ids'].name,
-                password: ALICE.user['tb_ec_ids'].password
-            }
-        };
+    const NODE = RunningProcess('node', {verbose: true});
 
-        let alice_socket = io_client.connect(url, options);
+    if (ALICE) {
+
+        ALICE_PROC = NODE(`../ec/ids/src/rc/alice/launch.alice.js`, {config: `"${Buffer.from(JSON.stringify(ALICE)).toString('base64')}"`});
+
+        let
+            url          = `${ALICE.schema}://${ALICE.host}:${ALICE.port}/`,
+            options      = {
+                reconnect:          true,
+                rejectUnauthorized: false,
+                auth:               {
+                    user:     ALICE.user['tb_ec_ids'].name,
+                    password: ALICE.user['tb_ec_ids'].password
+                }
+            },
+            alice_socket = io_client.connect(url, options)
+        ; // let
 
         alice_socket.on('connect', () => {
             alice_socket.on('event', (error, data) => {
@@ -75,18 +71,11 @@ module.exports = ({
     } // if (ALICE)
 
     if (BOB) {
-        BOB_PROC = exec(
-            `node ../ec/ids/src/rc/bob/launch.bob.js config=${Buffer.from(JSON.stringify(BOB)).toString('base64')}"`,
-            (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`exec error: ${error}`);
-                    return;
-                } // error
-                console.log(`stdout: ${stdout}`);
-                console.error(`stderr: ${stderr}`);
-            });
-        let url = `${BOB.schema}://${BOB.host}:${BOB.port}/`;
-        let options    = {
+
+        BOB_PROC = NODE(`../ec/ids/src/rc/bob/launch.bob.js`, {config: `"${Buffer.from(JSON.stringify(BOB)).toString('base64')}"`});
+
+        let url     = `${BOB.schema}://${BOB.host}:${BOB.port}/`;
+        let options = {
             reconnect:          true,
             rejectUnauthorized: false,
             auth:               {
@@ -111,7 +100,7 @@ module.exports = ({
     } // if (BOB)
 
     Object.defineProperties(ec_ids, {
-        'uri':                             {
+        'uri': {
             set:          (uri) => {
                 if (_uri_ === _default_uri_)
                     _uri_ = uri;
@@ -121,7 +110,7 @@ module.exports = ({
             }
             , enumerable: false
         },
-        'ec':                              {
+        'ec':  {
             set:          (ecoSystem) => {
                 if (!ec)
                     ec = ecoSystem;
@@ -235,7 +224,8 @@ module.exports = ({
             }, enumerable: false
         } // getSelfDescriptionFromRC
 
-    });
+    }); // Object.defineProperties()
+
     return ec_ids;
 }; // module.exports
 

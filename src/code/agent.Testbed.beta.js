@@ -361,7 +361,9 @@ async function TestbedAgent({
     await node_bob.read();
 
     let
-        ids = require("../../ec/ids/src/tb.ec.ids.js")({
+        cert_alice = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"),
+        cert_bob   = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"),
+        ids        = require("../../ec/ids/src/tb.ec.ids.js")({
             'uri':   `${id}ec/ids/`,
             'ALICE': {
                 'id':     alice_id,
@@ -384,7 +386,7 @@ async function TestbedAgent({
                     'default':                            node_alice['idsecm:daps_default'][0]['@id'],
                     'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
                 },
-                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
             }, // ALICE
             'BOB':   {
                 'id': bob_id,
@@ -407,11 +409,11 @@ async function TestbedAgent({
                     'default':                            node_bob['idsecm:daps_default'][0]['@id'],
                     'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
                 },
-                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"
             }
         });
-    ids.uri = `${id}ec/ids/`;
-    ids.ec  = ec;
+    ids.uri        = `${id}ec/ids/`;
+    ids.ec         = ec;
     ids.on('event', (error, data) => {
         eventEmitter.emit('event', error, data);
     });

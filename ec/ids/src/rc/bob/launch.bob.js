@@ -3,6 +3,7 @@ const
     crypto         = require("crypto"),
     //
     util           = require('@nrd/fua.core.util'),
+    {parseArgv} = require('@nrd/fua.module.subprocess'),
     //
     {BobConnector} = require('./connector.bob.js')
 ; // const
@@ -11,38 +12,23 @@ let
     __privateKey__ = undefined,
     config         = {}
 ;
-//region process.argv
-process['argv']['forEach']((val, index, array) => {
-    let
-        _argv_property,
-        _argv_value
-    ;
-    if (val['indexOf']("=") !== -1) {
-        _argv_property = val['split']("=")[0];
-        _argv_value    = val['split']("=")[1];
-    } // if()
-    switch (_argv_property) {
-        case "config":
-            config = JSON.parse(Buffer.from(_argv_value, 'base64').toString('utf8'));
-            break;
-        default:
-            break;
-    } // switch(_argv_property)
-}); // process['argv']['forEach']()
 
-//endregion process.argv
+const {param, args} = parseArgv();
+config = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
 
-const {client}        = require(config['cert_client']);
-config['privateKey']  = crypto.createPrivateKey(client.private);
-config['cert_client'] = undefined;
+const {cert}                  = require(config['cert_client']);
+config['connectorPrivateKey'] = crypto.createPrivateKey(cert.connector.key.toString());
+config['tlsPrivateKey']       = crypto.createPrivateKey(cert['tls-server'].key.toString());
 
 (async ({'config': config}) => {
     const
         bob_agent = new BobConnector({
-            'id':         config.id,
-            'SKIAKI':     config.SKIAKI,
-            'privateKey': config.privateKey,
-            'DAPS':       config.DAPS,
+            'id':     config.id,
+            'SKIAKI': config.SKIAKI,
+            //
+            'connectorPrivateKey': config.connectorPrivateKey,
+            //
+            'DAPS': config.DAPS,
             //
             'idle_timeout': config.idle_timeout
         })
@@ -51,8 +37,9 @@ config['cert_client'] = undefined;
     require('./app.bob.js')({
         'agent':  bob_agent,
         'config': {
-            'port': config.port,
-            'user': config.user
+            'tlsPrivateKey': config.tlsPrivateKey,
+            'port':          config.port,
+            'user':          config.user
         }
     });
 

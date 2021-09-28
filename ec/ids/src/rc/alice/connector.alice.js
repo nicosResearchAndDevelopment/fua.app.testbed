@@ -49,10 +49,10 @@ class AliceConnector extends BaseConnector {
     #about_wait_map = new Map();
 
     constructor({
-                    'id':         id,
-                    'SKIAKI':     SKIAKI,
-                    'privateKey': privateKey,
-                    'DAPS':       DAPS = {'default': undefined},
+                    'id':                  id,
+                    'SKIAKI':              SKIAKI,
+                    'connectorPrivateKey': privateKey,
+                    'DAPS':                DAPS = {'default': undefined},
                     //
                     'idle_timeout': idle_timeout = 30 // REM : seconds
                 }) {
