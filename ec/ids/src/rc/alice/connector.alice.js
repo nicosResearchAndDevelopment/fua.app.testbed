@@ -111,7 +111,7 @@ class AliceConnector extends BaseConnector {
                     }), enumerable: false
                 } // provideSelfDescription
             }
-        );
+        ); // Object.defineProperties(this)
 
         if (this.#idle_timeout)
             this.#idle_semaphore = this.#idle(this.#idle_timeout);

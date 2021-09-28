@@ -39,7 +39,6 @@ module.exports = ({
                 // TODO
             });
 
-
             await new Promise((resolve) =>
                 server.listen(config.server.port, resolve));
 

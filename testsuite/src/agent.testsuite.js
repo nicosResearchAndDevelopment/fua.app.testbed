@@ -60,6 +60,7 @@ async function TestsuiteAgent({
         rejectUnauthorized:   false,
         auth:                 testbed.auth
     });
+
     testbed_socket.on("connect", async () => {
 
         testbed_emit = util.promisify(testbed_socket.emit).bind(testbed_socket);

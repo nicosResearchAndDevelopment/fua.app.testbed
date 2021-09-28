@@ -129,6 +129,7 @@ module.exports = ({
                     // TODO : testsuite connects user password
                     if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
                         testsuite_socket = socket;
+                    agent.testsuite_inbox_socket = testsuite_socket;
                     testsuite_socket.on("test", async (test, callback) => {
                         let
                             ec      = test['ec'],
@@ -153,6 +154,7 @@ module.exports = ({
                                 error.code = jex.code;
                             callback(error, undefined);
                         } // try
+
                     }); // testsuite_socket.on("test")
 
                 }); // io_testsuite.on('connection')
@@ -168,7 +170,7 @@ module.exports = ({
                         // TODO : streamline
                         testsuite_socket.emit('event', error, data);
                     } // if ()
-                });
+                }); // agent.on('event')
                 agent.on('error', (error) => {
                     console.log("app.testbed :: agent : error :: >>>");
                     console.error(error);
@@ -178,7 +180,7 @@ module.exports = ({
                         // TODO : streamline
                         testsuite_socket.emit('error', {'error': error});
                     } // if ()
-                });
+                }); // agent.on('error')
                 app.get('/', (request, response) => {
                     response.redirect('/browse');
                 });

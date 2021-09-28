@@ -55,7 +55,7 @@ module.exports = ({
                                 socket_controller.emit('event', error, undefined);
                             socket_controller.emit('event', null, data);
                         } // if ()
-                    });
+                    }); // agent.on('event')
 
                     io.on('connection', (socket) => {
 

@@ -78,24 +78,26 @@ async function TestbedAgent({
                             }) {
 
     const
-        that                = rdf.generateGraph(space.dataStore.dataset, undefined, {
+        that                   = rdf.generateGraph(space.dataStore.dataset, undefined, {
             'compact': true,
             'meshed':  true,
             'blanks':  true
         }),
-
-        rootUri             = "https://testbed.nicos-rd.com/domain/user#",
-        testbed_config      = space.getNode(id),
-        testbed_config_data = await testbed_config.read(),
-        id_agent            = `${id}agent/`,
-        implemented_task    = {
+        rootUri                = "https://testbed.nicos-rd.com/domain/user#",
+        testbed_config         = space.getNode(id),
+        testbed_config_data    = await testbed_config.read(),
+        id_agent               = `${id}agent/`,
+        implemented_task       = {
             // self topics
             'error': "error",
             'event': "event"
         },
-        eventEmitter        = new EventEmitter()
-    ;
-    let testbedAgent        = {};
+        eventEmitter           = new EventEmitter()
+    ; // const
+    let
+        testsuite_inbox_socket = undefined,
+        testbedAgent           = {}
+    ; // let
 
     //if (new.target) {
     if (!id)
@@ -244,8 +246,14 @@ async function TestbedAgent({
     //endregion domain
 
     Object.defineProperties(testbedAgent, {
-        'id':          {value: id, enumerable: true},
-        'on':          {
+        'id':                     {value: id, enumerable: true},
+        'testsuite_inbox_socket': {
+            set(socket) {
+                if (!testsuite_inbox_socket)
+                    testsuite_inbox_socket = socket;
+            }, enumerable: false
+        },
+        'on':                     {
             value:          Object.defineProperties((topic, callback) => {
                 let
                     error  = null,
@@ -272,22 +280,29 @@ async function TestbedAgent({
                 'id': {value: `${id}on`, enumerable: true}
             }), enumerable: true
         }, // on
-        'scheduler':   {
+        'scheduler':              {
             value: new Scheduler(scheduler), enumerable: true
         },
-        'amec':        {
+        'amec':                   {
             value: amec, enumerable: true
         },
-        'PEP':         {
+        'PEP':                    {
             value: pep, enumerable: false
         },
-        'domain':      {
+        'domain':                 {
             value: domain, enumerable: true
         },
-        'space':       {
+        'space':                  {
             value: space, enumerable: true
         },
-        'executeTest': {
+        'inbox':                  {
+            value:         async (message) => {
+                if (testsuite_inbox_socket)
+                    testsuite_inbox_socket.emit();
+                return undefined;
+            }, enumerable: true
+        }, // inbox
+        'executeTest':            {
             value:         async (param) => {
                 try {
                     let
@@ -411,7 +426,6 @@ async function TestbedAgent({
     const
         {exec} = require('child_process')
     ;
-
 
     //endregion ec.ids : connector
 
