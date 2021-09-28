@@ -84,10 +84,10 @@ async function _addClientCertificate(param, ...args) {
             `  certfile: ${certFile}`;
 
     await openssl('req', {
-        new:   null,
-        x509:  null,
-        nodes: null,
-        batch: null,
+        new:   true,
+        x509:  true,
+        nodes: true,
+        batch: true,
         days:  param.days || 365,
         key:   param.privateKey,
         out:   certFile

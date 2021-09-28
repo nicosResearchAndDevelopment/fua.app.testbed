@@ -42,13 +42,13 @@ async function _loadRepository() {
 async function _createTlsCertificate() {
     await mkdir(config.metadata_broker.cert_folder, {recursive: true});
     await openssl('req', {
-        x509:   null,
+        x509:   true,
         newkey: 'rsa:4096',
         keyout: 'key.pem',
         out:    'cert.pem',
         days:   365,
-        nodes:  null,
-        batch:  null
+        nodes:  true,
+        batch:  true
     });
     await openssl('x509', {
         in:  'cert.pem',
@@ -78,5 +78,5 @@ async function _createContainer() {
 } // _createContainer
 
 async function _runApplication() {
-    await dockerCompose('up', {detach: null});
+    await dockerCompose('up', {detach: true});
 } // _runApplication
