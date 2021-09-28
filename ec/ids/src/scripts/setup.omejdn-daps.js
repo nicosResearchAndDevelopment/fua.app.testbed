@@ -66,7 +66,7 @@ async function _runApplication() {
     await docker('start', config.omejdn_daps.container_name);
 } // _runApplication
 
-async function _addClientCertificate(param, ...args) {
+async function _addClientCertificate_old(param, ...args) {
     util.assert(util.isString(param.privateKey), 'missing --privateKey');
     util.assert(util.isString(param.SKI), 'missing --SKI');
     util.assert(util.isString(param.AKI), 'missing --AKI');
@@ -93,5 +93,21 @@ async function _addClientCertificate(param, ...args) {
         out:   certFile
     });
 
+    await fs.appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
+} // _addClientCertificate_old
+
+async function _addClientCertificate(param) {
+    util.assert(util.isString(param.load), 'missing --load');
+    const
+        client      = require(param.load),
+        clientId    = `${client.meta.SKI}:${client.meta.AKI}`,
+        certFile    = Buffer.from(clientId).toString('base64') + '.cert',
+        clientEntry = `- client_id: ${clientId}\n` +
+            '  allowed_scopes:\n' +
+            '    - omejdn:api\n' +
+            `  redirect_uri: http://localhost\n` +
+            '  attributes: []\n' +
+            `  certfile: ${certFile}`;
+    await fs.writeFile(util.joinPath(config.omejdn_daps.keys_folder, certFile), client.cert);
     await fs.appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
 } // _addClientCertificate
