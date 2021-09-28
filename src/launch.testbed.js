@@ -113,7 +113,8 @@ const
         }
     },
     testbed_agent_context   = []
-;const {Testsuite}          = require("./code/agent.Testsuite.js"); // const
+;
+//const {Testsuite}          = require("./code/agent.Testsuite.js"); // const
 
 //endregion new style
 
@@ -207,18 +208,10 @@ async function createSpace(config) {
             'encodeSecret': (secret) => {
                 return `${secret}_salt`;
             }
-        }), // new TestbedAgent()
-        {Testsuite}     = require('./code/agent.Testsuite.js'), // REM: as agent
-        testsuite_agent = new Testsuite({
-            'id':        testbed_agent_testsuite['@id'],
-            'system':    testbed_agent.system,
-            'scheduler': testbed_agent.scheduler,
-            'testbed':   testbed_agent
-        }) // new Testsuite()
+        }) // new TestbedAgent()
+
     ;
-    //let that = space;
-    //const persistence    = require("@nrd/fua.module.persistence");
-    //const rdf            = require("@nrd/fua.module.rdf");
+
     testbed_app['agent'] = testbed_agent;
 
     let
@@ -230,6 +223,6 @@ async function createSpace(config) {
         'agent':  testbed_agent,
         'config': config
     });
-    //debugger;
+
 })(/* TEST */).catch(console.error);
 //endregion new style :: TEST

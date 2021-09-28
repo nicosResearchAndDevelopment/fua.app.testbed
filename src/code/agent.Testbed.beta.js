@@ -32,11 +32,11 @@ const
     }
     //
     ,
-    {DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js')),
-    {ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
-    {ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
-    //DAPS         = false
-;
+    //{DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
+    //{ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
+    //{ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
+    DAPS         = false
+;const {exec}    = require("child_process");
 
 //const testbed = require("./code/main.testbed.js");
 
@@ -45,6 +45,14 @@ const
 class ErrorTestbedIdIsMissing extends Error {
     constructor(message) {
         super(`${timestamp()}] : fua.agent.Testbed : Testbed :: ${message}`);
+        this.code = "ErrorTestbedIdIsMissing";
+    }
+}
+
+class ErrorTestbedUnkownCommand extends Error {
+    constructor(message) {
+        super(`${timestamp()}] : fua.agent.Testbed : Testbed :: ${message}`);
+        this.code = "ErrorTestbedUnkownCommand";
     }
 }
 
@@ -292,7 +300,7 @@ async function TestbedAgent({
                     } else {
                         command = ec[param.command];
                         if (!command) {
-                            throw(new Error(`agent.Testbed : 'executeTest' : unknown command <${ec.command}>.`));
+                            throw(new ErrorTestbedUnkownCommand(`unknown command <${ec.command}>.`));
                         } else {
                             param.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
                             let result         = await command(param.param);
@@ -310,7 +318,7 @@ async function TestbedAgent({
 
     //region ec.ip
     // TODO : instance shield
-    let {ip} = require("../../ec/ip/src/tb.ec.ip.beta.js");
+    let {ip} = require("../../ec/ip/src/tb.ec.ip.js");
     ip.uri   = `${id}ec/ids/`;
     ip.on('event', (error, data) => {
         //eventEmitter.emit('event', error, data);
@@ -325,10 +333,70 @@ async function TestbedAgent({
     //endregion ec.ip
 
     //region ec.ids
+
     // TODO : instance shield
-    let {ids} = require("../../ec/ids/src/tb.ec.ids.js");
-    ids.uri   = `${id}ec/ids/`;
-    ids.ec    = ec;
+
+    const
+        alice_id   = "https://alice.nicos-rd.com/",
+        node_alice = space.getNode(alice_id),
+        bob_id     = "https://bob.nicos-rd.com/",
+        node_bob   = space.getNode(bob_id)
+    ;
+    await node_alice.read();
+    await node_bob.read();
+
+    let
+        ids = require("../../ec/ids/src/tb.ec.ids.js")({
+            'uri':   `${id}ec/ids/`,
+            'ALICE': {
+                'id':     alice_id,
+                'schema': "http",
+                'host':   "127.0.0.1",
+                //'port':   8099,
+                'port': parseInt(node_alice['fua:port'][0]['@value']),
+                // TODO: SKIAKI
+                'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
+                //
+                'user': {
+                    'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
+                },
+                //
+                'idle_timeout': parseInt(node_alice['idsecm:idle_timeout'][0]['@value']),
+                //'idle_timeout': 1,
+                //
+                'DAPS':        {
+                    //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
+                    'default':                            node_alice['idsecm:daps_default'][0]['@id'],
+                    'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
+                },
+                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+            }, // ALICE
+            'BOB':   {
+                'id': bob_id,
+                //
+                'schema': "http",
+                'host':   "127.0.0.1",
+                'port':   parseInt(node_bob['fua:port'][0]['@value']),
+                // TODO: SKIAKI
+                'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
+                //
+                'user': {
+                    "tb_ec_ids": {'name': "tb_ec_ids", 'password': "marzipan"}
+                },
+                //
+                'idle_timeout': parseInt(node_bob['idsecm:idle_timeout'][0]['@value']),
+                //'idle_timeout': 1,
+                //
+                'DAPS':        {
+                    //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
+                    'default':                            node_bob['idsecm:daps_default'][0]['@id'],
+                    'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
+                },
+                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/resources/cert/index.js"
+            }
+        });
+    ids.uri = `${id}ec/ids/`;
+    ids.ec  = ec;
     ids.on('event', (error, data) => {
         eventEmitter.emit('event', error, data);
     });
@@ -339,15 +407,24 @@ async function TestbedAgent({
     ec['ids'] = ids;
     Object.freeze(ec['ids']);
 
-    if (DAPS) {
+    //region ec.ids : connector
+    const
+        {exec} = require('child_process')
+    ;
+
+
+    //endregion ec.ids : connector
+
+    if
+    (DAPS) {
         //Object.defineProperty(ec['ids'], 'ids', {
         //
         //});
         let
-            daps_id              = "https://nrd-daps.nicos-rd.com/", // TODO : config
-            nrd_daps_config      = space.getNode(daps_id),
-            nrd_daps_config_data = await nrd_daps_config.read()
+            daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
+            nrd_daps_config = space.getNode(daps_id)
         ;
+        await nrd_daps_config.read()
         Object.defineProperty(testbedAgent, 'DAPS', {
             value:         new DAPS({
                     'id':      `${daps_id}agent/`,
@@ -358,7 +435,7 @@ async function TestbedAgent({
                     'jwt_payload_iss': daps_id
                 }
             ), enumerable: false
-        });
+        }); // Object.defineProperty()
     } // if (DAPS)
     //endregion ec.ids
     //endregion ec

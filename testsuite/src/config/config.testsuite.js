@@ -10,8 +10,8 @@ exports.server = {
 //    baseUrl:     'http://testbed.nicos-rd.com/'
 //};
 
-exports.generator = {
-    interface: 'module',
-    location:  path.join(__dirname, '../../../src/code/fn-interface.testbed.js')
-    //location: '../../../src/code/fn-interface.testbed.js'
-};
+//exports.generator = {
+//    interface: 'module',
+//    location:  path.join(__dirname, '../../../src/code/fn-interface.testbed.js')
+//    //location: '../../../src/code/fn-interface.testbed.js'
+//};

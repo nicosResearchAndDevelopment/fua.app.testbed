@@ -1,44 +1,61 @@
 const
     path      = require('path'),
     http      = require('http'),
+    //
     express   = require('express'),
     socket_io = require('socket.io'),
-    config    = require('./config/config.testsuite.js'),
-    util      = require('@nrd/fua.core.util'),
-    testsuite = require('./code/main.testsuite.js');
+    //
+    util      = require('@nrd/fua.core.util')
+; // const
 
-(async (/* MAIN */) => {
-    try {
-        const
-            app    = express(),
-            server = http.createServer(app),
-            io     = socket_io(server);
+module.exports = ({
+                      //'space':  space = null,
+                      'agent':  agent,
+                      'config': config
+                  }) => {
 
-        app.disable('x-powered-by');
+    (async (/* MAIN */) => {
+        try {
+            const
+                app    = express(),
+                server = http.createServer(app),
+                io     = socket_io(server)
+            ; // const
 
-        app.get('/', (request, response) => {
-            // TODO
-            response.type('txt').send('Hello World!');
-        });
+            app.disable('x-powered-by');
 
-        app.post('/inbox', express.json(), (request, response, next) => {
-            // TODO
-            console.log(request.body);
-            next();
-        });
+            app.get('/', (request, response) => {
+                // TODO
+                response.type('txt').send('Hello World!');
+            });
 
-        io.on('connection', (socket) => {
-            // TODO
-        });
+            app.post('/inbox', express.json(), (request, response, next) => {
+                // TODO
+                console.log(request.body);
+                next();
+            });
 
-        await new Promise((resolve) =>
-            server.listen(config.server.port, resolve));
+            io.on('connection', (socket) => {
+                // TODO
+            });
 
-        console.log('listening at http://localhost:' + config.server.port);
 
-    } catch (err) {
-        console.error(err?.stack ?? err);
-        debugger;
-        process.exit(1);
-    } // try
-})(/* MAIN */).catch(console.error);
+            await new Promise((resolve) =>
+                server.listen(config.server.port, resolve));
+
+            console.log(`listening at <${config.server.url}>, port <${config.server.port}>`);
+
+            //region TEST
+            //debugger;
+            //endregion TEST
+
+        } catch (err) {
+            console.error(err?.stack ?? err);
+            debugger;
+            process.exit(1);
+        } // try
+    })(/* MAIN */).catch(console.error);
+
+}; // module.exports
+
+// EOF

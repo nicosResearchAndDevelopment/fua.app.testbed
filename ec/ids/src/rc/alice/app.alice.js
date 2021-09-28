@@ -59,12 +59,12 @@ module.exports = ({
 
                     io.on('connection', (socket) => {
 
-                        if (!((config.user[socket.handshake.query.user]) && (socket.handshake.query.password === config.user[socket.handshake.query.user].password)))
+                        if (!((config.user[socket.handshake.auth.user]) && (socket.handshake.auth.password === config.user[socket.handshake.auth.user].password)))
                             throw new Error(``);
 
                         socket_controller = socket;
                         //debugger;
-                        socket.on('rc_requestConnectorSelfDescription', async (param, callback) => {
+                        socket_controller.on('rc_requestConnectorSelfDescription', async (param, callback) => {
                             try {
                                 let result = await agent.rc_requestConnectorSelfDescription(param);
                                 callback(null, result);
@@ -73,11 +73,11 @@ module.exports = ({
                             } // try
                         }); // socket.on('rc_requestConnectorSelfDescription')
 
-                        socket.on('rc_connectorSelfDescriptionRequest', (param, callback) => {
+                        socket_controller.on('rc_connectorSelfDescriptionRequest', (param, callback) => {
                             agent.rc_connectorSelfDescriptionRequest(param, callback);
                         }); // socket.on('rc_requestConnectorSelfDescription')
 
-                        socket.on('rc_getSelfDescriptionFromRC', async (param, callback) => {
+                        socket_controller.on('rc_getSelfDescriptionFromRC', async (param, callback) => {
                             try {
                                 let result = await agent.selfDescription({'requester_url': undefined});
                                 callback(null, result);

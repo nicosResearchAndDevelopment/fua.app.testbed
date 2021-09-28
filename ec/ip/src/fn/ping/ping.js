@@ -6,13 +6,20 @@ const
 
 async function fn_ping(param) {
     const
-        result = {},
-        output = await SubProcess.execute('ping', {'n': 1}, param.address),
+        result = {
+            isAlive: false
+        },
+        //output = await SubProcess.execute('ping', {'n': 1}, param.address),
+        output = await SubProcess.execute('ping', {'n': 1}, param.host),
         parts  = output.split('\n\n');
 
     // TODO refine the result
+
     result.info      = parts[0];
     result.statistic = parts[1] || null;
+
+    if (result.statistic !== null)
+        result.isAlive = true;
 
     return result;
 }
