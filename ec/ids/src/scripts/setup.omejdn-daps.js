@@ -1,23 +1,23 @@
 const
-    config             = require('./setup-config.js'),
-    util               = require('./setup-util.js'),
-    fs                 = require('fs/promises'),
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
-    git                = ExecutionProcess('git', {
+    config     = require('./setup-config.js'),
+    util       = require('./setup-util.js'),
+    fs         = require('fs/promises'),
+    subprocess = require('@nrd/fua.module.subprocess'),
+    git        = subprocess.ExecutionProcess('git', {
         cwd:     config.ec_ids_folder,
         verbose: true
     }),
-    docker             = ExecutionProcess('docker', {
+    docker     = subprocess.ExecutionProcess('docker', {
         cwd:     config.omejdn_daps.repo_folder,
         verbose: true
     }),
-    openssl            = ExecutionProcess('openssl', {
+    openssl    = subprocess.ExecutionProcess('openssl', {
         cwd:     config.omejdn_daps.keys_folder,
         verbose: true
     });
 
 util.awaitMain(async function Main() {
-    const {param, args} = util.parseArgv();
+    const {param, args: [exe, script, ...args]} = subprocess.parseArgv();
 
     switch (args.shift()) {
 

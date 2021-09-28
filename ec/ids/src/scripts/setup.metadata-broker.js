@@ -2,22 +2,24 @@ const
     config                       = require('./setup-config.js'),
     {awaitMain, ignoreErr}       = require('./setup-util.js'),
     {mkdir, readFile, writeFile} = require('fs/promises'),
-    {ExecutionProcess}           = require('@nrd/fua.module.subprocess'),
-    git                          = ExecutionProcess('git', {
+    subprocess                   = require('@nrd/fua.module.subprocess'),
+    git                          = subprocess.ExecutionProcess('git', {
         cwd:     config.ec_ids_folder,
         verbose: true
     }),
-    openssl                      = ExecutionProcess('openssl', {
+    openssl                      = subprocess.ExecutionProcess('openssl', {
         cwd:     config.metadata_broker.cert_folder,
         verbose: true
     }),
-    dockerCompose                = ExecutionProcess('docker-compose', {
+    dockerCompose                = subprocess.ExecutionProcess('docker-compose', {
         cwd:     config.metadata_broker.docker_compose_folder,
         verbose: true
     });
 
 awaitMain(async function Main() {
-    switch (process.argv[2]) {
+    const {param, args: [exe, script, ...args]} = subprocess.parseArgv();
+
+    switch (args.shift()) {
 
         case 'install':
             await _loadRepository();
