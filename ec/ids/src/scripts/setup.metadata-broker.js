@@ -33,10 +33,12 @@ awaitMain(async function Main() {
             break;
 
     }
+    console.log(`done`);
 }); // Main
 
 async function _loadRepository() {
     await git('clone', config.metadata_broker.repo_url, config.metadata_broker.repo_folder);
+    console.log(`cloned metadata-broker repository`);
 } // _loadRepository
 
 async function _createTlsCertificate() {
@@ -58,6 +60,7 @@ async function _createTlsCertificate() {
         in:  'key.pem',
         out: 'server.key'
     });
+    console.log(`created self signed tls certificate`);
 } // _createTlsCertificate
 
 async function _modifyDockerCompose() {
@@ -71,12 +74,15 @@ async function _modifyDockerCompose() {
             .replace(/- "443:443"/g, '- "8443:443"')
             .replace(/- "80:80"/g, '- "8480:80"');
     await writeFile(config.metadata_broker.docker_compose_file, editedComposeFile);
+    console.log(`modified port and volume binding for docker-compose`);
 } // _modifyDockerCompose
 
 async function _createContainer() {
     await dockerCompose('pull');
+    console.log(`pulled metadata-broker container`);
 } // _createContainer
 
 async function _runApplication() {
     await dockerCompose('up', {detach: true});
+    console.log(`started metadata-broker application`);
 } // _runApplication

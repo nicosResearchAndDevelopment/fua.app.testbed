@@ -36,10 +36,12 @@ util.awaitMain(async function Main() {
             break;
 
     }
+    console.log(`done`);
 }); // Main
 
 async function _loadRepository() {
     await git('clone', config.omejdn_daps.repo_url, config.omejdn_daps.repo_folder);
+    console.log(`cloned omejdn-daps repository`);
 } // _loadRepository
 
 async function _createImage() {
@@ -48,6 +50,7 @@ async function _createImage() {
     await docker('build', {
         tag: config.omejdn_daps.image_name
     }, config.omejdn_daps.repo_folder);
+    console.log(`created omejdn-daps image`);
 } // _createImage
 
 async function _createContainer() {
@@ -60,44 +63,18 @@ async function _createContainer() {
             config.omejdn_daps.keys_folder + ':/opt/keys'
         ]
     }, config.omejdn_daps.image_name);
+    console.log(`created omejdn-daps container`);
 } // _createContainer
 
 async function _runApplication() {
     await docker('start', config.omejdn_daps.container_name);
+    console.log(`started omejdn-daps application`);
 } // _runApplication
-
-async function _addClientCertificate_old(param, ...args) {
-    util.assert(util.isString(param.privateKey), 'missing --privateKey');
-    util.assert(util.isString(param.SKI), 'missing --SKI');
-    util.assert(util.isString(param.AKI), 'missing --AKI');
-    util.assert(util.isString(param.redirectUri), 'missing --redirectUri');
-    // SEE https://github.com/International-Data-Spaces-Association/IDS-G/blob/main/Components/IdentityProvider/DAPS/README.md
-    // TODO add option for scopes and attributes
-    const
-        clientId    = `${param.SKI}:${param.AKI}`,
-        certFile    = Buffer.from(clientId).toString('base64') + '.cert',
-        clientEntry = `- client_id: ${clientId}\n` +
-            '  allowed_scopes:\n' +
-            '    - omejdn:api\n' +
-            `  redirect_uri: ${param.redirectUri}\n` +
-            '  attributes: []\n' +
-            `  certfile: ${certFile}`;
-
-    await openssl('req', {
-        new:   true,
-        x509:  true,
-        nodes: true,
-        batch: true,
-        days:  param.days || 365,
-        key:   param.privateKey,
-        out:   certFile
-    });
-
-    await fs.appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
-} // _addClientCertificate_old
 
 async function _addClientCertificate(param) {
     util.assert(util.isString(param.load), 'missing --load');
+    // SEE https://github.com/International-Data-Spaces-Association/IDS-G/blob/main/Components/IdentityProvider/DAPS/README.md
+    // TODO add option for scopes and attributes
     const
         client      = require(param.load),
         clientId    = `${client.meta.SKI}:${client.meta.AKI}`,
@@ -105,9 +82,9 @@ async function _addClientCertificate(param) {
         clientEntry = `- client_id: ${clientId}\n` +
             '  allowed_scopes:\n' +
             '    - omejdn:api\n' +
-            `  redirect_uri: http://localhost\n` +
             '  attributes: []\n' +
             `  certfile: ${certFile}`;
-    await fs.writeFile(util.joinPath(config.omejdn_daps.keys_folder, certFile), client.cert);
+    await fs.writeFile(util.joinPath(config.omejdn_daps.keys_folder, certFile), client.cert, {flag: 'wx'});
     await fs.appendFile(config.omejdn_daps.clients_file, '\n' + clientEntry);
+    console.log(`added certificate for ${clientId}`);
 } // _addClientCertificate
