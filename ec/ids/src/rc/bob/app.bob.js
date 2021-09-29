@@ -70,18 +70,20 @@ module.exports = ({
 
                         socket_controller = socket;
                         //debugger;
-                        socket_controller.on('rc_requestConnectorSelfDescription', async (param, callback) => {
+                        socket_controller.on('rc_requestApplicantsSelfDescription', async (param, callback) => {
                             try {
-                                let result = await agent.rc_requestConnectorSelfDescription(param);
+                                let result = await agent.rc_requestApplicantsSelfDescription(param);
                                 callback(null, result);
                             } catch (error) {
                                 callback(error, undefined);
                             } // try
-                        }); // socket.on('rc_requestConnectorSelfDescription')
+                        }); // socket.on('rc_requestApplicantsSelfDescription')
 
-                        socket_controller.on('rc_connectorSelfDescriptionRequest', (param, callback) => {
-                            agent.rc_connectorSelfDescriptionRequest(param, callback);
-                        }); // socket.on('rc_connectorSelfDescriptionRequest')
+                        socket_controller.on('rc_waitForApplicantsSelfDescriptionRequest', (param, callback) => {
+                            agent.rc_waitForApplicantsSelfDescriptionRequest(param, (error, data) => {
+                                callback(error, data);
+                            });
+                        }); // socket.on('rc_waitForApplicantsSelfDescriptionRequest')
 
                         socket_controller.on('rc_getSelfDescriptionFromRC', async (param, callback) => {
                             try {
@@ -90,7 +92,7 @@ module.exports = ({
                             } catch (error) {
                                 callback(error, undefined);
                             } // try
-                        }); // socket.on('rc_connectorSelfDescriptionRequest')
+                        }); // socket.on('rc_getSelfDescriptionFromRC')
 
                         //socket.on('on_RC_IDLE', (data, callback) => {
                         //    agent.on('idle', callback);

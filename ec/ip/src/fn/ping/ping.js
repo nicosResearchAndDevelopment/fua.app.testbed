@@ -5,31 +5,42 @@ const
     cmd_ping           = ExecutionProcess('ping', {encoding: 'cp437'})
 ; // const
 
+function _parser_(message, search) {
+    let result = false;
+    result     = (message.indexOf(search) > -1);
+    return result;
+}
+
 async function fn_ping(param) {
     const
-        result = {
+        result  = {
             isAlive: false
         },
-        output = await cmd_ping({'n': 1}, param.host),
-        parts  = output.split('\n\n');
+        output  = await cmd_ping({'n': 1}, param.host),
+        //parts  = output.split('\n\n');
+        parts   = output.split(/\r?\n\r?\n/)
+    ;
+    let
+        isAlive = false
+    ;
 
+    //let isAlive = _parser_(output, "Empfangen = 1");
     // TODO refine the result
 
     result.info      = parts[0];
     result.statistic = parts[1] || null;
 
     if (result.statistic !== null)
-        result.isAlive = true;
+        isAlive = true;
+
+    result.isAlive = isAlive;
 
     return result;
 }
 
 Object.defineProperties(fn_ping, {
-    'fno:name':       {value: "ping"},
-    'fno:solves':     {value: `${id}problem`},
-    'fno:implements': {value: `${id}algorithm`},
-    'fno:output':     {value: `${id}output`},
-    'version':        {value: version}
+    id:       {value: id},
+    _parser_: {value: _parser_}
 });
 
 module.exports = fn_ping;

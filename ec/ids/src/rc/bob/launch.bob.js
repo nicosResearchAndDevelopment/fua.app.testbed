@@ -26,7 +26,7 @@ config['tlsPrivateKey']       = crypto.createPrivateKey(cert['tls-server'].key.t
             'id':     config.id,
             'SKIAKI': config.SKIAKI,
             //
-            'connectorPrivateKey': config.connectorPrivateKey,
+            'privateKey': config.connectorPrivateKey,
             //
             'DAPS': config.DAPS,
             //

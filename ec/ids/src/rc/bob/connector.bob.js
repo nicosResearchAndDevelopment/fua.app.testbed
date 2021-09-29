@@ -1,20 +1,18 @@
 const
     path            = require('path'),
-    crypto          = require("crypto"),
+    //
+    fetch           = require("node-fetch"),
     //
     util            = require('@nrd/fua.core.util'),
+    uuid            = require('@nrd/fua.core.uuid'),
     //
     {BaseConnector} = require(path.join(util.FUA_JS_LIB, 'ids/ids.agent.BaseConnector/src/ids.agent.BaseConnector.js'))
 ; // const
 
 //region fn
-function timestamp() {
-    return (new Date).toISOString();
-}
 
 function randomLeave(pre) {
-    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
-    //return pre + Buffer.from(`${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`).toString('base64');
+    return `${pre}${uuid.v4()}`;
 }
 
 //endregion fn
@@ -30,7 +28,7 @@ class BobConnector extends BaseConnector {
                 'prov':   this.id,
                 'method': "idle",
                 'step':   "timeout_reached",
-                'start':  (new Date).toISOString()
+                'start':  util.timestamp()
             }
         ;
         event.end = event.start;
@@ -65,69 +63,51 @@ class BobConnector extends BaseConnector {
         this.#idle_timeout = ((idle_timeout && idle_timeout >= 1) ? idle_timeout : 1);
 
         Object.defineProperties(this, {
-            'idle_timeout':    {
-                get() {
-                    return this.#idle_timeout;
-                }
-            },
-            'selfDescription': {
-                value:          Object.defineProperties(async ({'requester_url': requester_url = undefined}) => {
-                    clearTimeout(this.#idle_semaphore);
-                    let
-                        //event                 = {
-                        //    'id':        randomLeave(this.id),
-                        //    'prov':      this.id,
-                        //    'method':    "selfDescription",
-                        //    'step':      "called",
-                        //    'start':     timestamp(),
-                        //    'requester': requester_url
-                        //},
-                        about_waiter_callback = this.#about_wait_map.get(requester_url)
-                    ;
-                    try {
-                        let selfDescription_;
-                        if
-                        (about_waiter_callback) {
-                            this.#about_wait_map.delete(requester_url);
-                            about_waiter_callback(null, {
-                                'requester_url':          requester_url,
-                                'SelfDescriptionFetched': true
-                            });
-                        } // if ()
-
-                        //event.end = timestamp();
-                        //this.emit('event', null, event);
-
-                        selfDescription_               = await super.selfDescription();
-                        selfDescription_['rdfs:label'] = {
-                            '@type':  "xsd:string",
-                            '@value': "tb.rc.ids.bc-bob"
-                        };
-
-                        // TODO : check catch(jex) : throw(new Error(``));
-
-                        this.#idle_semaphore = this.#idle(this.#idle_timeout);
-                        return selfDescription_;
-
-                    } catch (jex) {
-
-                        this.emit('event', jex, undefined);
-                        this.#idle_semaphore = this.#idle(this.#idle_timeout);
-
-                        if (about_waiter_callback) {
-                            this.#about_wait_map.delete(requester_url);
-                            about_waiter_callback(jex, undefined);
-                        } // if ()
-                    } // try
-                }, {
-                    'on': {
-                        value:         (requester_url, callback) => {
-                            this.#about_wait_map.set(requester_url, callback);
-                        }, enumerable: false
+                'idle_timeout':    {
+                    get() {
+                        return this.#idle_timeout;
                     }
-                }), enumerable: false
-            } // provideSelfDescription
-        }); // bject.defineProperties(this)
+                },
+                'selfDescription': {
+                    value:          Object.defineProperties(async ({'requester_url': requester_url = undefined}) => {
+                        clearTimeout(this.#idle_semaphore);
+
+                        let
+                            about_waiter_callback = this.#about_wait_map.get(requester_url)
+                        ;
+                        try {
+
+                            if (about_waiter_callback) {
+                                this.#about_wait_map.delete(requester_url);
+                                about_waiter_callback(null, {
+                                    'requester_url':          requester_url,
+                                    'SelfDescriptionFetched': true
+                                });
+                            } // if ()
+
+                            this.#idle_semaphore = this.#idle(this.#idle_timeout);
+                            return {'@type': "ids:SelfDescription"};
+
+                        } catch (jex) {
+
+                            this.emit('event', jex, undefined);
+                            this.#idle_semaphore = this.#idle(this.#idle_timeout);
+
+                            if (about_waiter_callback) {
+                                this.#about_wait_map.delete(requester_url);
+                                about_waiter_callback(jex, undefined);
+                            } // if ()
+                        } // try
+                    }, {
+                        'on': {
+                            value:         (requester_url, callback) => {
+                                this.#about_wait_map.set(requester_url, callback);
+                            }, enumerable: false
+                        }
+                    }), enumerable: false
+                } // provideSelfDescription
+            }
+        ); // Object.defineProperties(this)
 
         if (this.#idle_timeout)
             this.#idle_semaphore = this.#idle(this.#idle_timeout);
@@ -140,29 +120,58 @@ class BobConnector extends BaseConnector {
     } // constructor()
 
     //region rc
-    async rc_requestConnectorSelfDescription(param) {
-        clearTimeout(this.#idle_semaphore);
-        try {
-            let result = {
-                'id':                randomLeave(this.id),
-                'thread':            param.thread,
-                'prov':              `${this.id}rc_requestConnectorSelfDescription`,
-                'start':             (new Date).toISOString(),
-                'operationalResult': undefined
-            };
-            // TODO : fetch
-            let that   = `${param.schema}${param.host}${param.path}`;
+    async rc_requestApplicantsSelfDescription(param) {
 
-            result.operationalResult = {'prov': this.id};
-            result.end               = (new Date).toISOString();
-            this.#idle_semaphore     = this.#idle(this.#idle_timeout);
+        clearTimeout(this.#idle_semaphore);
+
+        let
+            event = {
+                'id':     randomLeave(this.id + "event/"),
+                'type':   "event",
+                'prov':   this.id,
+                'method': "rc_requestApplicantsSelfDescription",
+                'step':   "called",
+                'start':  util.timestamp()
+            }
+        ;
+        try {
+
+            let
+                result = {
+                    'id':                randomLeave(`${this.id}rc_requestApplicantsSelfDescription/result/`),
+                    'thread':            param.thread,
+                    'prov':              `${this.id}rc_requestApplicantsSelfDescription`,
+                    'target':            `${param.schema}://${param.host}${param.path}`,
+                    'operationalResult': undefined
+                }
+            ; // let
+
+            result.start = event.start;
+
+            const
+                response = await fetch(result.target),
+                body     = await response.text()
+            ;
+
+            // TODO :
+            result.operationalResult = JSON.parse(body);
+            result.end               = util.timestamp();
+
+            event.end = result.end;
+            this.emit('event', null, event);
+
+            this.#idle_semaphore = this.#idle(this.#idle_timeout);
             return result;
         } catch (jex) {
+            event.error = jex;
+            event.end   = util.timestamp();
+            this.emit('event', event, undefined);
             throw(jex);
         } // try
-    } // rc_requestConnectorSelfDescription()
+    } // rc_requestApplicantsSelfDescription()
 
-    async rc_connectorSelfDescriptionRequest(param, callback) {
+    async rc_waitForApplicantsSelfDescriptionRequest(param, callback) {
+
         clearTimeout(this.#idle_semaphore);
 
         try {
@@ -171,8 +180,8 @@ class BobConnector extends BaseConnector {
                 result = {
                     'id':                randomLeave(this.id),
                     'thread':            param.thread,
-                    'prov':              `${this.id}rc_connectorSelfDescriptionRequest`,
-                    'start':             (new Date).toISOString(),
+                    'prov':              `${this.id}rc_waitForApplicantsSelfDescriptionRequest`,
+                    'start':             util.timestamp(),
                     'operationalResult': undefined
                 },
                 semaphore
@@ -186,8 +195,9 @@ class BobConnector extends BaseConnector {
                 if (error)
                     callback(error, undefined);
 
+                clearTimeout(semaphore);
                 result.operationalResult = data;
-                result.end               = (new Date).toISOString();
+                result.end               = util.timestamp();
 
                 this.#idle_semaphore = this.#idle(this.#idle_timeout);
                 callback(null, result);
@@ -197,13 +207,13 @@ class BobConnector extends BaseConnector {
                 this.#about_wait_map.delete(param.requester_url);
 
                 this.#idle_semaphore = this.#idle(this.#idle_timeout);
-                callback({'message': `tb.ec.ids.rc : rc_connectorSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
+                callback({'message': `tb.ec.ids.rc : rc_waitForApplicantsSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
             }, (param.timeout * 1000));
 
         } catch (jex) {
             callback(jex, undefined);
         } // try
-    } // rc_connectorSelfDescriptionRequest
+    } // rc_waitForApplicantsSelfDescriptionRequest
     //endregion rc
 
 } // BobConnector

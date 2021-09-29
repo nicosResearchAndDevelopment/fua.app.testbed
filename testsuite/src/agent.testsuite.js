@@ -1,21 +1,29 @@
 const
     path = require('path'),
     //
-    util = require('@nrd/fua.core.util')
+    util = require('@nrd/fua.core.util'),
+    uuid = require('@nrd/fua.core.uuid')
     //
     //{Self}   = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
     //{Domain} = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.js'))
 ;
 
-//region error
+//region ERROR
+const
+    ERROR_CODE_ErrorTestsuiteIdIsMissing = "ids.agent.Testsuite.ERROR.1"
+; // const
 
 class ErrorTestsuiteIdIsMissing extends Error {
-    constructor(message) {
-        super(`fua.agent.testsuite: Testsuite :: ${message}`);
+    constructor({prov: prov}) {
+        super(`fua.agent.TestsuiteAgent : id is missing.`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestsuiteIdIsMissing;
+        this.prov = prov;
+        Object.freeze(this);
     }
 }
 
-//endregion error
+//endregion ERROR
 
 async function TestsuiteAgent({
                                   'id':      id = undefined,
@@ -28,11 +36,13 @@ async function TestsuiteAgent({
     let
         testsuite = {},
         testbed_emit
-    ;
+    ; // let
 
-    //if (new.target) {
     if (!id)
-        throw new ErrorTestsuiteIdIsMissing(`id is missing on node.`)
+        throw (new ErrorTestsuiteIdIsMissing({
+            prov: 'agent.TestsuiteAgent.constructor'
+        }));
+
     Object.defineProperties(testsuite, {
         'id':   {value: id, enumerable: true},
         'test': {
@@ -49,17 +59,18 @@ async function TestsuiteAgent({
         //    value: testbed, enumerable: true
         //}
     });
-    //} // if ()
 
     //region testbed io client
-    const io = require("socket.io-client");
 
-    const testbed_socket = io(`${testbed.schema}://${testbed.host}:${testbed.port}/execute`, {
-        reconnectionDelayMax: 10000,
-        reconnect:            true,
-        rejectUnauthorized:   false,
-        auth:                 testbed.auth
-    });
+    const
+        io             = require("socket.io-client"),
+        testbed_socket = io(`${testbed.schema}://${testbed.host}:${testbed.port}/execute`, {
+            reconnectionDelayMax: 10000,
+            reconnect:            true,
+            rejectUnauthorized:   false,
+            auth:                 testbed.auth
+        })
+    ; // const
 
     testbed_socket.on("connect", async () => {
 
@@ -80,15 +91,17 @@ async function TestsuiteAgent({
                 'param':   {
                     'url': alice
                 }
-            };
-        param     = { // REM : connect ALICE
+            }
+        ; // let
+
+        param = { // REM : connect ALICE
             'ec':      "ids",
             'command': "getSelfDescriptionFromRC",
             'param':   {
                 'rc': alice
             }
         };
-        param     = { // REM : connect ALICE
+        param = { // REM : connect ALICE
             'ec':      "ids",
             'command': "requestConnectorSelfDescription",
             'param':   {
@@ -117,6 +130,7 @@ async function TestsuiteAgent({
             console.error(error);
             debugger;
         } // try
+
         //endregion TEST
 
     });

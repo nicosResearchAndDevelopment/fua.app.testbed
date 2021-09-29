@@ -27,7 +27,7 @@ config['cert_client'] = undefined;
             'id':     config.id,
             'SKIAKI': config.SKIAKI,
             //
-            'connectorPrivateKey': config.connectorPrivateKey,
+            'privateKey': config.connectorPrivateKey,
             //
             'idle_timeout': config.idle_timeout,
             //

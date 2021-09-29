@@ -1,22 +1,18 @@
 const
     path            = require('path'),
-    crypto          = require("crypto"),
     //
     fetch           = require("node-fetch"),
     //
     util            = require('@nrd/fua.core.util'),
+    uuid            = require('@nrd/fua.core.uuid'),
     //
     {BaseConnector} = require(path.join(util.FUA_JS_LIB, 'ids/ids.agent.BaseConnector/src/ids.agent.BaseConnector.js'))
 ; // const
 
 //region fn
-function timestamp() {
-    return (new Date).toISOString();
-}
 
 function randomLeave(pre) {
-    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
-    //return pre + Buffer.from(`${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`).toString('base64');
+    return `${pre}${uuid.v4()}`;
 }
 
 //endregion fn
@@ -32,7 +28,7 @@ class AliceConnector extends BaseConnector {
                 'prov':   this.id,
                 'method': "idle",
                 'step':   "timeout_reached",
-                'start':  (new Date).toISOString()
+                'start':  util.timestamp()
             }
         ;
         event.end = event.start;
@@ -49,10 +45,10 @@ class AliceConnector extends BaseConnector {
     #about_wait_map = new Map();
 
     constructor({
-                    'id':                  id,
-                    'SKIAKI':              SKIAKI,
-                    'connectorPrivateKey': privateKey,
-                    'DAPS':                DAPS = {'default': undefined},
+                    'id':         id,
+                    'SKIAKI':     SKIAKI,
+                    'privateKey': privateKey,
+                    'DAPS':       DAPS = {'default': undefined},
                     //
                     'idle_timeout': idle_timeout = 30 // REM : seconds
                 }) {
@@ -124,7 +120,7 @@ class AliceConnector extends BaseConnector {
     } // constructor()
 
     //region rc
-    async rc_requestConnectorSelfDescription(param) {
+    async rc_requestApplicantsSelfDescription(param) {
 
         clearTimeout(this.#idle_semaphore);
 
@@ -133,18 +129,18 @@ class AliceConnector extends BaseConnector {
                 'id':     randomLeave(this.id + "event/"),
                 'type':   "event",
                 'prov':   this.id,
-                'method': "rc_requestConnectorSelfDescription",
+                'method': "rc_requestApplicantsSelfDescription",
                 'step':   "called",
-                'start':  (new Date).toISOString()
+                'start':  util.timestamp()
             }
         ;
         try {
 
             let
                 result = {
-                    'id':                randomLeave(`${this.id}rc_requestConnectorSelfDescription/result/`),
+                    'id':                randomLeave(`${this.id}rc_requestApplicantsSelfDescription/result/`),
                     'thread':            param.thread,
-                    'prov':              `${this.id}rc_requestConnectorSelfDescription`,
+                    'prov':              `${this.id}rc_requestApplicantsSelfDescription`,
                     'target':            `${param.schema}://${param.host}${param.path}`,
                     'operationalResult': undefined
                 }
@@ -159,24 +155,22 @@ class AliceConnector extends BaseConnector {
 
             // TODO :
             result.operationalResult = JSON.parse(body);
-            result.end               = timestamp();
+            result.end               = util.timestamp();
 
             event.end = result.end;
             this.emit('event', null, event);
-
-            //throw(new Error(``));
 
             this.#idle_semaphore = this.#idle(this.#idle_timeout);
             return result;
         } catch (jex) {
             event.error = jex;
-            event.end   = timestamp();
+            event.end   = util.timestamp();
             this.emit('event', event, undefined);
             throw(jex);
         } // try
-    } // rc_requestConnectorSelfDescription()
+    } // rc_requestApplicantsSelfDescription()
 
-    async rc_connectorSelfDescriptionRequest(param, callback) {
+    async rc_waitForApplicantsSelfDescriptionRequest(param, callback) {
 
         clearTimeout(this.#idle_semaphore);
 
@@ -186,8 +180,8 @@ class AliceConnector extends BaseConnector {
                 result = {
                     'id':                randomLeave(this.id),
                     'thread':            param.thread,
-                    'prov':              `${this.id}rc_connectorSelfDescriptionRequest`,
-                    'start':             (new Date).toISOString(),
+                    'prov':              `${this.id}rc_waitForApplicantsSelfDescriptionRequest`,
+                    'start':             util.timestamp(),
                     'operationalResult': undefined
                 },
                 semaphore
@@ -203,7 +197,7 @@ class AliceConnector extends BaseConnector {
 
                 clearTimeout(semaphore);
                 result.operationalResult = data;
-                result.end               = (new Date).toISOString();
+                result.end               = util.timestamp();
 
                 this.#idle_semaphore = this.#idle(this.#idle_timeout);
                 callback(null, result);
@@ -213,13 +207,13 @@ class AliceConnector extends BaseConnector {
                 this.#about_wait_map.delete(param.requester_url);
 
                 this.#idle_semaphore = this.#idle(this.#idle_timeout);
-                callback({'message': `tb.ec.ids.rc : rc_connectorSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
+                callback({'message': `tb.ec.ids.rc : rc_waitForApplicantsSelfDescriptionRequest : timeout <${param.timeout}sec> reached.`}, undefined);
             }, (param.timeout * 1000));
 
         } catch (jex) {
             callback(jex, undefined);
         } // try
-    } // rc_connectorSelfDescriptionRequest
+    } // rc_waitForApplicantsSelfDescriptionRequest
     //endregion rc
 
 } // AliceConnector

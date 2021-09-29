@@ -2,6 +2,7 @@ const
     path         = require('path'),
     //
     util         = require('@nrd/fua.core.util'),
+    uuid         = require("@nrd/fua.core.uuid"),
     rdf          = require('@nrd/fua.module.rdf'),
 
     EventEmitter = require('events'),
@@ -36,36 +37,73 @@ const
     //{ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
     //{ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
     DAPS         = false
-;const {exec}    = require("child_process");
+; // const
 
-//const testbed = require("./code/main.testbed.js");
-
-//region error
+//region ERROR
+const
+    ERROR_CODE_ErrorTestbedIdIsMissing            = "fua.agent.TestbedAgent.error.1",
+    ERROR_CODE_ErrorTestbedUnkownCommand          = "fua.agent.TestbedAgent.error.2",
+    ERROR_CODE_ErrorTestbedUnkownEcoSystem        = "fua.agent.TestbedAgent.error.3",
+    ERROR_CODE_ErrorTestbedUnknownOnTopic         = "fua.agent.TestbedAgent.error.4",
+    ERROR_CODE_ErrorTestbedCallbackMissingOnTopic = "fua.agent.TestbedAgent.error.5"
+; // const
 
 class ErrorTestbedIdIsMissing extends Error {
-    constructor(message) {
-        super(`${timestamp()}] : fua.agent.Testbed : Testbed :: ${message}`);
-        this.code = "ErrorTestbedIdIsMissing";
+    constructor({prov: prov}) {
+        super(`fua.agent.TestbedAgent : id is missing.`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestbedIdIsMissing;
+        this.prov = prov;
+        Object.freeze(this);
+    }
+}
+
+class ErrorTestbedUnkownEcoSystem extends Error {
+    constructor({prov: prov, ec: ec}) {
+        super(`fua.agent.TestbedAgent : unknow EcoSystem <${ec}>.`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestbedUnkownEcoSystem;
+        this.prov = prov;
+        Object.freeze(this);
     }
 }
 
 class ErrorTestbedUnkownCommand extends Error {
-    constructor(message) {
-        super(`${timestamp()}] : fua.agent.Testbed : Testbed :: ${message}`);
-        this.code = "ErrorTestbedUnkownCommand";
+    constructor({prov: prov, command: command}) {
+        super(`fua.agent.TestbedAgent : unknow command <${command}>.`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestbedUnkownCommand;
+        this.prov = prov;
+        Object.freeze(this);
     }
 }
 
-//endregion error
-
-//region fn
-function timestamp() {
-    return (new Date).toISOString();
+class ErrorTestbedUnknownOnTopic extends Error {
+    constructor({prov: prov, topic: topic}) {
+        super(`fua.agent.TestbedAgent : unknow on topic <${topic}>.`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestbedUnknownOnTopic;
+        this.prov = prov;
+        Object.freeze(this);
+    }
 }
 
+class ErrorTestbedCallbackMissingOnTopic extends Error {
+    constructor({prov: prov, topic: topic}) {
+        super(`fua.agent.TestbedAgent : on-callback  missing (topic <${topic}>).`);
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.code = ERROR_CODE_ErrorTestbedCallbackMissingOnTopic;
+        this.prov = prov;
+        Object.freeze(this);
+    }
+}
+
+//endregion ERROR
+
+//region fn
+
 function randomLeave(pre) {
-    return `${pre}${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`;
-    //return pre + Buffer.from(`${(new Date).valueOf()}_${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 100000)}`).toString('base64');
+    return `${pre}${uuid.v4()}`;
 }
 
 //endregion fn
@@ -101,7 +139,7 @@ async function TestbedAgent({
 
     //if (new.target) {
     if (!id)
-        throw new ErrorTestbedIdIsMissing(`id is missing on node`)
+        throw (new ErrorTestbedIdIsMissing({prov: "fua.agent.TestbedAgent.constructor"}));
 
     //region system
     //endregion system
@@ -265,16 +303,19 @@ async function TestbedAgent({
                             eventEmitter['on'](topic, callback);
                             result = true;
                         } else {
-                            error = new Error(`fua.agent.Testbed : callback is missing on topic < ${topic} >.`);
+                            error = (new ErrorTestbedCallbackMissingOnTopic({
+                                prov:  "fua.agent.TestbedAgent.on",
+                                topic: topic
+                            }));
                         } // if ()
                     } else {
-                        error = new Error(`fua.agent.Testbed : topic < ${topic} > not known.`);
+                        error = (new ErrorTestbedUnknownOnTopic({prov: "fua.agent.TestbedAgent.on", topic: topic}));
                     } // if ()
                 } catch (jex) {
-                    throw jex;
+                    throw (jex);
                 } // try
                 if (error)
-                    throw error;
+                    throw (error);
                 return result;
             }, {
                 'id': {value: `${id}on`, enumerable: true}
@@ -311,11 +352,12 @@ async function TestbedAgent({
                     ;
 
                     if (!ec) {
-                        throw(new Error(`agent.Testbed : 'executeTest' : unkown ec <${param.ec}>.`));
+                        throw(new ErrorTestbedUnkownEcoSystem({prov: `${id}executeTest`, ec: ed}));
+
                     } else {
                         command = ec[param.command];
                         if (!command) {
-                            throw(new ErrorTestbedUnkownCommand(`unknown command <${ec.command}>.`));
+                            throw(new ErrorTestbedUnkownCommand({prov: `${id}executeTest`, command: command}));
                         } else {
                             param.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
                             let result         = await command(param.param);
@@ -323,7 +365,7 @@ async function TestbedAgent({
                         } // if ()
                     } // if ()
                 } catch (jex) {
-                    throw jex;
+                    throw (jex);
                 } // try
             }, enumerable: true
         } // executeTest
@@ -424,15 +466,7 @@ async function TestbedAgent({
     ec['ids'] = ids;
     Object.freeze(ec['ids']);
 
-    //region ec.ids : connector
-    const
-        {exec} = require('child_process')
-    ;
-
-    //endregion ec.ids : connector
-
-    if
-    (DAPS) {
+    if (DAPS) {
         //Object.defineProperty(ec['ids'], 'ids', {
         //
         //});
@@ -453,6 +487,7 @@ async function TestbedAgent({
             ), enumerable: false
         }); // Object.defineProperty()
     } // if (DAPS)
+
     //endregion ec.ids
     //endregion ec
 
@@ -467,10 +502,7 @@ async function TestbedAgent({
             eventEmitter['emit'](value, data);
         });
     } // for()
-    //} // if (new.target)
 
-    //
-    //
     testbedAgent['on'](implemented_task['scheduler_idle'], (data) => {
         //debugger;
         console.log(`'scheduler_idle' : data <${JSON.stringify(data)}>`);

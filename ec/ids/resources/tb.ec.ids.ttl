@@ -78,7 +78,7 @@ ec-ids:
     rdfs:isDefinedBy                        ec-ids: ;
 .
 
-<https://nicos-gbx.nicos-rd.com/>
+<https://gbx.nicos-rd.com/>
     a        tbm:Applicant_IDS_Connector ;
     fua:port "8081"^^xsd:nonNegativeInteger ; ## default = 80
 .
@@ -120,7 +120,6 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
 ## REM: docker, local
     fua:port "4567"^^xsd:nonNegativeInteger ; ## default = 80
 .
-
 
 <https://ids-rc.nicos-rd.com/>
     a        idsecm:DAPS ;
