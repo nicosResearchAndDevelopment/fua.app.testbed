@@ -2,6 +2,7 @@ const
     EventEmitter  = require("events"),
     _default_uri_ = "urn:tb:ec:net:",
     sniff         = require(`./fn/sniff/sniff.js`),
+    sniffer       = require(`./fn/sniff/sniffer.js`),
     processes     = new Map()
 ;
 let
@@ -10,7 +11,7 @@ let
 ;
 
 Object.defineProperties(ec_net, {
-    uri:   {
+    uri:           {
         set:          (uri) => {
             if (_uri_ === _default_uri_)
                 _uri_ = uri;
@@ -21,7 +22,7 @@ Object.defineProperties(ec_net, {
         }
         , enumerable: false
     },
-    sniff: {
+    sniff:         {
         value:         async (param) => {
             try {
                 let _sniff_  = sniff(param);
@@ -35,7 +36,7 @@ Object.defineProperties(ec_net, {
             } // try
         }, enumerable: false
     }, // sniff
-    kill:  {
+    kill:          {
         value:         (process) => {
             processes.get(process).kill();
             ec_net.emit('event', null, {
@@ -43,7 +44,17 @@ Object.defineProperties(ec_net, {
                 killed:  true
             });
         }, enumerable: false
-    } // kill
+    }, // kill
+    start_sniffer: {
+        value:      sniffer.start,
+        enumerable: false
+    }, // start_sniffer
+    stop_sniffer:  {
+        value:      sniffer.stop,
+        enumerable: false
+    } // stop_sniffer
 });
+
+sniffer.listen('event', (err, data) => ec_net.emit('event', err, data));
 
 exports.net = ec_net;
