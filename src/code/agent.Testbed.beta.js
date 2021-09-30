@@ -37,7 +37,7 @@ const
     //{ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
     //{ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
     DAPS         = false
-; // const
+;const {ip}      = require("../../ec/ip/src/tb.ec.ip.js"); // const
 
 //region ERROR
 const
@@ -388,6 +388,26 @@ async function TestbedAgent({
     ec['ip'] = ip;
     Object.freeze(ec['ip']);
     //endregion ec.ip
+
+    //region ec.net
+    // TODO : instance shield
+    //let {net} = require("../../ec/net/src/tb.ec.net.js");
+    //net.uri   = `${id}ec/net/`;
+    //net.on('event', (error, data) => {
+    //    eventEmitter.emit('event', error, data);
+    //    debugger;
+    //});
+    //net.on('error', (error) => {
+    //    //eventEmitter.emit('event', error, data);
+    //    debugger;
+    //});
+    //ec['net'] = net;
+    //Object.freeze(ec['net']);
+    //region TEST
+    //await net.sniff();
+    //debugger;
+    //endregion TEST
+    //endregion ec.net
 
     //region ec.ids
 

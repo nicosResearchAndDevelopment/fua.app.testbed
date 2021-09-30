@@ -1,6 +1,6 @@
 const
     EventEmitter  = require("events"),
-    ping          = require("ping"),
+    //ping          = require("ping"),
     util          = require("@nrd/fua.core.util"),
     _default_uri_ = "urn:tb:ec:ip:"
 ;
@@ -27,7 +27,7 @@ Object.defineProperties(ec_ip, {
         , enumerable: false
     },
     'ping': {value: require(`./fn/ping/ping.js`), enumerable: false}
-    // TODO : 'portScan': {value: require(`./fn/ping/ping.js`), enumerable: false}
+    // TODO : 'portScan': {value: require(`./fn/ping/sniff.js`), enumerable: false}
 });
 
 exports.ip = ec_ip;
