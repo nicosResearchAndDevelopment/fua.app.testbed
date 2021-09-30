@@ -123,13 +123,13 @@ async function TestsuiteAgent({
         };
 
         let result;
-        try {
-            result = await testsuite.test(param);
-            debugger;
-        } catch (error) {
-            console.error(error);
-            debugger;
-        } // try
+        //try {
+        //    result = await testsuite.test(param);
+        //    debugger;
+        //} catch (error) {
+        //    console.error(error);
+        //    debugger;
+        //} // try
 
         //endregion TEST
 
