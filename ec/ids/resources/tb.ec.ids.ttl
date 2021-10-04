@@ -127,6 +127,9 @@ cF7ogfDRmadLrqnQFG2oqGSHgN0WU7YLZSs9nLP1O4Qn4AeBcG8N
 .
 
 ##region connectors
+
+# Subject: C = DE, ST = NRW, O = nicos AG, OU = nicos Research & Development GmbH, CN = ec, CN = ids, CN = alice
+
 <https://alice.nicos-rd.com/>
     a                   idsecm:BaseConnector ;
     fua:port            "8099"^^xsd:nonNegativeInteger ; ## default = 80
