@@ -1,11 +1,10 @@
 const
     path         = require('path'),
+    EventEmitter = require('events'),
     //
     util         = require('@nrd/fua.core.util'),
     uuid         = require("@nrd/fua.core.uuid"),
     rdf          = require('@nrd/fua.module.rdf'),
-
-    EventEmitter = require('events'),
     //{Self}      = require(path.join(util.FUA_JS_LIB, 'agent.Self/src/agent.Self.js')),
     // TODO : beta
     {Time}       = require(path.join(util.FUA_JS_LIB, 'agent.Time/src/agent.Time.js')),
@@ -37,7 +36,9 @@ const
     //{ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
     //{ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
     DAPS         = false
-;const {ip}      = require("../../ec/ip/src/tb.ec.ip.js"); // const
+;
+
+const {ip}      = require("../../ec/ip/src/tb.ec.ip.js"); // const
 
 //region ERROR
 const
@@ -51,7 +52,7 @@ const
 class ErrorTestbedIdIsMissing extends Error {
     constructor({prov: prov}) {
         super(`fua.agent.TestbedAgent : id is missing.`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestbedIdIsMissing;
         this.prov = prov;
         Object.freeze(this);
@@ -61,7 +62,7 @@ class ErrorTestbedIdIsMissing extends Error {
 class ErrorTestbedUnkownEcoSystem extends Error {
     constructor({prov: prov, ec: ec}) {
         super(`fua.agent.TestbedAgent : unknow EcoSystem <${ec}>.`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestbedUnkownEcoSystem;
         this.prov = prov;
         Object.freeze(this);
@@ -71,7 +72,7 @@ class ErrorTestbedUnkownEcoSystem extends Error {
 class ErrorTestbedUnkownCommand extends Error {
     constructor({prov: prov, command: command}) {
         super(`fua.agent.TestbedAgent : unknow command <${command}>.`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestbedUnkownCommand;
         this.prov = prov;
         Object.freeze(this);
@@ -81,7 +82,7 @@ class ErrorTestbedUnkownCommand extends Error {
 class ErrorTestbedUnknownOnTopic extends Error {
     constructor({prov: prov, topic: topic}) {
         super(`fua.agent.TestbedAgent : unknow on topic <${topic}>.`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestbedUnknownOnTopic;
         this.prov = prov;
         Object.freeze(this);
@@ -91,7 +92,7 @@ class ErrorTestbedUnknownOnTopic extends Error {
 class ErrorTestbedCallbackMissingOnTopic extends Error {
     constructor({prov: prov, topic: topic}) {
         super(`fua.agent.TestbedAgent : on-callback  missing (topic <${topic}>).`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v4()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestbedCallbackMissingOnTopic;
         this.prov = prov;
         Object.freeze(this);
@@ -292,34 +293,35 @@ async function TestbedAgent({
             }, enumerable: false
         },
         'on':                     {
-            value:          Object.defineProperties((topic, callback) => {
-                let
-                    error  = null,
-                    result = false
-                ;
-                try {
-                    if (implemented_task[topic]) {
-                        if (!!callback) {
-                            eventEmitter['on'](topic, callback);
-                            result = true;
+            value:              Object.defineProperties((topic, callback) => {
+                    let
+                        error  = null,
+                        result = false
+                    ;
+                    try {
+                        if (implemented_task[topic]) {
+                            if (!!callback) {
+                                eventEmitter['on'](topic, callback);
+                                result = true;
+                            } else {
+                                error = (new ErrorTestbedCallbackMissingOnTopic({
+                                    prov:  "fua.agent.TestbedAgent.on",
+                                    topic: topic
+                                }));
+                            } // if ()
                         } else {
-                            error = (new ErrorTestbedCallbackMissingOnTopic({
-                                prov:  "fua.agent.TestbedAgent.on",
-                                topic: topic
-                            }));
+                            error = (new ErrorTestbedUnknownOnTopic({prov: "fua.agent.TestbedAgent.on", topic: topic}));
                         } // if ()
-                    } else {
-                        error = (new ErrorTestbedUnknownOnTopic({prov: "fua.agent.TestbedAgent.on", topic: topic}));
-                    } // if ()
-                } catch (jex) {
-                    throw (jex);
-                } // try
-                if (error)
-                    throw (error);
-                return result;
-            }, {
-                'id': {value: `${id}on`, enumerable: true}
-            }), enumerable: true
+                    } catch (jex) {
+                        throw (jex);
+                    } // try
+                    if (error)
+                        throw (error);
+                    return result;
+                },
+                {
+                    'id': {value: `${id}on`, enumerable: true}
+                }), enumerable: true
         }, // on
         'scheduler':              {
             value: new Scheduler(scheduler), enumerable: true
@@ -344,23 +346,23 @@ async function TestbedAgent({
             }, enumerable: true
         }, // inbox
         'executeTest':            {
-            value:         async (param) => {
+            value:         async (data) => {
                 try {
                     let
-                        ec = testbedAgent['ec'][param.ec],
+                        ec = testbedAgent['ec'][data.ec],
                         command
                     ;
 
                     if (!ec) {
-                        throw(new ErrorTestbedUnkownEcoSystem({prov: `${id}executeTest`, ec: ed}));
+                        throw(new ErrorTestbedUnkownEcoSystem({prov: `${id}executeTest`, ec: ec}));
 
                     } else {
-                        command = ec[param.command];
+                        command = ec[data.command];
                         if (!command) {
                             throw(new ErrorTestbedUnkownCommand({prov: `${id}executeTest`, command: command}));
                         } else {
-                            param.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
-                            let result         = await command(param.param);
+                            //token.data.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
+                            let result         = await command(data.param);
                             return result;
                         } // if ()
                     } // if ()
@@ -414,27 +416,24 @@ async function TestbedAgent({
     // TODO : instance shield
 
     const
-        alice_id   = "https://alice.nicos-rd.com/",
+        alice_id   = "https://ec_ids_connector_alice.nicos-rd.com/",
         node_alice = space.getNode(alice_id),
-        bob_id     = "https://bob.nicos-rd.com/",
+        bob_id     = "https://ec_ids_connector_bob.nicos-rd.com/",
         node_bob   = space.getNode(bob_id)
     ;
     await node_alice.read();
     await node_bob.read();
 
     let
-        cert_alice = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"),
-        cert_bob   = require("C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"),
-        ids        = require("../../ec/ids/src/tb.ec.ids.js")({
+        ids = require("../../ec/ids/src/tb.ec.ids.js")({
             'uri':   `${id}ec/ids/`,
             'ALICE': {
                 'id':     alice_id,
                 'schema': "http",
                 'host':   "127.0.0.1",
                 //'port':   8099,
-                'port': parseInt(node_alice['fua:port'][0]['@value']),
-                // TODO: SKIAKI
-                'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
+                'port':   parseInt(node_alice['fua:port'][0]['@value']),
+                'SKIAKI': node_alice['dapsm:skiaki'][0]['@value'],
                 //
                 'user': {
                     'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
@@ -444,9 +443,7 @@ async function TestbedAgent({
                 //'idle_timeout': 1,
                 //
                 'DAPS':        {
-                    //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
-                    'default':                            node_alice['idsecm:daps_default'][0]['@id'],
-                    'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
+                    'default': node_alice['idsecm:daps_default'][0]['@id']
                 },
                 'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
             }, // ALICE
@@ -456,8 +453,7 @@ async function TestbedAgent({
                 'schema': "http",
                 'host':   "127.0.0.1",
                 'port':   parseInt(node_bob['fua:port'][0]['@value']),
-                // TODO: SKIAKI
-                'SKIAKI': "11:B9:DE:C7:63:7C:00:B6:A9:32:57:5A:23:01:3F:44:0E:39:02:82:keyid:3B:9B:8E:72:A4:54:05:5A:10:48:E7:C0:33:0B:87:02:BC:57:7C:A4",
+                'SKIAKI': node_bob['dapsm:skiaki'][0]['@value'],
                 //
                 'user': {
                     "tb_ec_ids": {'name': "tb_ec_ids", 'password': "marzipan"}
@@ -467,15 +463,13 @@ async function TestbedAgent({
                 //'idle_timeout': 1,
                 //
                 'DAPS':        {
-                    //'default':                           "https://nrd-daps.nicos-rd.com:8082/",
-                    'default':                            node_bob['idsecm:daps_default'][0]['@id'],
-                    'https://nrd-daps.nicos-rd.com:8082': "https://nrd-daps.nicos-rd.com:8082/"
+                    'default': node_bob['idsecm:daps_default'][0]['@id']
                 },
                 'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"
             }
         });
-    ids.uri        = `${id}ec/ids/`;
-    ids.ec         = ec;
+    ids.uri = `${id}ec/ids/`;
+    ids.ec  = ec;
     ids.on('event', (error, data) => {
         eventEmitter.emit('event', error, data);
     });

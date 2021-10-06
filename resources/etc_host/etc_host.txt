@@ -14,16 +14,16 @@
 
 # ALICE
 ## port 8099
-127.0.0.1 alice.nicos-rd.com
+127.0.0.1 ec_ids_connector_alice.nicos-rd.com
 
 # BOB
 ## port 8098
-127.0.0.1 bob.nicos-rd.com
+127.0.0.1 ec_ids_connector_bob.nicos-rd.com
 
 ##region tb.ec.ids.applicant
 # GAIAboX
 ## port 8081
-127.0.0.1 gbx.nicos-rd.com
+127.0.0.1 nrd_gbx.nicos-rd.com
 ##endregion tb.ec.ids.applicant
 
 ##endregion tb.ec.ids

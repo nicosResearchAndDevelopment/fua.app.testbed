@@ -86,7 +86,10 @@ class BobConnector extends BaseConnector {
                             } // if ()
 
                             this.#idle_semaphore = this.#idle(this.#idle_timeout);
-                            return {'@type': "ids:SelfDescription"};
+                            return {
+                                id:      this.id,
+                                '@type': "ids:SelfDescription"
+                            };
 
                         } catch (jex) {
 

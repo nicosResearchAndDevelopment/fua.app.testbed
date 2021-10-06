@@ -1,3 +1,4 @@
+@prefix ldp:                                    <http://www.w3.org/ns/ldp#> .
 @prefix rdf:             <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:             <http://www.w3.org/2002/07/owl#> .
@@ -11,7 +12,8 @@
 @prefix nrd:             <https://www.nicos-rd.com/> .
 
 #@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
-#@prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
+@prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
+@prefix domain:                                 <https://www.nicos-rd.com.org/fua/domain#> .
 
 @prefix tbm:             <https://www.nicos-rd.com.org/fua/testbed#> .
 
@@ -20,9 +22,17 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:           <https://www.nicos-rd.com/> .
-@prefix appl:            <https://nicos-gbx-0-0-1.nicos-rd.com/> .
+@prefix connector:            <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> .
 
-appl:
+agent:
+    a          ids:Participant ;
+## comment : 'org:Organization' is present in ids:Participant, also. So, if agent is not a ids:Participant
+##           we can use 'org:Organization' (or 'foaf:Person') instead
+    a          org:Organization ;
+    rdfs:label "nicos Research & Development GmbH"^^xsd:string ;
+.
+
+connector:
     a                      tbm:Applicant_IDS_Connector ;
     a                      ids:BaseConnector ;
     owl:sameAs             <https://10.10.33.21> ;
@@ -36,8 +46,8 @@ appl:
     ids:physicalLocation   [ a ids:Location ; ] ;
 #    ids:outboundModelVersion "4.1.0" ;
 #    ids:inboundModelVersion "4.1.0" ;
-    ids:hasDefaultEndpoint appl:http_host ;
-    ids:authInfo           appl:auth_info ;
+    ids:hasDefaultEndpoint connector:http_host ;
+    ids:authInfo           connector:auth_info ;
     ids:securityProfile    idsc:BASE_SECURITY_PROFILE ;
 #    ids:componentCertification appl:certification ;
     ids:resourceCatalog    [ a ids:ResourceCatalog ; ] ;
@@ -49,7 +59,7 @@ appl:
 
 # TODO: host
 # TODO: port (default)
-    rdfs:seeAlso           <https://nicos-gbx-0-0-0.nicos-rd.com/> ;
+    rdfs:seeAlso           <https:/ec_ids_connector_nrd_gbx-03.nicos-rd.com/> ;
 ### OR
 #    tbm:history      <https://nicos-gbx-0-0-0.testbed.local/> ;
 ### OR
@@ -57,91 +67,15 @@ appl:
     rdfs:isDefinedBy       nrd: ;
 .
 
-appl:http_host
+connector:http_host
     a             ids:ConnectorEndpoint ;
     ids:accessURL <https://marzipan.de> ;
 .
 
-appl:auth_info
+connector:auth_info
     a                ids:AuthInfo ;
     ids:authService  <https://nrd-daps.nicos-rd.com/> ;
     ids:authStandard idsc:OAUTH2_JWT ;
 .
-
-#appl:certification
-#    a ids:ComponentCertification ;
-#    ids:certificationLevel idsc:COMPONENT_TRUSTPLUS_SECURITY_PROFILE_CONCEPT_REVIEW ;
-#    ids:lastValidDate "2020-12-31T12:00:00.000+02:00"^^xsd:dateTimeStamp ;
-#.
-
-agent:
-    a          ids:Participant ;
-## comment : 'org:Organization' is present in ids:Participant, also. So, if agent is not a ids:Participant
-##           we can use 'org:Organization' (or 'foaf:Person') instead
-    a          org:Organization ;
-    rdfs:label "nicos Research & Development GmbH"^^xsd:string ;
-.
-
-# TODO : delete >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#        a ids:BaseConnector ;
-#    # General properties
-#    ids:title "Mobile base connector" ;
-#    ids:description "Mobile base connector operated by PART1" ;
-#    ids:maintainer part1: ;
-#    ids:curator part1: ;
-#    ids:physicalLocation <http://sws.geonames.org/3247450/> ; # Bonn
-#    ids:outboundModelVersion "4.1.0" ;
-#    ids:inboundModelVersion "4.1.0" ;
-#
-#    # Network hosts maintained by the Connector
-#    ids:hasDefaultEndpoint conn1:http_host ;
-#
-#    # Security and trust features
-#    ids:authInfo conn1:auth_info ;
-#    ids:securityProfile idsc:BASE_SECURITY_PROFILE ;
-#    ids:componentCertification conn1:certification ;
-#
-#    # Catalog of mediated resources
-#    ids:resourceCatalog [
-#        a ids:ResourceCatalog ;
-#].
-
-#    ids:appEndpoint        [ a                            ids:AppEndpoint ;
-#                             ids:appEndpointInformation   "I am an app endpoint. I do endpoint things." ;
-#                             ids:appEndpointDocumentation <https://app.swaggerhub.com/apis/app/1337> ;
-#                             ids:appEndpointType          idsc:INPUT_ENDPOINT ;
-#                             ids:appEndPointPort          5000 ;
-#                             ids:path                     "/input" ;
-#                             ids:appEndpointMediaType
-#                                                          <https://www.iana.org/assignments/media-types/application/json> ;
-#                             ids:appEndpointProtocol      "HTTP/1.1" ; ] ;
-#    ids:appEndpointPort    80 ;
-#    ids:appEndpointType    idsc:INPUT_ENDPOINT ;
-#    ids:appEndpointType    idsc:OUTPUT_ENDPOINT ;
-
-
-#ids:representation [
-#        a ids:AppRepresentation ;
-#        ids:mediaType <https://www.iana.org/assignments/media-types/application/zip> ;
-#        ids:dataAppDistributionService <https://example.com> ;
-#        ids:dataAppRuntimeEnvironment "Docker" ;
-#        ids:dataAppInformation [
-#            a ids:SmartDataApp ;
-#            ids:appDocumentation "App-related human-readable documentation.";
-#            ids:appEnvironmentVariables "$Env1 = environment variable 1, $Env2 = environment variable 2";
-#            ids:appStorageConfiguration "1 Docker volume required, e.g., -v /data";
-#            ids:appEndpoint [
-#                a ids:AppEndpoint;
-#                ids:appEndpointInformation "I am an app endpoint. I do endpoint things.";
-#                ids:appEndpointDocumentation <https://app.swaggerhub.com/apis/app/1337> ;
-#                ids:appEndpointType idsc:INPUT_ENDPOINT ;
-# REM               ids:appEndPointPort 5000 ;
-#                ids:path "/input";
-#                ids:appEndpointMediaType <https://www.iana.org/assignments/media-types/application/json> ;
-#                ids:appEndpointProtocol "HTTP/1.1";
-#                ]
-#            ];
-#]
 
 ## EOF

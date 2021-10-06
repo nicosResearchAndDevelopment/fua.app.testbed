@@ -42,8 +42,6 @@ tb:
     rdfs:isDefinedBy nrd: ;
 .
 
-
-
 tb:domain
     a                dom:Domain ;
 #    domain:users    <https://testbed.local:8080/user#jlangkau> ;
@@ -57,20 +55,24 @@ tb:domain
 tb:Users
     a                dom:Users ;
     ldp:member       <https://testbed.nicos-rd.com/domain/user#testsuite> ;
+
+##region tb : operators
 ##  Order ALPHA
     ldp:member       <https://testbed.nicos-rd.com/domain/user#jlangkau> ;
     ldp:member       <https://testbed.nicos-rd.com/domain/user#spetrac> ;
-## DAPS :: user
-# Subject: C = DE, ST = NRW, O = nicos AG, OU = nicos Research & Development GmbH, CN = ec, CN = ids, CN = alice
-    ldp:member       <https://testbed.nicos-rd.com/domain/user#alice> ;
-    ## TODO :: ldp:member       <https://testbed.nicos-rd.com/domain/user#ec_ids_alice> ;
-# nrd_gbx03
-    ldp:member
-                     <https://testbed.nicos-rd.com/domain/user#11_B9_DE_C7_63_7C_00_B6_A9_32_57_5A_23_01_3F_44_0E_39_02_82_keyid_3B_9B_8E_72_A4_54_05_5A_10_48_E7_C0_33_0B_87_02_BC_57_7C_A4> ;
-## TODO ::  ldp:member       <https://testbed.nicos-rd.com/domain/user#ec_ids_nicos_gbx_3> ;
+##endregion tb : operators
+
+##region ec : ids : DAPS : user
+    ldp:member       <https://ec_ids_connector_alice.nicos-rd.com/> ;
+    ldp:member       <https://ec_ids_connector_bob.nicos-rd.com/> ;
+## ec : ids : DAPS : user :: CUT
+    ldp:member       <https://testbed.nicos-rd.com/domain/user#ec_ids_connector_nrd_gbx-03> ;
+##endregion ec : ids : DAPS : user
+
     rdfs:isDefinedBy nrd: ;
 .
 
+##region tb : operators
 <https://testbed.nicos-rd.com/domain/user#spetrac>
     a            dom:User ;
     dom:password "boxMeIn_salt"^^xsd:string ;
@@ -81,6 +83,7 @@ tb:Users
     dom:active   "true"^^xsd:boolean ;
     dom:password "marzipan_salt"^^xsd:string ;
 .
+##endregion tb : operators
 
 tb:Groups
     a                dom:Groups ;
@@ -96,29 +99,5 @@ tb:Groups
     ldp:member <https://testbed.nicos-rd.com/domain/user#spetrac> ;
 .
 
-#
-#ts:
-#    a                tbm:Testsuite ;
-#    rdfs:label       "nrd Testsuite" ;
-##    foaf:homepage                           "https://testbed.nicos-rd.com/testsuite/browse" ;
-### region meta
-#    ecm:owner        nrd: ;
-#    ecm:provider     nrd: ;
-#    domain:domain    [ a domain:Domain ; ] ;
-### endregion meta
-### region configuration
-### region configuration application
-#    fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
-### endregion configuration application
-#    ecm:ecosystem    <https://testbed.nicos-rd.com/ec/ids/> ;
-#    tbm:testbed      tb: ; ## 0..1
-#    owl:sameAs       <https://10.10.33.43> ;
-#    owl:sameAs       <https://testbed.nicos-rd.com> ;
-### region configuration applicant
-#    tbm:applicant    <https://nicos-gbx.nicos-rd.com/> ;
-### endregion configuration applicant
-### endregion configuration
-#    rdfs:isDefinedBy nrd: ;
-#.
 
 ## EOF : nrd-testbed

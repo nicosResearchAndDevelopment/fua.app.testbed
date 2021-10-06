@@ -100,67 +100,22 @@ module.exports = ({
     } // if (BOB)
 
     Object.defineProperties(ec_ids, {
-        'uri': {
-            set:          (uri) => {
+        'uri':                                     {
+            set:           (uri) => {
                 if (_uri_ === _default_uri_)
                     _uri_ = uri;
             },
-            get:          () => {
+            get:           () => {
                 return _uri_
-            }
-            , enumerable: false
+            }, enumerable: false
         },
-        'ec':  {
-            set:          (ecoSystem) => {
+        'ec':                                      {
+            set:           (ecoSystem) => {
                 if (!ec)
                     ec = ecoSystem;
-            }
-            , enumerable: false
+            }, enumerable: false
         },
-        //'connect':                         {
-        //    value:         async (param) => {
-        //        let
-        //            result  = {
-        //                'id':                `${randomLeave(`${_uri_}connect/`)}`,
-        //                'thread':            param.thread,
-        //                'start':             (new Date).toISOString(),
-        //                'operationalResult': false
-        //            },
-        //            options = {
-        //                'reconnect':          true,
-        //                'rejectUnauthorized': false
-        //            }
-        //        ; // let
-        //
-        //        if (param.auth)
-        //            options['auth'] = param.auth;
-        //
-        //        socket = io_client.connect(param.url, options);
-        //
-        //        //await new Promise((resolve, reject) => {
-        //        await new Promise((resolve, reject) => {
-        //            socket.on('connect', (args) => {
-        //                socket.on('event', (error, data) => {
-        //                    ec_ids.emit('event', error, data);
-        //                    //debugger;
-        //                });
-        //                rc.set(param.url, util.promisify(socket.emit).bind(socket));
-        //                resolve();
-        //            }); // socket.on('connect')
-        //            socket.on('error', (args) => {
-        //                reject(args);
-        //            }); // socket.on('error')
-        //        }); // await new Promise()
-        //
-        //        result.end               = (new Date).toISOString();
-        //        result.operationalResult = {'url': param.url, 'connected': true};
-        //        connected                = true;
-        //
-        //        return result;
-        //
-        //    }, enumerable: false
-        //}, // connect
-        'selfTest':                        {
+        'selfTest':                                {
             value:         async (param) => {
                 try {
                     if (!connected && socket)
@@ -175,7 +130,7 @@ module.exports = ({
                 } // try
             }, enumerable: false
         }, // selfTest
-        'requestApplicantsSelfDescription': {
+        'requestApplicantsSelfDescription':        {
             value:         async (param) => {
                 try {
                     if (!connected && socket)
@@ -197,7 +152,7 @@ module.exports = ({
                 } // try
             }, enumerable: false
         }, // requestApplicantsSelfDescription
-        'waitForApplicantsSelfDescriptionRequest':   {
+        'waitForApplicantsSelfDescriptionRequest': {
             value:         async (param) => {
                 try {
                     if (!connected && socket)
@@ -210,7 +165,7 @@ module.exports = ({
                 } // try
             }, enumerable: false
         }, // waitForApplicantsSelfDescriptionRequest
-        'getSelfDescriptionFromRC':        {
+        'getSelfDescriptionFromRC':                {
             value:         async (param) => {
                 try {
                     if (!connected && socket)

@@ -53,8 +53,8 @@ ec-ids:
 ##region cas
     idsecm:cas                              <CA> ;
 ##endregion cas
-    idsecm:daps                             <https://nrd-daps.nicos-rd.com/> ;
-    idsecm:daps                             <https://omejdn-daps.nicos-rd.com/> ;
+    idsecm:daps                             <https://ec_ids_daps_nrd.nicos-rd.com/> ;
+    idsecm:daps                             <https://ec_ids_daps_fh_omejdn.nicos-rd.com/> ;
     idsecm:ParIS                            <https://paris.nicos-rd.com/> ;
 ##region participants
 #    idsecm:participants                     <https://ids.atos.net/> ;
@@ -62,8 +62,8 @@ ec-ids:
     idsecm:participants                     nicos-ag: ;
 ##endregion participants
 #    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
-    idsecm:connectors                       <https://alice.nicos-rd.com/> ;
-    idsecm:connectors                       <https://bob.nicos-rd.com/> ;
+    idsecm:connectors                       <https://ec_ids_connector_alice.nicos-rd.com/> ;
+    idsecm:connectors                       <https://ec_ids_connector_bob.nicos-rd.com/> ;
 ##region ecosystems
 #    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
 #    idsecm:ecosystems                       <https://testbed.nicos-rd.com/> ;
@@ -74,89 +74,75 @@ ec-ids:
 ##endregion ecosystems subs
 ##endregion ecosystems
 #    idsecm:islands          <> ;
-    idsecm:applicant                        <https://nicos-gbx.nicos-rd.com/> ;
+    idsecm:applicant                        <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> ;
     rdfs:isDefinedBy                        ec-ids: ;
 .
 
-<https://gbx.nicos-rd.com/>
+<https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/>
     a        tbm:Applicant_IDS_Connector ;
     fua:port "8081"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
-<https://nrd-daps.nicos-rd.com/>
+<https://ec_ids_daps_nrd.nicos-rd.com/>
     a                idsecm:DAPS ;
     dapsm:privateKey """-----BEGIN RSA PRIVATE KEY-----
-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
+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
 -----END RSA PRIVATE KEY-----"""^^xsd:string ;
     fua:port         "8082"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
-<https://omejdn-daps.nicos-rd.com/>
+<https://ec_ids_daps_fh_omejdn.nicos-rd.com/>
     a        idsecm:DAPS ;
 ## REM: docker, local
     fua:port "4567"^^xsd:nonNegativeInteger ; ## default = 80
 .
-
-<https://ids-rc.nicos-rd.com/>
-    a        idsecm:DAPS ;
-    fua:port "8084"^^xsd:nonNegativeInteger ; ## default = 80
-.
-
-##region connectors
-
-# Subject: C = DE, ST = NRW, O = nicos AG, OU = nicos Research & Development GmbH, CN = ec, CN = ids, CN = alice
-
-<https://alice.nicos-rd.com/>
-    a                   idsecm:BaseConnector ;
-    fua:port            "8099"^^xsd:nonNegativeInteger ; ## default = 80
-    idsecm:daps         <https://nrd-daps.nicos-rd.com/> ;
-    idsecm:daps_default <https://nrd-daps.nicos-rd.com/> ;
-##
-    idsecm:idle_timeout "30"^^xsd:nonNegativeInteger ;
-.
-
-<https://bob.nicos-rd.com/>
-    a                   idsecm:BaseConnector ;
-    fua:port            "8098"^^xsd:nonNegativeInteger ; ## default = 80
-    idsecm:daps         <https://nrd-daps.nicos-rd.com/> ;
-    idsecm:daps_default <https://nrd-daps.nicos-rd.com/> ;
-##
-    idsecm:idle_timeout "30"^^xsd:nonNegativeInteger ;
-.
-##endregion connectors
-
-#@base <https://w3id.org/idsa/3cm/> .
-#@prefix fn:             <tests/getDATfromDAPS/> .
-#
-#@prefix tb:             <https://testbed.nicos-rd.com/> .
-#
-#tb:
-##    tbm:function <https://w3id.org/idsa/3cm/tests/getDATfromDAPS/> ;
-#    tbm:function </ids/getDATfromDAPS/> ;
-#.
 
 ## EOF : nrd-testbed.IDS

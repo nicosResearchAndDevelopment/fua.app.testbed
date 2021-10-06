@@ -1,0 +1,65 @@
+@prefix ldp:                                    <http://www.w3.org/ns/ldp#> .
+@prefix rdf:             <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:             <http://www.w3.org/2002/07/owl#> .
+@prefix dct:             <http://purl.org/dc/terms/> .
+@prefix foaf:            <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:             <http://www.w3.org/ns/org#> .
+@prefix ids:             <https://w3id.org/idsa/core/> .
+@prefix idsc:            <https://w3id.org/idsa/code/> .
+
+@prefix nrd:             <https://www.nicos-rd.com/> .
+
+#@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
+@prefix domain:                                 <https://www.nicos-rd.com.org/fua/domain#> .
+
+@prefix tbm:             <https://www.nicos-rd.com.org/fua/testbed#> .
+
+# REM : 90
+
+#@prefix appl:           <https://localhost:8090/> .
+#@prefix appl:           <https://applicant/> .
+@prefix agent:           <https://www.nicos-rd.com/> .
+@prefix connector:            <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> .
+
+##region DAPS user
+connector:
+    a                        dapsm:Component ;
+    a                        ldp:Resource ;
+    domain:active            "true"^^xsd:boolean ;
+## TODO: make roles working...
+#    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
+## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
+    dapsm:skiaki
+                             "E9:8A:9D:AB:41:B8:DD:A2:49:68:72:82:81:5F:67:7B:5F:C8:C5:5D:keyid:88:61:3B:14:33:AD:2F:1A:1D:11:A0:BD:A9:5B:A9:8A:F4:04:B4:3E"^^xsd:string ;
+    dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAv0VflpZFwwPjiNeNShtj
+CnPS/HQyJnsf34URkuGuJEw0obC7YnX1hTty1x12jf1Bt/6b5ybl5HOM//rPLjhG
+XpzF3h4VwRmfQgsTzKh637HQbiLIocx8Y/cH6vRdAstRvLu9UP6oQFcU1K87ghPe
+mXQBnuMlxA4q62G+v9jLW/UQQ7lgUykH1IzLug5ICMh2P2TrNzbSQY27sHPzVleQ
+YPCvfIFAczBVW0bEwnPnppCGS1g+20VpdfqwLjuP2lDpqSkYexEfrixWcAm/mKHX
+QRXr+BBayuU2NVnGPYczp+7epicFbVAqnXBGXUN/jwtUrMFFIUEI3J89AE0XO67+
+xxUyTby8W/kkG0cIJnP+ZjwILD7m84XuM++SqQHQS3Dg/v3GU6ZuyPwijgSVeoj4
+4ddlxu3s2cn12bB1jdUkIjfH0U6c9n343vxJEjSWrHM8ir4alARbZxj5epY8MbLs
+e79I9pcganv8QmcykoPEAOacg4gON3lepcdb3kkK/xj95mn8Uxf/7A80/yQyfDTd
+8OogeVBGMnV2z1s5f9KBuw8Dd3GS0QD0vUGq6hJLXg80dypEae05CY/PBNGwdwXb
+hmgkIWjAz65/2c3vKYzinHewOf5JR3rxwg70895EYaVR9nd2Ye0LgTuDGtoeBHvi
+DMCSexKC33noXRGhBWXM2ukCAwEAAQ==
+-----END PUBLIC KEY-----"""^^xsd:string ;
+## TODO: woher kommt der 'referringConnector'?????
+    dapsm:referringConnector "https:/ec_ids_connector_nrd_gbx-03.nicos-rd.com/"^^xsd:string ;
+## TODO: <dapsm:securityProfile> to ids
+    dapsm:securityProfile    "idsc:BASE_CONNECTOR_SECURITY_PROFILE"^^xsd:string ;
+#    dapsm:securityProfile    <idsc:BASE_CONNECTOR_SECURITY_PROFILE> ;
+## TODO: <dapsm:extendedGuarantee> to ids
+    dapsm:extendedGuarantee  "idsc:USAGE_CONTROL_POLICY_ENFORCEMENT"^^xsd:string ;
+#    dapsm:extendedGuarantee <idsc:USAGE_CONTROL_POLICY_ENFORCEMENT> ;
+## TODO: dapsm:scope              "ids_connector_attributes"
+    dapsm:scope              "ids_connector_attributes"^^xsd:string ;
+.
+##endregion DAPS user
+
+
+## EOF

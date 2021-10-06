@@ -86,7 +86,10 @@ class AliceConnector extends BaseConnector {
                             } // if ()
 
                             this.#idle_semaphore = this.#idle(this.#idle_timeout);
-                            return {'@type': "ids:SelfDescription"};
+                            return {
+                                id:      this.id,
+                                '@type': "ids:SelfDescription"
+                            };
 
                         } catch (jex) {
 
@@ -141,7 +144,7 @@ class AliceConnector extends BaseConnector {
                     'id':                randomLeave(`${this.id}rc_requestApplicantsSelfDescription/result/`),
                     'thread':            param.thread,
                     'prov':              `${this.id}rc_requestApplicantsSelfDescription`,
-                    'target':            `${param.schema}://${param.host}${param.path}`,
+                    'target':            `${param.schema}://${param.host}${((!!param.port) ? ":" + param.port : "")}${param.path}`,
                     'operationalResult': undefined
                 }
             ; // let

@@ -1,0 +1,133 @@
+@prefix ldp:                                    <http://www.w3.org/ns/ldp#> .
+@prefix rdf:                                    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:                                   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:                                    <http://www.w3.org/2002/07/owl#> .
+@prefix dct:                                    <http://purl.org/dc/terms/> .
+@prefix foaf:                                   <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:                                    <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:                                    <http://www.w3.org/ns/org#> .
+@prefix ids:                                    <https://w3id.org/idsa/core/> .
+@prefix idsc:                                   <https://w3id.org/idsa/code/> .
+
+@prefix nrd:                                    <https://www.nicos-rd.com/> .
+@prefix fua:                                    <https://www.nicos-rd.com.org/fua#> .
+
+#@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
+@prefix domain:                                 <https://www.nicos-rd.com.org/fua/domain#> .
+
+@prefix idsecm:                                 <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
+
+@prefix tbm:                                    <https://www.nicos-rd.com.org/fua/testbed#> .
+
+# REM : 90
+
+#@prefix appl:           <https://localhost:8090/> .
+#@prefix appl:           <https://applicant/> .
+@prefix agent:                                  <https://www.nicos-rd.com/> .
+@prefix connector:                              <https://ec_ids_connector_bob.nicos-rd.com/> .
+
+agent:
+    a          ids:Participant ;
+## comment : 'org:Organization' is present in ids:Participant, also. So, if agent is not a ids:Participant
+##           we can use 'org:Organization' (or 'foaf:Person') instead
+    a          org:Organization ;
+    rdfs:label "nicos Research & Development GmbH"^^xsd:string ;
+.
+
+connector:
+    a                      idsecm:BaseConnector ;
+    owl:sameAs             <https://10.10.33.21> ;
+    rdfs:label             "IDS-RC-ALICE" ;
+
+##region IDS
+    ids:title              "IDS-RC-BOB" ;
+    ids:description        "Bob, Remote Control Connector for EcoSystem 'IDS'" ;
+    ids:maintainer         agent: ;
+    ids:curator            agent: ;
+    ids:physicalLocation   [ a ids:Location ; ] ;
+#    ids:outboundModelVersion "4.1.0" ;
+#    ids:inboundModelVersion "4.1.0" ;
+    ids:hasDefaultEndpoint connector:http_host ;
+    ids:authInfo           connector:auth_info ;
+    ids:securityProfile    idsc:BASE_SECURITY_PROFILE ;
+#    ids:componentCertification appl:certification ;
+    ids:resourceCatalog    [ a ids:ResourceCatalog ; ] ;
+##endregion IDS
+
+##region configuration
+##region RC
+    fua:port               "8098"^^xsd:nonNegativeInteger ; ## default = 80
+    idsecm:daps            <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps_default    <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:idle_timeout    "30"^^xsd:nonNegativeInteger ;
+##endregion RC
+##endregion configuration
+
+# TODO: host
+# TODO: port (default)
+#    rdfs:seeAlso           <https://nicos-gbx-0-0-0.nicos-rd.com/> ;
+### OR
+#    tbm:history      <https://nicos-gbx-0-0-0.testbed.local/> ;
+### OR
+#    tbm:previous     <https://nicos-gbx-0-0-0.testbed.local/> ;
+
+
+##region DAPS
+## REM: this is ONLY used for agent.DAPS - as long as this is running under agent.testbed
+
+##endregion DAPS
+
+    rdfs:isDefinedBy       nrd: ;
+.
+
+connector:http_host
+    a             ids:ConnectorEndpoint ;
+    ids:accessURL "https://ec_ids_connector_bob.nicos-rd.com/" ;
+.
+
+connector:auth_info
+    a                ids:AuthInfo ;
+    ids:authService  <https://nrd-daps.nicos-rd.com/> ;
+    ids:authStandard idsc:OAUTH2_JWT ;
+.
+
+##region DAPS user
+connector:
+    a                        dapsm:Component ;
+    a                        ldp:Resource ;
+    domain:active            "true"^^xsd:boolean ;
+## TODO: make roles working...
+#    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
+## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
+    dapsm:skiaki
+                             "C8:DF:D6:9C:BB:FD:D2:05:72:AD:E7:0A:81:E9:74:C0:17:A6:DE:48:keyid:88:61:3B:14:33:AD:2F:1A:1D:11:A0:BD:A9:5B:A9:8A:F4:04:B4:3E"^^xsd:string ;
+    dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1qLZajAvJTogT58sRV3K
+tqBWhq0H0u0yy3o+rj8i8qqUHgn6I7l7+sPUPl5VtjLPyXbBBMnAUs/spq7eKljn
+jWrrA9JqLoT7LsrAdZlGAcX/J89eC1anOppZidMJTOvOYeDzgl5Bfaz6hbENF+JT
+SQIdMseFJedXU5/9hrlW9THs2zHdCY9A218Ctit1KGBpZq6wTcD33V530xwY29Sd
+ObnT26mg59bAD3gYqDJ/ENs8E8WnP6phNFyoWAOEe0Gm7vBuDYp26FUrK7VTjD0P
+RMhrkLooVwJG5wvIGXLp7Y4/HEKYaobEvU9F9dTiLxQxMrtGPkBUs6B+R29s4l7F
+NoyADYMit5Wax+J5RvjRMYoVqXhrsaMw5hhwkZojCCku8sfL6b0r9C3SOhCVONsX
+owhbb7gcujxAvO7D9CDzXnEYQWRqgVoiyb24WuUMFunMwV9sqan3DiqE/WWaQlqz
+jxJ/eMt+iP2n9t4YQX/GViNgVEwB531p4sAqLLh/uA3OBCo7oFW0wubSHm3u0p5h
+ym782sV45GMN2b678JS/wCXsyUwHxpqRCIriGBefQLG1wXJKeu0Gl1V83eEiwYWW
++KtgOasMzi5g7VcCjIgAxBcxon6eieBt8I/s+4SrtQC1xiknA7PfDn8sjCswICE8
+SKRNdKuNYDmDi33fHyK657MCAwEAAQ==
+-----END PUBLIC KEY-----"""^^xsd:string ;
+## TODO: woher kommt der 'referringConnector'?????
+    dapsm:referringConnector "https://ec_ids_connector_bob.nicos-rd.com"^^xsd:string ;
+## TODO: <dapsm:securityProfile> to ids
+    dapsm:securityProfile    "idsc:BASE_CONNECTOR_SECURITY_PROFILE"^^xsd:string ;
+#    dapsm:securityProfile    <idsc:BASE_CONNECTOR_SECURITY_PROFILE> ;
+## TODO: <dapsm:extendedGuarantee> to ids
+    dapsm:extendedGuarantee  "idsc:USAGE_CONTROL_POLICY_ENFORCEMENT"^^xsd:string ;
+#    dapsm:extendedGuarantee <idsc:USAGE_CONTROL_POLICY_ENFORCEMENT> ;
+## TODO: dapsm:scope              "ids_connector_attributes"
+    dapsm:scope              "ids_connector_attributes"^^xsd:string ;
+.
+##endregion DAPS user
+
+
+## EOF
