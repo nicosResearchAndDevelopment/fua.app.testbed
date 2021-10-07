@@ -1,27 +1,31 @@
 const
     EventEmitter  = require("events"),
     _default_uri_ = "urn:tb:ec:net:",
+    //
+    ping          = require(`./fn/ping/ping.js`),
     sniff         = require(`./fn/sniff/sniff.js`),
     sniffer       = require(`./fn/sniff/sniffer.js`),
+    //
     processes     = new Map()
-;
+; // const
+
 let
     _uri_         = _default_uri_,
     ec_net        = new EventEmitter()
-;
+; // let
 
 Object.defineProperties(ec_net, {
     uri:           {
-        set:          (uri) => {
+        set:           (uri) => {
             if (_uri_ === _default_uri_)
                 _uri_ = uri;
             _uri_ = uri;
         },
-        get:          () => {
+        get:           () => {
             return _uri_
-        }
-        , enumerable: false
+        }, enumerable: false
     },
+    ping:          {value: ping, enumerable: false},
     sniff:         {
         value:         async (param) => {
             try {

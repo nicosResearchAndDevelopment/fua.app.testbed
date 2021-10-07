@@ -22,53 +22,46 @@ const
     config.server.url = testsuite_id;
     config.testbed    = testbed;
 
-    const validate = {
-        ec: {
-            ip: {
-                ping: async ({
-                                 id:         id,
-                                 testResult: testResult
-                             }) => {
-                    const
-                        pass = "pass",
-                        fail = "fail"
-                        //notApplicable = "notApplicable"
-                    ; // const
+    const
+        validate        = {
+            ec: {
+                net: {
+                    ping: async ({
+                                     id:         id,
+                                     testResult: testResult
+                                 }) => {
+                        const
+                            pass = "ip:Pass",
+                            fail = "ip:Fail"
+                        ; // const
 
-                    let result = {
-                        id:   id,
-                        mode: "fail",
-                        fail: {},
-                        pass: {}
-                    };
-                    if (testResult.isAlive) {
-                        result.mode  = pass;
-                        result[pass] = {};
-                        delete result[fail];
-                    } else {
-                        result.mode  = fail;
-                        result[fail] = {};
-                        delete result["pass"];
-                    } // if ()
-                    return result;
+                        let result = {
+                            '@context': ["https://www.nicos-rd.com/fua/ip/"],
+                            id:         id,
+                            type:       ["ip:validationResult"]
+                        };
+                        if (testResult.isAlive) {
+                            result.type.push(pass);
+                        } else {
+                            result.type.push(fail);
+                        } // if ()
+                        return result;
+                    }
                 }
             }
-        }
-    }; // const
-
-    const
+        },
         testsuite_agent = await TestsuiteAgent({
             id:       testsuite_id,
             validate: validate,
             testbed:  config.testbed
+        }),
+        APP_testsuite   = require('./app.testsuite.js')({
+            'space':  undefined,
+            'agent':  testsuite_agent,
+            'config': config
         })
-    ;
+    ; // const
 
-    const APP_testsuite = require('./app.testsuite.js')({
-        'space':  undefined,
-        'agent':  testsuite_agent,
-        'config': config
-    });
-    //debugger;
-})({'config': config}).catch(console.error);
+})
+({'config': config}).catch(console.error);
 

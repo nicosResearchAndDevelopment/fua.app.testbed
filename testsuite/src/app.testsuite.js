@@ -98,54 +98,23 @@ module.exports = ({
                     }
                 };
                 data = { // REM : ping localhost ALICE
-                    'ec':      "ip",
-                    'command': "ping",
-                    'param':   {
+                    ec:       "net",
+                    command:  "ping",
+                    testCase: "net:isAlive",
+                    param:    {
                         'host': "127.0.0.1"
                     }
                 };
 
-                let validate = {
-                    ec: {
-                        ip: {
-                            ping: async ({
-                                             id:         id,
-                                             testResult: testResult
-                                         }) => {
-                                const
-                                    pass = "pass",
-                                    fail = "fail"
-                                    //notApplicable = "notApplicable"
-                                ; // const
-
-                                let result = {
-                                    id:   id,
-                                    mode: "fail",
-                                    fail: {},
-                                    pass: {}
-                                };
-                                if (testResult.isAlive) {
-                                    result.mode  = pass;
-                                    result[pass] = {};
-                                    delete result[fail];
-                                } else {
-                                    result.mode  = fail;
-                                    result[fail] = {};
-                                    delete result["pass"];
-                                } // if ()
-                                return result;
-                            }
-                        }
-                    }
-                }; // let
-
-                let test_result;
+                let
+                    _id_,
+                    test_result
+                ;
                 try {
-                    //let token_test                   = agent.Token({data: data});
+                    _id_ = `${agent.id}bpef/pool/ec/ids/tc/INF_01/start/`;
+                    test_result = await agent.enforce({id: _id_, token: agent.Token({data: data})});
 
-                    test_result = /** REM : BPMN.Activity */ await agent.test(agent.Token({data: data}));
-
-                    console.log(JSON.stringify(token_test, "", "\t"));
+                    console.log(JSON.stringify(test_result, "", "\t"));
 
                     debugger;
 
@@ -162,6 +131,7 @@ module.exports = ({
             debugger;
             process.exit(1);
         } // try
+
     })(/* MAIN */).catch(console.error);
 
 }; // module.exports

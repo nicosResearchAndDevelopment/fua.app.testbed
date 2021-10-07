@@ -376,35 +376,35 @@ async function TestbedAgent({
     //region ec
 
     //region ec.ip
-    // TODO : instance shield
-    let {ip} = require("../../ec/ip/src/tb.ec.ip.js");
-    ip.uri   = `${id}ec/ids/`;
-    ip.on('event', (error, data) => {
-        //eventEmitter.emit('event', error, data);
-        //debugger;
-    });
-    ip.on('error', (error) => {
-        //eventEmitter.emit('event', error, data);
-        debugger;
-    });
-    ec['ip'] = ip;
-    Object.freeze(ec['ip']);
+    //// TODO : instance shield
+    //let {ip} = require("../../ec/ip/src/tb.ec.ip.js");
+    //ip.uri   = `${id}ec/ids/`;
+    //ip.on('event', (error, data) => {
+    //    //eventEmitter.emit('event', error, data);
+    //    //debugger;
+    //});
+    //ip.on('error', (error) => {
+    //    //eventEmitter.emit('event', error, data);
+    //    debugger;
+    //});
+    //ec['ip'] = ip;
+    //Object.freeze(ec['ip']);
     //endregion ec.ip
 
     //region ec.net
     // TODO : instance shield
-    //let {net} = require("../../ec/net/src/tb.ec.net.js");
-    //net.uri   = `${id}ec/net/`;
-    //net.on('event', (error, data) => {
-    //    eventEmitter.emit('event', error, data);
-    //    debugger;
-    //});
-    //net.on('error', (error) => {
-    //    //eventEmitter.emit('event', error, data);
-    //    debugger;
-    //});
-    //ec['net'] = net;
-    //Object.freeze(ec['net']);
+    let {net} = require("../../ec/net/src/tb.ec.net.js");
+    net.uri   = `${id}ec/net/`;
+    net.on('event', (error, data) => {
+        eventEmitter.emit('event', error, data);
+        debugger;
+    });
+    net.on('error', (error) => {
+        //eventEmitter.emit('event', error, data);
+        debugger;
+    });
+    ec['net'] = net;
+    Object.freeze(ec['net']);
     //region TEST
     //await net.sniff();
     //debugger;
