@@ -2,6 +2,7 @@ const
     path           = require('path'),
     http           = require('http'),
     express        = require('express'),
+    //{exec}      = require("child_process"),
     socket_io      = require('socket.io'),
     //config         = require('./config/config.testbed.js'),
     rdf            = require('@nrd/fua.module.rdf'),
@@ -9,7 +10,7 @@ const
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
     LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js'))
-;const {exec}      = require("child_process");
+; // const
 
 module.exports = ({
                       'space':  space = null,
@@ -130,20 +131,23 @@ module.exports = ({
                     if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
                         testsuite_socket = socket;
                     agent.testsuite_inbox_socket = testsuite_socket;
-                    testsuite_socket.on("test", async (test, callback) => {
+                    testsuite_socket.on("test", async (token, test, callback) => {
+                        token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : called`);
                         let
-                            ec      = test['ec'],
-                            command = test['command'],
-                            param   = test['param']
+                            ec       = test['ec'],
+                            command  = test['command'],
+                            param    = test['param']
                         ;
+                        token        = ((typeof token === "string") ? {id: token, thread: []} : token);
+                        token.thread = (token.thread || []);
                         try {
                             let result = await agent.executeTest({
                                 'ec':      ec,
                                 'command': command,
                                 'param':   param
                             });
-
-                            callback(null, result);
+                            token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : before : callback`);
+                            callback(null, token, result);
 
                         } catch (jex) {
                             // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -152,7 +156,7 @@ module.exports = ({
                             };
                             if (jex.code)
                                 error.code = jex.code;
-                            callback(error, undefined);
+                            callback(error, token, undefined);
                         } // try
 
                     }); // testsuite_socket.on("test")

@@ -105,14 +105,24 @@ module.exports = ({
                         'host': "127.0.0.1"
                     }
                 };
-
                 let
-                    _id_,
+                    pool_root = `${agent.id}bpef/pool/`,
+                    enforce   = {
+                        'urn:ts:frontend:launch:start':  `${pool_root}testsuite/frontend/launch/start/`,
+                        'urn:ts:ec:ids:tc:INF_01:start': `${pool_root}ec/ids/tc/INF_01/start/`
+                    },
                     test_result
                 ;
                 try {
-                    _id_ = `${agent.id}bpef/pool/ec/ids/tc/INF_01/start/`;
-                    test_result = await agent.enforce({id: _id_, token: agent.Token({data: data})});
+
+                    data.operator = "https://testbed.nicos-rd.com/domain/user#jlangkau";
+
+                    test_result = await agent.enforce(
+                        //enforce["urn:ts:ec:ids:tc:INF_01:start"],
+                        enforce["urn:ts:frontend:launch:start"],
+                        agent.Token(),
+                        data
+                    );
 
                     console.log(JSON.stringify(test_result, "", "\t"));
 

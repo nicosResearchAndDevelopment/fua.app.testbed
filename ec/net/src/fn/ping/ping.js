@@ -1,7 +1,9 @@
 const
+    util               = require('@nrd/fua.core.util'),
+    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    //
     id                 = "/windows-ping#",
     version            = "0-0-2",
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
     cmd_ping           = ExecutionProcess('ping', {encoding: 'cp437'})
 ; // const
 
@@ -14,7 +16,8 @@ function _parser_(message, search) {
 async function fn_ping(param) {
     const
         result  = {
-            isAlive: false
+            timestamp: util.timestamp(),
+            isAlive:   false
         },
         output  = await cmd_ping({'n': 1}, param.host),
         //parts  = output.split('\n\n');

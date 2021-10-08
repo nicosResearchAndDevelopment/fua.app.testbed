@@ -59,24 +59,43 @@ async function TestsuiteAgent({
         debugger;
     }
 
-    async function endExit({token: token}) {
+    async function endExit(token, data) {
+        token.end = util.timestamp();
         console.log(token);
-        debugger;
-        return true; // TODO:
+        console.log(data);
+        //debugger;
+        return {token: token, data: data}; // TODO:
     }
 
     const
-        pool_root                            = `${id}bpef/pool/`,
-        _test_                               = async (token) => {
+        pool_root = `${id}bpef/pool/`,
+        _test_    = async (token, data) => {
             try {
-                let testResult        = await testbed_emit("test", token.data);
-                token.data.testResult = testResult;
-                //token.data.validationResult = await validate.ec[token.data.ec][token.data.command]({
-                //    id:         `${testsuite.id}validation/ec/${token.data.ec}/${token.data.command}/${uuid.v1()}`,
-                //    testResult: token.data.testResult
-                //});
-                token.end = util.timestamp();
-                return token;
+
+                let testResult = await testbed_emit(
+                    "test",
+                    {
+                        id:     token.id,
+                        start:  token.start,
+                        thread: []
+                    },
+                    data
+                );
+
+                if (typeof testResult[0] === "string") {
+                    if (testResult[0] !== token.id)
+                        throw(new Error(``)); // TODO : better ERROR
+                } else {
+                    if (testResult[0].id !== token.id)
+                        throw(new Error(``)); // TODO : better ERROR
+                    if (testResult[0].thread)
+                        token.thread = token.thread.concat(testResult[0].thread);
+                } //  if ()
+
+                data.testResult = testResult[1];
+
+                //token.end = util.timestamp();
+                return {token: token, data: data};
             } catch (jex) {
                 throw(jex);
             } // try
@@ -84,15 +103,19 @@ async function TestsuiteAgent({
 
     ; // const
     let
-        BPEF                                 = {
+        BPEF      = {
             exec: ({id: id, environment: environment}) => {
-                return Object.defineProperties(async ({token: token}) => {
-                    return await environment.test(/** token */ token);
+                return Object.defineProperties(async (token, data) => {
+
+                    //let result = await environment.test(/** token */ token, data);
+                    //return result;
+                    return await environment.test(/** token */ token, data);
+
                 }, {id: {value: id, enumerable: true}});
             }
         }
     ;
-    BPEF.id                                  = {
+    BPEF.id       = {
         root: {
             ec: {
                 id:  `${pool_root}ec/`,
@@ -108,7 +131,7 @@ async function TestsuiteAgent({
                                     exit: `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/`
                                 },
                                 activity: {
-                                    selfDescription:          {
+                                    getSelfDescription: {
                                         id:   `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/`,
                                         exec: BPEF.exec({
                                             id:          `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/exec/`,
@@ -116,10 +139,21 @@ async function TestsuiteAgent({
                                         }),
                                         exit: `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/validate/`
                                     },
-                                    validate_selfDescription: {
+                                    validate:           {
                                         id:   `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/validate/`,
-                                        exec: async ({token:token}) => {
-                                            return false;
+                                        exec: async (token, data) => {
+                                            data.validationResult = {
+                                                timestamp: util.timestamp()
+                                            };
+                                            if (data.testResult.isAlive) {
+                                                data.validationResult.valid  = true;
+                                                data.validationResult.status = "PASS";
+                                            } else {
+                                                data.validationResult.valid  = false;
+                                                data.validationResult.status = "FAIL";
+                                            } // if ()
+
+                                            return {token: token, data: data};
                                         },
                                         exit: `${pool_root}ec/ids/tc/INF_01/end/`
                                     }
@@ -136,44 +170,74 @@ async function TestsuiteAgent({
         } // root
     } // BPEF.id
     ;
-    BPEF.graph                               = [
-        {
-            id:       BPEF.id.root.ec.ids.testcases.id,
-            type:     "bpmn:Pool",
-            label:    "IDS testcases",
-            swimLane: [BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id]
-        },
-        {
-            id:       BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id,
-            type:     "bpmn:SwimLane",
-            label:    "IDS Testcase 'INF_01'",
-            start:    {
-                id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.id,
-                exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.exit
-            },
-            activity: [
-                {
-                    id:    BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.selfDescription.id,
-                    type:  "bpmn:Activity",
-                    label: "getSelfDescription",
-                    exec:  BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.selfDescription.exec,
-                    exit:  BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate_selfDescription.id
-                },
-                {
-                    id:    BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate_selfDescription.id,
-                    type:  "bpmn:Activity",
-                    label: "validate getSelfDescription",
-                    exec:  BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate_selfDescription.exec,
-                    exit:  BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id
-                }
-            ],
-            end:      {
-                id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id,
-                exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.exit
-            }
-        }
+    BPEF.graph    = [
+
+        //region ids
+        //{
+        //    id:       BPEF.id.root.ec.ids.testcases.id,
+        //    type:     "bpmn:Pool",
+        //    name:     "ts.ec.ids.testcases",
+        //    swimLane: [BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id]
+        //},
+        //..{
+        // ..   id:    BPEF.id.root.launch.id,
+        // ..   type:  "bpmn:SwimLane",
+        //..    name:  "ts.ec.ids.testcase.INF_01",
+        //..    start: {
+        //.        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.id,
+        //.        name: "ts.ec.ids.testcase.INF_01.start",
+        //.        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.exit
+        //.    }
+        //.},
+        //{
+        //    id:       BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id,
+        //    type:     "bpmn:SwimLane",
+        //    name:     "ts.ec.ids.testcase.INF_01",
+        //    start:    {
+        //        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.id,
+        //        name: "ts.ec.ids.testcase.INF_01.start",
+        //        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.exit
+        //    },
+        //    activity: [
+        //        {
+        //            id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.getSelfDescription.id,
+        //            type: "bpmn:Activity",
+        //            name: "ts.ec.ids.getSelfDescription",
+        //            exec: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.getSelfDescription.exec,
+        //            exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.id
+        //        },
+        //        {
+        //            id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.id,
+        //            type: "bpmn:Activity",
+        //            name: "ts.ec.ids.validate.getSelfDescription",
+        //            exec: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.exec,
+        //            exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id
+        //        }
+        //    ],
+        //    end:      {
+        //        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id,
+        //        name: "ts.ec.ids.testcase.INF_01.end",
+        //        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.exit
+        //    }
+        //}
+        //endregion ids
     ] // BPEF.graph
     ; // let
+    let carrier;
+    carrier       = require('./bpef/testsuite/bpef.testsuite.js')({
+            root:    pool_root,
+            endExit: endExit
+        }
+    );
+    BPEF.graph    = BPEF.graph.concat(carrier.graph);
+    carrier       = require('./bpef/frontend/bpef.frontend.js')({
+            root:          pool_root,
+            testsuiteRoot: carrier.root,
+            endExit:       endExit
+        }
+    );
+    BPEF.graph    = BPEF.graph.concat(carrier.graph);
+
     const
         bpep                                 = new BPEPAgent({
             id: "https://www.nicos-rd.com/test/agent/bpef/"
@@ -233,16 +297,17 @@ async function TestsuiteAgent({
             value: _test_, enumerable: false
         }, // test
         enforce: {
-            value:         async ({id: id, token: token}) => {
-                let result = await bpep.enforce({id: id, token: token});
+            value:         async (id, token, data) => {
+                let result = await bpep.enforce(id, token, data);
                 return result;
             }, enumerable: false
         }, // test
         Token:   {
-            value:         ({data: data}) => {
+            //value:         ({data: data}) => {
+            value:         () => {
                 return BPMN.Token({
-                    id:   `${id}token/${uuid.v1()}`,
-                    data: data
+                    id: `${id}token/${uuid.v1()}`
+                    //,data: data
                 });
             }, enumerable: false
         }, // Token
