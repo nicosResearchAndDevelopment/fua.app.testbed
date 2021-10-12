@@ -17,9 +17,9 @@ const
     });
 
 awaitMain(async function Main() {
-    const {param, args: [exe, script, ...args]} = subprocess.parseArgv();
+    const {param, args: [exe, script, method, ...args]} = subprocess.parseArgv();
 
-    switch (args.shift()) {
+    switch (method) {
 
         case 'install':
             await _loadRepository();
@@ -71,8 +71,8 @@ async function _modifyDockerCompose() {
                 /- \/etc\/idscert\/localhost:\/etc\/cert\//g,
                 `- ${config.metadata_broker.cert_folder.replace(/\\/g, '/')}:/etc/cert/`
             )
-            .replace(/- "443:443"/g, '- "8443:443"')
-            .replace(/- "80:80"/g, '- "8480:80"');
+            .replace(/- "443:443"/g, '- "' + config.metadata_broker.exposed_https_port + ':443"')
+            .replace(/- "80:80"/g, '- "' + config.metadata_broker.exposed_http_port + ':80"');
     await writeFile(config.metadata_broker.docker_compose_file, editedComposeFile);
     console.log(`modified port and volume binding for docker-compose`);
 } // _modifyDockerCompose

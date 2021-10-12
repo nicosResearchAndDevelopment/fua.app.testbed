@@ -17,9 +17,9 @@ const
     });
 
 util.awaitMain(async function Main() {
-    const {param, args: [exe, script, ...args]} = subprocess.parseArgv();
+    const {param, args: [exe, script, method, ...args]} = subprocess.parseArgv();
 
-    switch (args.shift()) {
+    switch (method) {
 
         case 'install':
             await _loadRepository();
@@ -57,7 +57,7 @@ async function _createContainer() {
     await util.ignoreErr(docker('rm', config.omejdn_daps.container_name));
     await docker('create', {
         name:    config.omejdn_daps.container_name,
-        publish: '4567:4567',
+        publish: config.omejdn_daps.exposed_port + ':4567',
         volume:  [
             config.omejdn_daps.config_folder + ':/opt/config',
             config.omejdn_daps.keys_folder + ':/opt/keys'
