@@ -4,7 +4,9 @@ const
     //
     util         = require('@nrd/fua.core.util'),
     uuid         = require('@nrd/fua.core.uuid'),
-
+    //
+    _prefix_     = "ts",
+    //
     {BPEPAgent}  = require(path.join(util.FUA_JS_LIB, 'BPEF/agent.BPEP/src/agent.BPEP')),
     BPMN_factory = require(path.join(util.FUA_JS_LIB, 'BPEF/module.BPMN-2.0/src/module.BPMN'))
 
@@ -51,6 +53,7 @@ class ErrorTestsuiteCallbackMissingOnTopic extends Error {
 
 async function TestsuiteAgent({
                                   id:       id = undefined,
+                                  prefix:   prefix = _prefix_,
                                   validate: validate = undefined,
                                   testbed:  testbed = undefined
                               }) {
@@ -170,104 +173,60 @@ async function TestsuiteAgent({
         } // root
     } // BPEF.id
     ;
-    BPEF.graph    = [
-
-        //region ids
-        //{
-        //    id:       BPEF.id.root.ec.ids.testcases.id,
-        //    type:     "bpmn:Pool",
-        //    name:     "ts.ec.ids.testcases",
-        //    swimLane: [BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id]
-        //},
-        //..{
-        // ..   id:    BPEF.id.root.launch.id,
-        // ..   type:  "bpmn:SwimLane",
-        //..    name:  "ts.ec.ids.testcase.INF_01",
-        //..    start: {
-        //.        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.id,
-        //.        name: "ts.ec.ids.testcase.INF_01.start",
-        //.        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.exit
-        //.    }
-        //.},
-        //{
-        //    id:       BPEF.id.root.ec.ids.testcases.swimlane.INF_01.id,
-        //    type:     "bpmn:SwimLane",
-        //    name:     "ts.ec.ids.testcase.INF_01",
-        //    start:    {
-        //        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.id,
-        //        name: "ts.ec.ids.testcase.INF_01.start",
-        //        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.start.exit
-        //    },
-        //    activity: [
-        //        {
-        //            id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.getSelfDescription.id,
-        //            type: "bpmn:Activity",
-        //            name: "ts.ec.ids.getSelfDescription",
-        //            exec: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.getSelfDescription.exec,
-        //            exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.id
-        //        },
-        //        {
-        //            id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.id,
-        //            type: "bpmn:Activity",
-        //            name: "ts.ec.ids.validate.getSelfDescription",
-        //            exec: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.activity.validate.exec,
-        //            exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id
-        //        }
-        //    ],
-        //    end:      {
-        //        id:   BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.id,
-        //        name: "ts.ec.ids.testcase.INF_01.end",
-        //        exit: BPEF.id.root.ec.ids.testcases.swimlane.INF_01.end.exit
-        //    }
-        //}
-        //endregion ids
-    ] // BPEF.graph
+    BPEF.graph    = [] // BPEF.graph
     ; // let
-    let carrier;
-    carrier       = require('./bpef/testsuite/bpef.testsuite.js')({
-            root:    pool_root,
-            endExit: endExit
-        }
-    );
-    BPEF.graph    = BPEF.graph.concat(carrier.graph);
-    carrier       = require('./bpef/frontend/bpef.frontend.js')({
-            root:          pool_root,
-            testsuiteRoot: carrier.root,
-            endExit:       endExit
-        }
-    );
-    BPEF.graph    = BPEF.graph.concat(carrier.graph);
+    //let carrier;
+    //carrier       = require('./bpef/testsuite/bpef.testsuite.js')({
+    //        root:    pool_root,
+    //        endExit: endExit
+    //    }
+    //);
+    //BPEF.graph    = BPEF.graph.concat(carrier.graph);
+    //carrier       = require('./bpef/frontend/bpef.frontend.js')({
+    //        root:          pool_root,
+    //        testsuiteRoot: carrier.root,
+    //        endExit:       endExit
+    //    }
+    //);
+    //BPEF.graph    = BPEF.graph.concat(carrier.graph);
 
-    const
-        bpep                                 = new BPEPAgent({
-            id: "https://www.nicos-rd.com/test/agent/bpef/"
-        }), // new BPEPAgent()
-        BPMN                                 = BPMN_factory({
-            //uri: "https://www.nicos-rd.com/fua/module/BPMN/" // REM : default
-            //prefix: "bpmn", // REM : default
-            bpep:      Object.freeze({
-                id:      bpep.id,
-                addNode: bpep.addNode,
-                hasNode: bpep.hasNode
-            }),
-            doAddNode: true
-        }), // BPMN
-        implemented_emits                    = {
+    //const
+    //    bpep                                 = new BPEPAgent({
+    //        id: "https://www.nicos-rd.com/test/agent/bpef/"
+    //    }), // new BPEPAgent()
+    //    BPMN                                 = BPMN_factory({
+    //        //uri: "https://www.nicos-rd.com/fua/module/BPMN/" // REM : default
+    //        //prefix: "bpmn", // REM : default
+    //        bpep:      Object.freeze({
+    //            id:      bpep.id,
+    //            addNode: bpep.addNode,
+    //            hasNode: bpep.hasNode
+    //        }),
+    //        doAddNode: true
+    //    }), // BPMN
+
+    //; // const
+    //let
+    //    BPMN_buildExecutableFromGraph_result = await BPMN.buildExecutableFromGraph(BPEF.graph),
+    //    bpep_renderTargets_result            = await bpep.renderTargets({param: undefined}),
+    //    testsuite                            = {},
+    //    testbed_emit
+    //; // let
+
+    let
+        testcases         = null, // !!!
+        testsuite         = {},
+        testbed_emit,
+        implemented_emits = {
             // self topics
             testbed_socket_connect: "testbed_socket_connect",
             error:                  "error",
             event:                  "event"
         },
-        eventEmitter                         = new EventEmitter()
-    ; // const
-    let
-        BPMN_buildExecutableFromGraph_result = await BPMN.buildExecutableFromGraph(BPEF.graph),
-        bpep_renderTargets_result            = await bpep.renderTargets({param: undefined}),
-        testsuite                            = {},
-        testbed_emit
+        eventEmitter      = new EventEmitter()
     ; // let
 
-    console.warn(BPMN_buildExecutableFromGraph_result);
+    //console.warn(BPMN_buildExecutableFromGraph_result);
     //debugger;
 
     if (!id)
@@ -276,7 +235,8 @@ async function TestsuiteAgent({
         }));
 
     Object.defineProperties(testsuite, {
-        id: {value: id, enumerable: true},
+        id:     {value: id, enumerable: true},
+        prefix: {value: prefix, enumerable: true},
         //test:  {
         //    value:         async (token) => {
         //        try {
@@ -293,25 +253,62 @@ async function TestsuiteAgent({
         //        } // try
         //    }, enumerable: false
         //}, // test
-        test:    {
+
+        testcases: {
+            set(tc) {
+                if (testcases !== null)
+                    throw(new Error(``)); // TODO : better ERROR
+                testcases = new Map();
+                for (let [ec_name, ec] of Object.entries(tc)) {
+                    for (let [fn_name, fn] of Object.entries(ec)) {
+                        testcases.set(fn.id, fn);
+                        if (fn.urn)
+                            testcases.set(fn.urn, fn);
+                    } // for
+                } // for
+            } // set
+        }, // testcases
+        test:      {
             value: _test_, enumerable: false
         }, // test
-        enforce: {
+        enforce:   {
             value:         async (id, token, data) => {
-                let result = await bpep.enforce(id, token, data);
-                return result;
+                const tc_fn = testcases.get(id);
+                if (!tc_fn)
+                    throw(new Error(``)); // TODO : make better ERROR
+                return await tc_fn(token, data);
+                //let result = await bpep.enforce(id, token, data);
+                //return result;
             }, enumerable: false
         }, // test
-        Token:   {
-            //value:         ({data: data}) => {
-            value:         () => {
-                return BPMN.Token({
-                    id: `${id}token/${uuid.v1()}`
-                    //,data: data
-                });
-            }, enumerable: false
+        Token:     {
+            value: ({
+                        id:     id = `${testsuite.id}token/${uuid.v1()}`,
+                        start:  start = util.timestamp(),
+                        thread: thread = []
+                    }) => {
+                if (typeof thread === "string")
+                    thread = [thread];
+                let
+                    _data  = undefined,
+                    result = {
+                        id:     id,
+                        type:   [`${prefix}:Token`],
+                        start:  start,
+                        thread: thread
+                    }
+                ; // let
+
+                return result; // TODO : freeze never?!?
+            } // Token()
+            //value:         () => {
+            //    return BPMN.Token({
+            //        id: `${id}token/${uuid.v1()}`
+            //        //,data: data
+            //    });
+            //}, enumerable: false
         }, // Token
-        on:      {
+        on:        {
             value:              Object.defineProperties((topic, callback) => {
                     let
                         error  = null,

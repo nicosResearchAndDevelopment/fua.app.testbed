@@ -126,6 +126,13 @@ module.exports = ({
                     });
                 }); // io.on('connection')
 
+                //io_testsuite.use((socket, next) => {
+                //    if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
+                //        testsuite_socket = socket;
+                //    agent.testsuite_inbox_socket = testsuite_socket;
+                //    //debugger;
+                //});
+
                 io_testsuite.on('connection', (socket) => {
                     // TODO : testsuite connects user password
                     if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
@@ -262,7 +269,7 @@ module.exports = ({
                 //    console.log(data);
                 //    //debugger;
                 //}
-                if (/** shield */false) {
+                if (/** shield */ false) {
                     agent.executeTest({ // REM : connect ALICE
                         'ec':      "ids",
                         'command': "connect",

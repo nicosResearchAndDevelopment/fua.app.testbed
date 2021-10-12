@@ -97,14 +97,14 @@ module.exports = ({
                         'path':   "/about"
                     }
                 };
-                data = { // REM : ping localhost ALICE
-                    ec:       "net",
-                    command:  "ping",
-                    testCase: "net:isAlive",
-                    param:    {
-                        'host': "127.0.0.1"
-                    }
-                };
+                //data = { // REM : ping localhost ALICE
+                //    ec:       "net",
+                //    command:  "ping",
+                //    testCase: "net:CUT:isAlive",
+                //    param:    {
+                //        'host': "127.0.0.1"
+                //    }
+                //};
                 let
                     pool_root = `${agent.id}bpef/pool/`,
                     enforce   = {
@@ -117,16 +117,20 @@ module.exports = ({
 
                     data.operator = "https://testbed.nicos-rd.com/domain/user#jlangkau";
 
-                    test_result = await agent.enforce(
-                        //enforce["urn:ts:ec:ids:tc:INF_01:start"],
-                        enforce["urn:ts:frontend:launch:start"],
-                        agent.Token(),
-                        data
-                    );
-
+                    test_result = await agent.test(agent.Token({id: undefined, start: undefined}), data);
                     console.log(JSON.stringify(test_result, "", "\t"));
 
+                    //region BPEF
+                    test_result = await agent.enforce(
+                        ///** testcase */ "urn:net:ping",
+                        /** testcase */ "urn:ids:INF_01",
+                        agent.Token({id: undefined, start: undefined, thread: `${util.timestamp()} : TESTSUITE : app : process : start`}),
+                        data
+                    );
+                    console.log(JSON.stringify(test_result, "", "\t"));
                     debugger;
+                    //endregion BPEF
+
 
                 } catch (error) {
                     console.error(error);

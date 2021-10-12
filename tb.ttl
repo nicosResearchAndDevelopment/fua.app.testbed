@@ -75,6 +75,7 @@ tb:Users
 ##region tb : operators
 <https://testbed.nicos-rd.com/domain/user#spetrac>
     a            dom:User ;
+    dom:name     "spetrac@nicos-ag.com"^^xsd:string ;
     dom:password "boxMeIn_salt"^^xsd:string ;
 .
 
@@ -84,6 +85,14 @@ tb:Users
     dom:password "marzipan_salt"^^xsd:string ;
 .
 ##endregion tb : operators
+
+<https://testbed.nicos-rd.com/domain/user#testsuite>
+    a            dom:User ;
+    dom:active   "true"^^xsd:boolean ;
+    dom:name     "testsuite"^^xsd:string ;
+    dom:password "marzipan"^^xsd:string ;
+#    dom:password "$2b$10$bzDHAUB7fnzL0Nw8EzZsN.8J4LLBdhw08xhsaIotIHe6BVRF/g6M."^^xsd:string ;
+.
 
 tb:Groups
     a                dom:Groups ;

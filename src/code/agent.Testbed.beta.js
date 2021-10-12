@@ -16,7 +16,7 @@ const
     //{Device}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     //{Testsuite}  = require('./agent.Testsuite.js'), // REM: as agent
 
-    amec         = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
+    //amec         = require(path.join(util.FUA_JS_LIB, 'agent.amec/back/src/agent.amec.next.js')),
     task         = {
         'domain':    {},
         'scheduler': {
@@ -38,7 +38,7 @@ const
     DAPS         = false
 ;
 
-const {ip}      = require("../../ec/ip/src/tb.ec.ip.js"); // const
+const {ip} = require("../../ec/ip/src/tb.ec.ip.js"); // const
 
 //region ERROR
 const
@@ -224,16 +224,17 @@ async function TestbedAgent({
         return fn;
     } // IDS_DAT_Authentication_Factory
 
-    amec.authMechanism('BasicAuthentication_Leave', BasicAuthentication_Leave_Factory({
-        'id':           `${id}amec/BasicAuthentication_Leave`,
-        'rootUri':      rootUri,
-        'encodeSecret': encodeSecret
-    }));
-    amec.authMechanism('IDS_DAT_Authentication', IDS_DAT_Authentication_Factory({
-        'id':           `${id}amec/IDS_DAT_Authentication`,
-        'rootUri':      rootUri,
-        'encodeSecret': encodeSecret
-    }));
+    // TODO : new version
+    //amec.authMechanism('BasicAuthentication_Leave', BasicAuthentication_Leave_Factory({
+    //    'id':           `${id}amec/BasicAuthentication_Leave`,
+    //    'rootUri':      rootUri,
+    //    'encodeSecret': encodeSecret
+    //}));
+    //amec.authMechanism('IDS_DAT_Authentication', IDS_DAT_Authentication_Factory({
+    //    'id':           `${id}amec/IDS_DAT_Authentication`,
+    //    'rootUri':      rootUri,
+    //    'encodeSecret': encodeSecret
+    //}));
 
     //amec.authMechanism('login', async function (request) {
     //    // 1. get identification data
@@ -271,7 +272,8 @@ async function TestbedAgent({
     //region domain
     let
         domain_config = testbed_config['ecm:domain'][0],
-        ec            = {}
+        ec            = {},
+        amec          = null // !!!
     ;
     await domain_config.read();
     const
@@ -326,26 +328,37 @@ async function TestbedAgent({
         'scheduler':              {
             value: new Scheduler(scheduler), enumerable: true
         },
-        'amec':                   {
-            value: amec, enumerable: true
+        //'amec':                   {
+        //    value: amec, enumerable: true
+        //},
+        amec:          {
+            set(amc) {
+                if (amec === null)
+                    amec = amc;
+            }, enumerable: false
         },
-        'PEP':                    {
+        authenticate:  {
+            value: async () => {
+                return await amec.authenticate;
+            }
+        },
+        'PEP':         {
             value: pep, enumerable: false
         },
-        'domain':                 {
+        'domain':      {
             value: domain, enumerable: true
         },
-        'space':                  {
+        'space':       {
             value: space, enumerable: true
         },
-        'inbox':                  {
+        'inbox':       {
             value:         async (message) => {
                 if (testsuite_inbox_socket)
                     testsuite_inbox_socket.emit();
                 return undefined;
             }, enumerable: true
         }, // inbox
-        'executeTest':            {
+        'executeTest': {
             value:         async (data) => {
                 try {
                     let
@@ -362,7 +375,7 @@ async function TestbedAgent({
                             throw(new ErrorTestbedUnkownCommand({prov: `${id}executeTest`, command: command}));
                         } else {
                             //token.data.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
-                            let result         = await command(data.param);
+                            let result = await command(data.param);
                             return result;
                         } // if ()
                     } // if ()

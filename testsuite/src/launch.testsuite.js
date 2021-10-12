@@ -3,6 +3,7 @@ const
     config           = require('./config/config.testsuite.js'),
     util             = require('@nrd/fua.core.util'),
     //
+    //Amec             = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
     {TestsuiteAgent} = require('./agent.testsuite.js'),// REM: as agent
     //
     testsuite_id     = "https://testsuite.nicos-rd.com/",
@@ -17,6 +18,9 @@ const
     }
 ; // const
 
+let
+    amec
+;
 (async ({'config': config}) => {
 
     config.server.url = testsuite_id;
@@ -54,8 +58,31 @@ const
             id:       testsuite_id,
             validate: validate,
             testbed:  config.testbed
+        })
+    ; // const
+
+    //amec = new Amec();
+
+
+    let testcases = {
+        net: require(`./tc/ec/net/tc.ec.net.launch`)({
+            root_uri: testsuite_id,
+            agent:    {
+                test: testsuite_agent.test
+            }
         }),
-        APP_testsuite   = require('./app.testsuite.js')({
+        ids: require(`./tc/ec/ids/tc.ec.ids.launch`)({
+            root_uri: testsuite_id,
+            agent:    {
+                test: testsuite_agent.test
+            }
+        })
+    };
+
+    testsuite_agent.testcases = testcases;
+
+    const
+        APP_testsuite = require('./app.testsuite.js')({
             'space':  undefined,
             'agent':  testsuite_agent,
             'config': config
