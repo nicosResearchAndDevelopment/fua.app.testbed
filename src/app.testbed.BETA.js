@@ -126,19 +126,26 @@ module.exports = ({
                     });
                 }); // io.on('connection')
 
-                //io_testsuite.use((socket, next) => {
-                //    if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
-                //        testsuite_socket = socket;
-                //    agent.testsuite_inbox_socket = testsuite_socket;
-                //    //debugger;
-                //});
+                io_testsuite.use(async (socket, next) => {
+                    //debugger;
+
+                    let result = await agent.authenticate({
+                        Authorization: "Basic " + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password}`).toString('base64')
+                        // REM : ERROR : Authorization: "Basic " + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password + "nix"}`).toString('base64')
+                    }, "BasicAuth");
+
+                    if (result) {
+                        next();
+                    } else {
+                        next(new Error(`TODO: not authenticated.`));
+                    } // if ()
+                });
 
                 io_testsuite.on('connection', (socket) => {
-                    // TODO : testsuite connects user password
-                    if ((socket.handshake.auth.user === "testsuite") && (socket.handshake.auth.password === "marzipan"))
-                        testsuite_socket = socket;
-                    agent.testsuite_inbox_socket = testsuite_socket;
-                    testsuite_socket.on("test", async (token, test, callback) => {
+
+                    agent.testsuite_inbox_socket = socket;
+
+                    socket.on("test", async (token, test, callback) => {
                         token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : called`);
                         let
                             ec       = test['ec'],
@@ -204,20 +211,20 @@ module.exports = ({
 
                 //region TEST :: space
 
-                let
-                    users = await agent.domain.users()
-                ;
+                //let
+                //    users = await agent.domain.users()
+                //;
 
                 //let jlangkau = Buffer.from("jlangkau:marzipan").toString('base64');
                 //jlangkau     = "amxhbmdrYXU6bWFyemlwYW4=";
 
-                let
-                    user  = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave'),
-                    group = await agent.domain.groups.get("https://testbed.nicos-rd.com/domain/group#admin"),
-                    is_in = await agent.domain.group.hasMember(group, user)
-                ;
-                is_in     = await agent.domain.group.hasMember(group, "http//:unknown_user/");
-                is_in     = await agent.domain.user.memberOf(user, group);
+                //let
+                //    user  = await agent.domain.authenticate("amxhbmdrYXU6bWFyemlwYW4=", 'BasicAuthentication_Leave'),
+                //    group = await agent.domain.groups.get("https://testbed.nicos-rd.com/domain/group#admin"),
+                //    is_in = await agent.domain.group.hasMember(group, user)
+                //;
+                //is_in     = await agent.domain.group.hasMember(group, "http//:unknown_user/");
+                //is_in     = await agent.domain.user.memberOf(user, group);
 
                 //endregion TEST :: space
 

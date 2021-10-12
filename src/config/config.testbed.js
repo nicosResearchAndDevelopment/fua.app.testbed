@@ -64,6 +64,11 @@ exports.persistence = {
     options: {},
     load:    [
         {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
+        //region domain
+        //region domain : users
+        {'dct:identifier': path.join(__root, 'domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
+        //endregion domain : users
+        //endregion domain
         //region ids
         {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.alice.ttl'), 'dct:format': 'text/turtle'},

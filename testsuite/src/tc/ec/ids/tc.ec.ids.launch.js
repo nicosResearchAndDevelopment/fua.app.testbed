@@ -24,8 +24,17 @@ module.exports = ({
         INF_01: {
             value:          Object.defineProperties(async (token, data) => {
                 try {
+
                     token.thread.push(`${util.timestamp()} : TESTSUITE : agent : enforce : testcase : <tc.ids.INF_01> : called`);
+
+                    // start : net.sniffer
+
+                    // net.ping
+
                     let result = await agent.test(token, data);
+
+                    // end : net.sniffer
+
                     //region validation
                     if (!data.testResult)
                         throw(new Error(``)); // TODO : better ERROR
@@ -40,6 +49,7 @@ module.exports = ({
                     data.validationResult.value = ((data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL);
                     //endregion validation
                     token.thread.push(`${util.timestamp()} : TESTSUITE : agent : enforce : testcase : <tc.ids.INF_01> : before : return`);
+
                     return result;
                 } catch (jex) {
                     throw(jex); // TODO : better ERROR

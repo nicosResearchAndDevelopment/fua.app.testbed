@@ -328,9 +328,6 @@ async function TestbedAgent({
         'scheduler':              {
             value: new Scheduler(scheduler), enumerable: true
         },
-        //'amec':                   {
-        //    value: amec, enumerable: true
-        //},
         amec:          {
             set(amc) {
                 if (amec === null)
@@ -338,8 +335,8 @@ async function TestbedAgent({
             }, enumerable: false
         },
         authenticate:  {
-            value: async () => {
-                return await amec.authenticate;
+            value: async (headers, mechanism) => {
+                return await amec.authenticate(headers, mechanism);
             }
         },
         'PEP':         {
