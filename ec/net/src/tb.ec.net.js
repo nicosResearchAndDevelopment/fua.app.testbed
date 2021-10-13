@@ -3,15 +3,16 @@ const
     _default_uri_ = "urn:tb:ec:net:",
     //
     ping          = require(`./fn/ping/ping.js`),
+    portscan      = require(`./fn/portscan/portscan.js`),
     sniff         = require(`./fn/sniff/sniff.js`),
-    sniffer       = require(`./fn/sniff/sniffer.js`),
+    tshark       = require(`./fn/tshark/tshark.js`),
     //
     processes     = new Map()
 ; // const
 
 let
-    _uri_         = _default_uri_,
-    ec_net        = new EventEmitter()
+    _uri_  = _default_uri_,
+    ec_net = new EventEmitter()
 ; // let
 
 Object.defineProperties(ec_net, {
@@ -26,39 +27,40 @@ Object.defineProperties(ec_net, {
         }, enumerable: false
     },
     ping:          {value: ping, enumerable: false},
-    sniff:         {
-        value:         async (param) => {
-            try {
-                let _sniff_  = sniff(param);
-                _sniff_.emit = (topic, error, data) => {
-                    ec_net.emit(topic, error, data);
-                };
-                processes.set(_sniff_.id, _sniff_);
-                return {process: _sniff_.id};
-            } catch (jex) {
-                throw (jex); // TODO : own error
-            } // try
-        }, enumerable: false
-    }, // sniff
-    kill:          {
-        value:         (process) => {
-            processes.get(process).kill();
-            ec_net.emit('event', null, {
-                process: process,
-                killed:  true
-            });
-        }, enumerable: false
-    }, // kill
-    start_sniffer: {
-        value:      sniffer.start,
+    portscan:      {value: portscan, enumerable: false},
+    //sniff:         {
+    //    value:         async (param) => {
+    //        try {
+    //            let _sniff_  = sniff(param);
+    //            _sniff_.emit = (topic, error, data) => {
+    //                ec_net.emit(topic, error, data);
+    //            };
+    //            processes.set(_sniff_.id, _sniff_);
+    //            return {process: _sniff_.id};
+    //        } catch (jex) {
+    //            throw (jex); // TODO : own error
+    //        } // try
+    //    }, enumerable: false
+    //}, // sniff
+    //kill:          {
+    //    value:         (process) => {
+    //        processes.get(process).kill();
+    //        ec_net.emit('event', null, {
+    //            process: process,
+    //            killed:  true
+    //        });
+    //    }, enumerable: false
+    //}, // kill
+    start_tshark: {
+        value:      tshark.start,
         enumerable: false
     }, // start_sniffer
-    stop_sniffer:  {
-        value:      sniffer.stop,
+    stop_tshark:  {
+        value:      tshark.stop,
         enumerable: false
     } // stop_sniffer
 });
 
-sniffer.listen('event', (err, data) => ec_net.emit('event', err, data));
+tshark.listen('event', (err, data) => ec_net.emit('tshark', err, data));
 
 exports.net = ec_net;

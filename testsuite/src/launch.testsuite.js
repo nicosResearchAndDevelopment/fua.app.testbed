@@ -7,6 +7,7 @@ const
     {TestsuiteAgent} = require('./agent.testsuite.js'),// REM: as agent
     //
     testsuite_id     = "https://testsuite.nicos-rd.com/",
+
     testbed          = {
         schema: "http",
         host:   "127.0.0.1",
@@ -55,14 +56,13 @@ let
             }
         },
         testsuite_agent = await TestsuiteAgent({
-            id:       testsuite_id,
-            validate: validate,
-            testbed:  config.testbed
+            id: testsuite_id,
+            //validate: validate,
+            testbed: config.testbed
         })
     ; // const
 
     //amec = new Amec();
-
 
     let testcases = {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({

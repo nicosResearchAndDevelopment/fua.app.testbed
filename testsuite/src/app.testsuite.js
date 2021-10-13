@@ -84,52 +84,50 @@ module.exports = ({
 
                 let data;
 
-                data = { // REM :
-                    'ec':      "ids",
-                    'command': "requestApplicantsSelfDescription",
-                    'param':   {
-                        //'operator': "simon petrac",
-                        'rc': alice,
-                        // REM : Bob as applicant
-                        'schema': bob.schema,
-                        'host':   bob.host,
-                        'port':   bob.port,
-                        'path':   "/about"
+                //data = { // REM :
+                //    //'ec':      "ids",
+                //    //'command': "requestApplicantsSelfDescription",
+                //    testCase: "urn:ts:ec:ids:tc:INF_01",
+                //    param:   {
+                //        //'operator': "simon petrac",
+                //        'rc': alice,
+                //        // REM : Bob as applicant
+                //        'schema': bob.schema,
+                //        'host':   bob.host,
+                //        'port':   bob.port,
+                //        'path':   "/about"
+                //    }
+                //};
+                data = { // REM : ping localhost ALICE
+                    testCase: "urn:ts:ec:net:tc:ping",
+                    param:    {
+                        'host': "127.0.0.1"
                     }
                 };
                 //data = { // REM : ping localhost ALICE
-                //    ec:       "net",
-                //    command:  "ping",
-                //    testCase: "net:CUT:isAlive",
+                //    testCase: "urn:ts:ec:net:tc:portscan",
                 //    param:    {
                 //        'host': "127.0.0.1"
                 //    }
                 //};
                 let
                     pool_root = `${agent.id}bpef/pool/`,
-                    enforce   = {
-                        'urn:ts:frontend:launch:start':  `${pool_root}testsuite/frontend/launch/start/`,
-                        'urn:ts:ec:ids:tc:INF_01:start': `${pool_root}ec/ids/tc/INF_01/start/`
-                    },
                     test_result
                 ;
                 try {
 
+                    let host = "applicant.com";
                     data.operator = "https://testbed.nicos-rd.com/domain/user#jlangkau";
 
-                    test_result = await agent.test(agent.Token({id: undefined, start: undefined}), data);
+                    //test_result = await agent.test(agent.Token({id: undefined, start: undefined}), data);
                     console.log(JSON.stringify(test_result, "", "\t"));
 
-                    //region BPEF
                     test_result = await agent.enforce(
-                        ///** testcase */ "urn:net:ping",
-                        /** testcase */ "urn:ids:INF_01",
                         agent.Token({id: undefined, start: undefined, thread: `${util.timestamp()} : TESTSUITE : app : process : start`}),
                         data
                     );
                     console.log(JSON.stringify(test_result, "", "\t"));
                     debugger;
-                    //endregion BPEF
 
 
                 } catch (error) {

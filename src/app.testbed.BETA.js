@@ -147,6 +147,7 @@ module.exports = ({
 
                     socket.on("test", async (token, test, callback) => {
                         token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : called`);
+                        token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on:test : called`);
                         let
                             ec       = test['ec'],
                             command  = test['command'],
@@ -160,7 +161,8 @@ module.exports = ({
                                 'command': command,
                                 'param':   param
                             });
-                            token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : before : callback`);
+                            //token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : before : callback`);
+                            token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on:test : before : callback`);
                             callback(null, token, result);
 
                         } catch (jex) {

@@ -54,7 +54,7 @@ class ErrorTestsuiteCallbackMissingOnTopic extends Error {
 async function TestsuiteAgent({
                                   id:       id = undefined,
                                   prefix:   prefix = _prefix_,
-                                  validate: validate = undefined,
+                                  //validate: validate = undefined,
                                   testbed:  testbed = undefined
                               }) {
 
@@ -261,9 +261,17 @@ async function TestsuiteAgent({
                 testcases = new Map();
                 for (let [ec_name, ec] of Object.entries(tc)) {
                     for (let [fn_name, fn] of Object.entries(ec)) {
+                        if (testcases.get(fn.id))
+                            throw(new Error(``)); // TODO : better ERROR
+
                         testcases.set(fn.id, fn);
-                        if (fn.urn)
+
+                        if (fn.urn) {
+                            if (testcases.get(fn.urn))
+                                throw(new Error(``)); // TODO : better ERROR
                             testcases.set(fn.urn, fn);
+                        } // if ()
+
                     } // for
                 } // for
             } // set
@@ -272,15 +280,21 @@ async function TestsuiteAgent({
             value: _test_, enumerable: false
         }, // test
         enforce:   {
-            value:         async (id, token, data) => {
-                const tc_fn = testcases.get(id);
+            //value:         async (id, token, data) => {
+            value:         async (token, data) => {
+                const tc_fn = testcases.get(data.testCase);
                 if (!tc_fn)
                     throw(new Error(``)); // TODO : make better ERROR
-                return await tc_fn(token, data);
+                try {
+                    return await tc_fn(token, data);
+                    data.validationResult.value = "PASS";
+                } catch (jex) {
+                    data.validationResult.value = "FAIL";
+                } //
                 //let result = await bpep.enforce(id, token, data);
                 //return result;
             }, enumerable: false
-        }, // test
+        }, // enforce
         Token:     {
             value: ({
                         id:     id = `${testsuite.id}token/${uuid.v1()}`,

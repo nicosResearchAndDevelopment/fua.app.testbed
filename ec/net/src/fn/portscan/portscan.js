@@ -14,7 +14,6 @@ function _parser_(message, search) {
 }
 
 async function fn_portscan(param) {
-
     const
         result = {
             timestamp:         util.timestamp(),
@@ -23,13 +22,20 @@ async function fn_portscan(param) {
         output = await cmd_nmap({'n': 1}, param.host),
         parts  = output.split(/\r?\n\r?\n/)
     ;
-    //let _parts = parts[1].split(/\r\n/);
-    for (const line of parts[1].split(/\r\n/)) {
+    let lines = parts[1].split(/\r\n/);
+    lines.shift(); // REM : drop header
+    for (const line of lines) {
         console.log(line);
-        let line_ = line.replace(/   /g, ' ');
-        line_     = line_.replace(/ /g, ' ');
-        line_ = line_.split(' ');
-        result.operationalResult[line_[0]] = {state: line_[1], service: line_[2]};
+        let line_         = line.replace(/\s+/g, ' ');
+        line_             = line_.split(' ');
+        let port_protocol = line_[0].split('/');
+        if (!result.operationalResult[port_protocol[1]])
+            result.operationalResult[port_protocol[1]] = {};
+        result.operationalResult[port_protocol[1]][port_protocol[0]] = {};
+        if (line_[1] !== "unknown")
+            result.operationalResult[port_protocol[1]][port_protocol[0]].state = line_[1];
+        if (line_[2] !== "unknown")
+            result.operationalResult[port_protocol[1]][port_protocol[0]].service = line_[2];
     } // for
 
     return result;
