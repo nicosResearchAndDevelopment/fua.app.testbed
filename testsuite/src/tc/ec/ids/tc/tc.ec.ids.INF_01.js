@@ -15,48 +15,82 @@ module.exports = ({
                   }) => {
 
     const
-        uri = `${tc_root_uri}${name}`,
+        uri = `${tc_root_uri}${name}/`,
         urn = `${tc_root_urn}${name}`
     ;
 
+    //region ERROR
+    const
+        ERROR_CODE_ErrorTestResultIsMissing        = `${urn}:error:test-result-is-missing`,
+        ERROR_CODE_ErrorOperationalResultIsMissing = `${urn}:error:operational-result-is-missing`
+    ; // const
+
+    class ErrorTestResultIsMissing extends Error {
+        constructor() {
+            super(`${urn} : test result is missing`);
+            this.id        = `${uri}error/${uuid.v1()}`;
+            this.timestamp = util.timestamp();
+            this.code      = ERROR_CODE_ErrorTestResultIsMissing;
+            this.prov      = uri;
+            Object.freeze(this);
+        }
+    }
+
+    class ErrorOperationalResultIsMissing extends Error {
+        constructor() {
+            super(`${urn} : operational result is missing`);
+            this.id        = `${uri}error/${uuid.v1()}`;
+            this.timestamp = util.timestamp();
+            this.code      = ERROR_CODE_ErrorOperationalResultIsMissing;
+            this.prov      = uri;
+            Object.freeze(this);
+        }
+    }
+
+    //endregion ERROR
+
     let INF_01 = Object.defineProperties(async (token, data) => {
+        let error = null;
         try {
 
-
             token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
-
-            // start : net.sniffer
-
-            // net.ping
 
             data.ec      = ec;
             data.command = "requestApplicantsSelfDescription";
 
-            let result = await agent.test(token, data.param);
-
-
-            // end : net.sniffer
+            //let result = await agent.test(token, data);
+            await agent.test(token, data);
 
             //region validation
-            if (!result.data.testResult)
-                throw(new Error(``)); // TODO : better ERROR
-            if (!result.data.testResult.operationalResult)
-                throw(new Error(``)); // TODO : better ERROR
-
-            result.data.validationResult = {
-                id:        `${tc_root_uri}getSelfDescription/${uuid.v1()}`,
-                timestamp: util.timestamp()
-            };
             token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
-            result.data.validationResult.value = ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL);
+
+            //error = new ErrorTestResultIsMissing(); // REM : error-testing
+
+            if (!data.testResult)
+                error = new ErrorTestResultIsMissing();
+
+            if (!error && !result.data.testResult.operationalResult)
+                error = new ErrorOperationalResultIsMissing();
+
+            if (!error) {
+                data.validationResult = {
+                    id:        `${uri}/validation/result/${uuid.v1()}`,
+                    timestamp: util.timestamp(),
+                    value:     ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL)
+                };
+            } // if ()
             //endregion validation
 
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
-
-            return result;
         } catch (jex) {
-            throw(jex); // TODO : better ERROR
+            error = jex;
         } // try
+
+        if (error)
+            console.error(error);
+
+        token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+        return {token: token, data: data, error: error};
+
     }, {
         id:   {value: uri, enumerable: true},
         urn:  {value: urn, enumerable: true},

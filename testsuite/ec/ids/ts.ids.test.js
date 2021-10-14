@@ -1,124 +1,146 @@
 const
+    fs                              = require("fs"),
     {describe, test, before, after} = require('mocha'),
-    Session                         = require("./session/ts.ids.Session.js"),
-    applicant                       = require("./ts.ids.applicant.json"),
-    applicantGetsDATfromDAPS        = require('./ts.ids.test.getDATfromDAPS.js')
+    //
+    util                            = require('@nrd/fua.core.util'),
+    uuid                            = require('@nrd/fua.core.uuid'),
+    //
+    testsuite_id                    = "https://testsuite.nicos-rd.com/",
+    tc_root_urn                     = `urn:ts:ec:ids:tc:`,
+    tc_root_uri                     = `${testsuite_id}ec/ids/tc/`,
+    //
+    {TestsuiteAgent}                = require('../../src/agent.testsuite.js')// REM: as agent
+    //Portscan                        = require('../../src/agent.testsuite.js')
 ;
 
-function ObjectPropertyFactory(name, value) {
+const
+    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    applicant_root = `${auditlog}/tb_ids_bob`,
+    session_root   = `${applicant_root}/net`,
+    applicant      = require(`${applicant_root}/config.json`)
+;
 
-    // TODO: array-check
-    value = [value];
+function Session({
+                     root: root
+                 }) {
 
-    async function has(item, node) {
-        try {
-            let result = false;
-            return result;
-        } catch (jex) {
-            throw jex;
-        } // try
-    }
+    let session = {};
 
-    async function add(item, node) {
-        try {
-            let result = false;
-            return result;
-        } catch (jex) {
-            throw jex;
-        } // try
-    }
+    Object.defineProperties(session, {
+        write: {
+            value:         async ({testcase: testcase, token: token, data: data, error: error}) => {
+                try {
+                    const
+                        leave = uuid.v1()
+                    ;
+                    let node  = {
+                            id:    `${tc_root_uri}${testcase}/${leave}`,
+                            urn:   `${tc_root_urn}${testcase}:${leave}`,
+                            token: token,
+                            data:  data
+                        }
+                    ;
+                    if (error)
+                        node.error = error;
 
-    class ObjectPropertyFactoryError extends Error {
-        constructor(message) {
-            super(message);
-            this['timestamp'] = (new Date).toISOString();
-        }
-    } // class ObjectPropertyFactoryError
+                    fs.writeFileSync(`${root}/${testcase}_${leave}.json`, JSON.stringify(node, "", "\t"), /** options */ {});
+                } catch (jex) {
+                    throw (jex);
+                } // try
+            }, enumerable: false
+        } // write
+    }); // Object.defineProperties(session)
 
-    let
-        fn = async () => {
-            let result = {};
-            try {
+    Object.freeze(session);
+    return session;
+}
 
-            } catch (jex) {
-                throw jex;
-            } // try
-            return result;
-        } // fn
-    ;
-    Object.defineProperties(fn, {
-        'name':   {value: name},
-        'has':    {
-            value: async (node) => {
-                return await has(this, node);
-            }
-        },
-        'add':    {
-            value: async (node) => {
-                return await add(this, node);
-            }
-        },
-        'modify': {
-            value: () => {
-                throw null;
-            }
-        },
-        'remove': {
-            value: () => {
-                throw null;
-            }
-        },
-        'delete': {
-            value: () => {
-                throw null;
-            }
-        }
-    });
-    return fn;
-} // ObjectPropertyFactory()
-
-let session;
-describe('IDS', function () {
+describe('ids', function () {
 
     this.timeout(0);
 
-    describe('applicantGetsDATfromDAPS', function () {
-        applicant;
-        session = new Session({
-            'applicant':         applicant.name,
-            'session_folder':    applicant.session_folder,
-            'log_file_name':     undefined, // REM: 'log.txt'
-            'session_file_name': undefined  // REM: 'session.json'
-        });
-        test(
-            'basic test',
-            () => applicantGetsDATfromDAPS.basic({
-                session:       session,
-                timeout:       180,
-                daps_endpoint: 'http://testbed.nicos-rd.com/daps/'
-            })
-        ); // test
-        if (session) {
-            session.setCriterion("INF_01", {
-                'status': "pass"
-            });
-            session.presentVerifiableCredential({
-                'presentationProof': () => {
-                    let
-                        proof = `presentationProof :: aaaa.bbbb.cccc`
-                    ;
-                    return proof;
-                },
-                'credentialProof':   () => {
-                    let
-                        proof = `credentialProof : dddd.eeee.ffff`
-                    ;
-                    return proof;
-                },
-                'file_name':         undefined
-            });
-            session.sessionEnd();
-        } // if ()
-    }); // describe
+    let
+        tc,
+        session,
+        agent
+    ;
 
-});
+    before(async function () {
+
+        let config = {
+            port:    8081,
+            testbed: {
+                schema: "http",
+                host:   "127.0.0.1",
+                port:   8080,
+                auth:   {
+                    user:     "testsuite",
+                    password: "marzipan" // TODO : password : HASH
+                }
+            }
+        };
+
+        session = Session({root: session_root});
+        //session = null; // REM : mute output
+
+        agent = await TestsuiteAgent({
+            id:      testsuite_id,
+            testbed: config.testbed
+        });
+        tc    = require('../../src/tc/ec/ids/tc.ec.ids.launch.js')({
+            //ec:          "net", // REM : "net" = default
+            root_uri: testsuite_id,
+            root_urn: "urn:ts:",
+            agent:    agent
+        });
+        await new Promise((resolve, reject) => {
+            agent.on('testbed_socket_connect', async () => {
+                resolve();
+            });
+        });
+
+    }); // before()
+
+    describe('INF_01', function () {
+
+        //before(function () {
+        //
+        //}); // before()
+
+        //param = { // REM : ALICE gets BOBs selfDescription
+        //    'ec':      "ids",
+        //    'command': "requestApplicantsSelfDescription",
+        //    'param':   {
+        //        //'operator': "simon petrac",
+        //        'rc': alice,
+        //        // REM : Bob as applicant
+        //        'schema': bob.schema,
+        //        'host':   bob.host,
+        //        'port':   bob.port,
+        //        'path':   "/about"
+        //    }
+        //};
+        //
+        test(
+            `should successfully 'ping' applicant <${applicant.host}>`,
+            async () => await tc.INF_01(
+                agent.Token({
+                    id:     undefined,
+                    start:  undefined,
+                    thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+                }),
+                /** data */ {
+                    param: {
+                        host: applicant.host
+                    }
+                }, session)
+        ); // test
+
+        //after(function () {
+        //
+        //}); // after()
+
+    }); // describe(ping)
+
+}); // describe('ids')
+

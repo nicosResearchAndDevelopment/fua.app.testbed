@@ -7,32 +7,73 @@ const
 ; // const
 module.exports = ({
                       root_uri = root_uri,
+                      root_urn = root_urn = "urn:ts:",
                       agent
                   }) => {
     const
-        tc_root_urn = `urn:ts:ec:net:tc:`,
+        tc_root_urn = `${root_urn}ec:net:tc:`,
         tc_root_uri = `${root_uri}ec/net/tc/`
     ;
     let
         carry       = {}
     ;
 
+    function wrapper({
+                         tc_root_uri: tc_root_uri,
+                         tc_root_urn: tc_root_urn,
+                         agent:       agent,
+                         fn:          fn
+                     }) {
+        const
+            _fn_ = fn({
+                tc_root_uri: tc_root_uri,
+                tc_root_urn: tc_root_urn,
+                agent:       agent
+            })
+        ;
+
+        return async (token, data, session) => {
+            let result = await _fn_(token, data);
+            if (session) {
+                let node = {
+                    testcase: _fn_.name,
+                    token:    result.token,
+                    data:     result.data
+                };
+                if (result.error)
+                    node.error = {
+                        id:        result.error.id,
+                        timestamp: result.error.timestamp,
+                        code:      result.error.code,
+                        prov:      result.error.prov,
+                        message:   result.error.message
+                    };
+                await session.write(node);
+            } // if ()
+            if (result.error)
+                throw(result.error);
+            return result;
+        };
+    } // function wrapper()
+
     // REM : ONLY functions are iterable!!!
     Object.defineProperties(carry, {
-        id: {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
-        ping: {
-            value:          require(`./tc/tc.ec.net.ping`)({
+        id:       {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
+        ping:     {
+            value:          wrapper({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
-                agent:       agent
-            }), enumerable: true
+                agent:       agent,
+                fn:          require(`./tc/tc.ec.net.ping.js`)
+            }), enumerable: false
         }, // ping
         portscan: {
-            value:          require(`./tc/tc.ec.net.portscan`)({
+            value:          wrapper({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
-                agent:       agent
-            }), enumerable: true
+                agent:       agent,
+                fn:          require(`./tc/tc.ec.net.portscan.js`)
+            }), enumerable: false
         } // portscan
     }); // Object.defineProperties(carry)
 

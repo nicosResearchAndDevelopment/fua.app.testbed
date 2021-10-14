@@ -15,11 +15,30 @@ module.exports = ({
                   }) => {
 
     const
-        uri = `${tc_root_uri}${name}`,
+        uri = `${tc_root_uri}${name}/`,
         urn = `${tc_root_urn}${name}`
     ;
 
+    //region ERROR
+    const
+        ERROR_CODE_ErrorTestResultIsMissing = `${urn}:error:test-result-is-missing`
+    ; // const
+
+    class ErrorTestResultIsMissing extends Error {
+        constructor() {
+            super(`${urn} : test result is missing`);
+            this.id        = `${uri}error/${uuid.v1()}`;
+            this.timestamp = util.timestamp();
+            this.code      = ERROR_CODE_ErrorTestResultIsMissing;
+            this.prov      = uri;
+            Object.freeze(this);
+        }
+    }
+
+    //endregion ERROR
+
     let ping = Object.defineProperties(async (token, data) => {
+        let error = null;
         try {
 
             token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
@@ -31,27 +50,29 @@ module.exports = ({
             await agent.test(token, data);
 
             //region validation
-            if (!data.testResult)
-                throw(new Error(``)); // TODO : better ERROR
-            data.validationResult = {
-                id:        `${tc_root_uri}ping/${uuid.v1()}`,
-                timestamp: util.timestamp()
-            };
             token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
-            //data.validationnvalue = ((data.testisAlive === true) ? PASS : FAIL);
+            //error = new ErrorTestResultIsMissing(); // REM : error-testing
+            if (!data.testResult)
+                error = new ErrorTestResultIsMissing();
 
-            if (!data.testResult.isAlive)
-                throw(new Error(``));
-
-            //data.validationvalue = PASS;
+            if (!error)
+                data.validationResult = {
+                    id:        `${uri}/validation/result/${uuid.v1()}`,
+                    timestamp: util.timestamp(),
+                    value:     ((data.testResult.isAlive === true) ? PASS : FAIL)
+                };
             //endregion validation
 
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
-            console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            return {token: token, data: data};
         } catch (jex) {
-            throw(jex); // TODO : better ERROR
+            error = jex; // TODO : better ERROR
         } // try
+
+        if (error)
+            console.error(error);
+
+        token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+        return {token: token, data: data, error: error};
+
     }, {
         id:   {value: uri, enumerable: true},
         urn:  {value: urn, enumerable: true},

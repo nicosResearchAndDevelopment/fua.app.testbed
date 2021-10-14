@@ -1,33 +1,81 @@
 const
+    fs                              = require("fs"),
     {describe, test, before, after} = require('mocha'),
     //
     util                            = require('@nrd/fua.core.util'),
     uuid                            = require('@nrd/fua.core.uuid'),
     //
     testsuite_id                    = "https://testsuite.nicos-rd.com/",
-    tc_root_urn                     = `urn:ts:ec:ids:tc:`,
-    tc_root_uri                     = `${testsuite_id}ec/ids/tc/`,
+    tc_root_urn                     = `urn:ts:ec:net:tc:`,
+    tc_root_uri                     = `${testsuite_id}ec/net/tc/`,
     //
     {TestsuiteAgent}                = require('../../src/agent.testsuite.js')// REM: as agent
     //Portscan                        = require('../../src/agent.testsuite.js')
-;const Ping                         = require("../../src/tc/ec/net/tc/tc.ec.net.ping.js");
+;
 
 const
-    bad       = {
-        ports: [21]
+    bad_ports      = {
+        tcp: [21]
     },
-    applicant = {
-        host: "127.0.0.1",
-        port: 8080
-    }
+    //applicant = {
+    //    log_root: "",
+    //    name:     "bob",
+    //    host:     "127.0.0.1",
+    //    port:     8080
+    //}
+    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    applicant_root = `${auditlog}/tb_ids_bob`,
+    session_root   = `${applicant_root}/net`,
+    applicant      = require(`${applicant_root}/config.json`)
 ;
-describe('NET', function () {
+
+function Session({
+                     root: root
+                 }) {
+
+    let session = {};
+
+    Object.defineProperties(session, {
+        write: {
+            value:         async ({testcase: testcase, token: token, data: data, error: error}) => {
+                try {
+                    const
+                        leave = uuid.v1()
+                    ;
+                    let node  = {
+                            id:    `${tc_root_uri}${testcase}/${leave}`,
+                            urn:   `${tc_root_urn}${testcase}:${leave}`,
+                            token: token,
+                            data:  data
+                        }
+                    ;
+                    if (error)
+                        node.error = error;
+
+                    fs.writeFileSync(`${root}/${testcase}_${leave}.json`, JSON.stringify(node, "", "\t"), /** options */ {});
+                } catch (jex) {
+                    throw (jex);
+                } // try
+            }, enumerable: false
+        } // write
+    }); // Object.defineProperties(session)
+
+    Object.freeze(session);
+    return session;
+}
+
+describe('net', function () {
 
     this.timeout(0);
 
-    let agent;
+    let
+        tc,
+        session,
+        agent
+    ;
 
     before(async function () {
+
         let config = {
             port:    8081,
             testbed: {
@@ -40,9 +88,19 @@ describe('NET', function () {
                 }
             }
         };
-        agent      = await TestsuiteAgent({
+
+        session = Session({root: session_root});
+        //session = null; // REM : mute output
+
+        agent = await TestsuiteAgent({
             id:      testsuite_id,
             testbed: config.testbed
+        });
+        tc    = require('../../src/tc/ec/net/tc.ec.net.launch.js')({
+            //ec:          "net", // REM : "net" = default
+            root_uri: testsuite_id,
+            root_urn: "urn:ts:",
+            agent:    agent
         });
         await new Promise((resolve, reject) => {
             agent.on('testbed_socket_connect', async () => {
@@ -54,34 +112,28 @@ describe('NET', function () {
 
     describe('ping', function () {
 
-        let ping;
-
-        before(function () {
-            const
-                Ping = require('../../src/tc/ec/net/tc/tc.ec.net.ping.js')
-            ;
-            ping     = Ping({
-                //ec:          "net", // REM : "net" = default
-                tc_root_uri: tc_root_uri,
-                tc_root_urn: tc_root_urn,
-                agent:       agent
-            });
-        }); // before()
+        //before(function () {
+        //
+        //}); // before()
 
         test(
             `should successfully 'ping' applicant <${applicant.host}>`,
-            () => ping(
+            async () => await tc.ping(
                 agent.Token({
                     id:     undefined,
                     start:  undefined,
-                    thread: `${util.timestamp()} : TS-MOCHA : test :  start`
+                    thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
                 }),
                 /** data */ {
                     param: {
                         host: applicant.host
                     }
-                })
+                }, session)
         ); // test
+
+        //after(function () {
+        //
+        //}); // after()
 
     }); // describe(ping)
 
@@ -89,34 +141,28 @@ describe('NET', function () {
 
         let portscan;
 
-        before(async function () {
-
-            const
-                Portscan = require('../../src/tc/ec/net/tc/tc.ec.net.portscan.js')
-            ;
-            portscan     = Portscan({
-                //ec:          "net", // REM : "net" = default
-                tc_root_uri: tc_root_uri,
-                tc_root_urn: tc_root_urn,
-                agent:       agent
-            });
-
-        });
+        //before(async function () {
+        //
+        //});
 
         test(
-            `TODO should successfully 'portscan' at applicant <${applicant.host}`,
-            () => portscan(agent.Token({
+            `TODO should successfully make 'portscan' at applicant <${applicant.host}`,
+            () => tc.portscan(agent.Token({
                     id:     undefined,
                     start:  undefined,
-                    thread: `${util.timestamp()} : TS-MOCHA : test :  start`
+                    thread: `${util.timestamp()} : TS-MOCHA : test : portscan : start`
                 }),
                 /** data */ {
                     param: {
                         host: applicant.host,
-                        bad:  bad.ports
+                        bad:  bad_ports
                     }
-                })
+                }, session)
         ); // test
+
+        //after(function () {
+        //
+        //}); // after()
 
     }); // describe(portscan)
 
