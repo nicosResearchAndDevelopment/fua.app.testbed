@@ -64,18 +64,23 @@ let
 
     //amec = new Amec();
 
-    let testcases = {
+    const
+        tc_console_log = true
+    ;
+    let testcases      = {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({
-            root_uri: testsuite_id,
-            agent:    {
+            root_uri:    testsuite_id,
+            agent:       {
                 test: testsuite_agent.test
-            }
+            },
+            console_log: tc_console_log
         }),
         ids: require(`./tc/ec/ids/tc.ec.ids.launch`)({
-            root_uri: testsuite_id,
-            agent:    {
+            root_uri:    testsuite_id,
+            agent:       {
                 test: testsuite_agent.test
-            }
+            },
+            console_log: tc_console_log
         })
     };
 

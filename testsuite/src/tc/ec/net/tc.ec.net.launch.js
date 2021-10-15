@@ -1,14 +1,16 @@
 const
-    util       = require('@nrd/fua.core.util'),
-    uuid       = require('@nrd/fua.core.uuid'),
+    util = require('@nrd/fua.core.util'),
+    uuid = require('@nrd/fua.core.uuid'),
     //
-    PASS       = "PASS",
-    FAIL       = "FAIL"
+    PASS = "PASS",
+    FAIL = "FAIL"
 ; // const
+
 module.exports = ({
-                      root_uri = root_uri,
-                      root_urn = root_urn = "urn:ts:",
-                      agent
+                      root_uri:    root_uri,
+                      root_urn:    root_urn = "urn:ts:",
+                      agent:       agent,
+                      console_log: console_log = false
                   }) => {
     const
         tc_root_urn = `${root_urn}ec:net:tc:`,
@@ -19,16 +21,19 @@ module.exports = ({
     ;
 
     function wrapper({
+
                          tc_root_uri: tc_root_uri,
                          tc_root_urn: tc_root_urn,
                          agent:       agent,
-                         fn:          fn
+                         fn:          fn,
+                         console_log: console_log = false
                      }) {
         const
             _fn_ = fn({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
-                agent:       agent
+                agent:       agent,
+                console_log: console_log
             })
         ;
 
@@ -64,7 +69,8 @@ module.exports = ({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
                 agent:       agent,
-                fn:          require(`./tc/tc.ec.net.ping.js`)
+                fn:          require(`./tc/tc.ec.net.ping.js`),
+                console_log: console_log
             }), enumerable: false
         }, // ping
         portscan: {
@@ -72,7 +78,8 @@ module.exports = ({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
                 agent:       agent,
-                fn:          require(`./tc/tc.ec.net.portscan.js`)
+                fn:          require(`./tc/tc.ec.net.portscan.js`),
+                console_log: console_log
             }), enumerable: false
         } // portscan
     }); // Object.defineProperties(carry)

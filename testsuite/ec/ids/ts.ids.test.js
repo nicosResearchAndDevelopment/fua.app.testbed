@@ -15,6 +15,8 @@ const
 
 const
     auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    operator       = "https://testbed.nicos-rd.com/domain/user#jlangkau",
+    //operator = "https://testbed.nicos-rd.com/domain/user#spetrac",
     applicant_root = `${auditlog}/tb_ids_bob`,
     session_root   = `${applicant_root}/net`,
     applicant      = require(`${applicant_root}/config.json`)
@@ -110,6 +112,7 @@ describe('ids', function () {
         //param = { // REM : ALICE gets BOBs selfDescription
         //    'ec':      "ids",
         //    'command': "requestApplicantsSelfDescription",
+        //operator: operator,
         //    'param':   {
         //        //'operator': "simon petrac",
         //        'rc': alice,
@@ -121,19 +124,18 @@ describe('ids', function () {
         //    }
         //};
         //
-        test(
-            `should successfully 'ping' applicant <${applicant.host}>`,
-            async () => await tc.INF_01(
-                agent.Token({
-                    id:     undefined,
-                    start:  undefined,
-                    thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
-                }),
-                /** data */ {
-                    param: {
-                        host: applicant.host
-                    }
-                }, session)
+        test(`should successfully 'ping' applicant <${applicant.host}>`, async () => await tc.INF_01(
+            agent.Token({
+                id:     undefined,
+                start:  undefined,
+                thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+            }),
+            /** data */ {
+                operator: operator,
+                param:    {
+                    host: applicant.host
+                }
+            }, session)
         ); // test
 
         //after(function () {

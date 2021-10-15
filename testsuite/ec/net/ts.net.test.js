@@ -14,8 +14,12 @@ const
 ;
 
 const
-    bad_ports      = {
-        tcp: [21]
+    tc_console_log = true,
+    ports          = {
+        needed: undefined, // REM: TC claims to need those
+        //used:   undefined, // REM: applicant claims to use those
+        bad: {tcp: [21]} // REM: TC claims those to be bad, validation-result on NOT_bad, PASS|FAIL|NOT_APPLICABLE
+        //bad:    {tcp: []}
     },
     //applicant = {
     //    log_root: "",
@@ -96,11 +100,13 @@ describe('net', function () {
             id:      testsuite_id,
             testbed: config.testbed
         });
-        tc    = require('../../src/tc/ec/net/tc.ec.net.launch.js')({
+
+        tc = require('../../src/tc/ec/net/tc.ec.net.launch.js')({
             //ec:          "net", // REM : "net" = default
-            root_uri: testsuite_id,
-            root_urn: "urn:ts:",
-            agent:    agent
+            root_uri:    testsuite_id,
+            root_urn:    "urn:ts:",
+            agent:       agent,
+            console_log: tc_console_log
         });
         await new Promise((resolve, reject) => {
             agent.on('testbed_socket_connect', async () => {
@@ -131,9 +137,11 @@ describe('net', function () {
                 }, session)
         ); // test
 
-        //after(function () {
-        //
-        //}); // after()
+        after(function () {
+            console.log(`#########################################################`);
+            console.log(`# ${tc_root_urn}ping : after`);
+            console.log(`#########################################################`);
+        }); // after()
 
     }); // describe(ping)
 
@@ -141,9 +149,22 @@ describe('net', function () {
 
         let portscan;
 
-        //before(async function () {
-        //
-        //});
+        before(async function () {
+            //let result = await tc.ping(
+            //    agent.Token({
+            //        id:     undefined,
+            //        start:  undefined,
+            //        thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+            //    }),
+            //    /** data */ {
+            //        param: {
+            //            host: applicant.host
+            //        }
+            //    }, session);
+            //if (result.error)
+            //    throw (error);
+            ////throw (new Error(``)); // REM : testing only
+        });
 
         test(
             `TODO should successfully make 'portscan' at applicant <${applicant.host}`,
@@ -154,15 +175,17 @@ describe('net', function () {
                 }),
                 /** data */ {
                     param: {
-                        host: applicant.host,
-                        bad:  bad_ports
+                        host:  applicant.host,
+                        ports: ports
                     }
                 }, session)
         ); // test
 
-        //after(function () {
-        //
-        //}); // after()
+        after(function () {
+            console.log(`#########################################################`);
+            console.log(`# ${tc_root_urn}portscan : after`);
+            console.log(`#########################################################`);
+        }); // after()
 
     }); // describe(portscan)
 

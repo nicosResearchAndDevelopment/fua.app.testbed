@@ -11,7 +11,8 @@ module.exports = ({
                       ec:          ec = "net",
                       tc_root_uri: tc_root_uri,
                       tc_root_urn: tc_root_urn,
-                      agent:       agent
+                      agent:       agent,
+                      console_log: console_log = false
                   }) => {
 
     const
@@ -69,6 +70,11 @@ module.exports = ({
 
         if (error)
             console.error(error);
+
+        if (console_log) {
+            console.log(`data: ${JSON.stringify(data, "", "\t")}`);
+            console.log(`token: ${JSON.stringify(token, "", "\t")}`);
+        } // if ()
 
         token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
         return {token: token, data: data, error: error};
