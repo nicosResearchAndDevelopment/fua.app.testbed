@@ -13,12 +13,14 @@ module.exports = ({
                       tc_root_uri: tc_root_uri,
                       tc_root_urn: tc_root_urn,
                       agent:       agent,
+                      criterion:   criterion,
                       console_log: console_log = false
                   }) => {
 
     const
-        uri = `${tc_root_uri}${name}/`,
-        urn = `${tc_root_urn}${name}`
+        uri      = `${tc_root_uri}activity/${name}/`,
+        urn      = `${tc_root_urn}${name}`,
+        testCase = `${tc_root_uri}${name}/`
     ;
 
     //region ERROR
@@ -64,7 +66,10 @@ module.exports = ({
     //endregion ERROR
 
     let portscan = Object.defineProperties(async (token, data) => {
-                let error = null;
+                let
+                    status = PASS,
+                    error  = null
+                ;
                 try {
                     token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
 
@@ -83,13 +88,14 @@ module.exports = ({
 
                     if (!error) {
                         data.validationResult = {
-                            id:                    `${uri}portscan/validation/result/${uuid.v1()}`,
-                            timestamp:             util.timestamp(),
-                            testCase:              urn,
-                            testCriterion:         undefined,
-                            testCaseSpecification: undefined,
-                            ports:                 {},
-                            value:                 PASS // REM: sub-failings will set to 'FAIL'
+                            id:        `${uri}portscan/validation/result/${uuid.v1()}`,
+                            timestamp: util.timestamp(),
+                            //testCase:              urn,
+                            //testCriterion:         undefined,
+                            //testCaseSpecification: undefined,
+                            ports: {},
+                            //value:                 PASS // REM: sub-failings will set to 'FAIL',
+                            criterion: {}
                         };
                         let
                             ports_found       = [],
@@ -119,13 +125,13 @@ module.exports = ({
 
                             if (ports_NOT_found.length > 0) {
                                 data.validationResult.ports.needed = {
-                                    value: FAIL
+                                    status: FAIL
                                 };
-                                data.validationResult.value        = FAIL;
+                                status                             = FAIL;
                                 error                              = new ErrorPortsNeededNotFound(JSON.stringify(ports_NOT_found));
                             } else {
                                 data.validationResult.ports.needed = {
-                                    value: PASS
+                                    status: PASS
                                 };
                             } // if ()
 
@@ -156,22 +162,30 @@ module.exports = ({
 
                             if (ports_found.length > 0) {
                                 data.validationResult.ports.NOT_bad = {
-                                    value: FAIL
+                                    status: FAIL
                                 };
-                                data.validationResult.value         = FAIL;
+                                status                              = FAIL;
                                 error                               = new ErrorBadPort(JSON.stringify(ports_found));
                             } else {
                                 data.validationResult.ports.NOT_bad = {
-                                    value: PASS
+                                    status: PASS
                                 };
                             } // if ()
 
                         } else {
                             data.validationResult.ports.NOT_bad = {
-                                value: NOT_APPLICABLE
+                                status: NOT_APPLICABLE
                             };
+                            status                              = FAIL;
                         } // if (data.param.ports.bad)
-
+                        data.validationResult.criterion.PORTS_CORRECT = criterion.PORTS_CORRECT({
+                            id:          `${uri}validation/criterion/PORTS_CORRECT/${uuid.v1()}`,
+                            prov:        portscan.id,
+                            testCase:    testCase,
+                            description: "SUT answers on portscan",
+                            status:      status,
+                            timestamp:   util.timestamp()
+                        });
                     } // if ()
 
                     //endregion validation

@@ -14,6 +14,11 @@ const
 ;
 
 const
+    operator = "https://testbed.nicos-rd.com/domain/user#jlangkau"
+    //operator = "https://testbed.nicos-rd.com/domain/user#spetrac",
+;
+
+const
     tc_console_log = true,
     ports          = {
         needed: undefined, // REM: TC claims to need those
@@ -131,7 +136,8 @@ describe('net', function () {
                     thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
                 }),
                 /** data */ {
-                    param: {
+                    operator: operator,
+                    param:    {
                         host: applicant.host
                     }
                 }, session)
@@ -174,7 +180,8 @@ describe('net', function () {
                     thread: `${util.timestamp()} : TS-MOCHA : test : portscan : start`
                 }),
                 /** data */ {
-                    param: {
+                    operator: operator,
+                    param:    {
                         host:  applicant.host,
                         ports: ports
                     }

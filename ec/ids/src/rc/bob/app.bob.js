@@ -1,11 +1,12 @@
 const
+    fs        = require("fs"),
     path      = require('path'),
-    http      = require('http'),
+    http      = require('https'),
     express   = require('express'),
     socket_io = require('socket.io'),
     util      = require('@nrd/fua.core.util')
     //ExpressSession = require('express-session')
-; // const
+;
 
 module.exports = ({
                       'agent':  agent,
@@ -15,11 +16,20 @@ module.exports = ({
     (async (/* MAIN */) => {
         try {
             const
-                app          = express(),
-                server       = http.createServer(app),
-                io           = socket_io(server)
+                ca_cert           = fs.readFileSync(path.join(__dirname, './cert/ca/ca.cert'), 'utf-8'),
+                tls_certificates  = require(path.join(__dirname, './cert/tls-server/server.js')),
+                options           = {
+                    key:                tls_certificates.key,
+                    cert:               tls_certificates.cert,
+                    ca:                 ca_cert,
+                    requestCert:        true,
+                    rejectUnauthorized: true
+                },
+                app               = express(),
+                server            = http.createServer(options, app),
+                io                = socket_io(server)
                 ,
-                express_json = express.json()
+                express_json      = express.json()
                 //sessions     = ExpressSession(config.session)
             ; // const
             let
@@ -39,7 +49,7 @@ module.exports = ({
 
             app.get('/', (request, response) => {
                 //response.redirect('/browse');
-                response.send("test 42");
+                response.send(`${util.timestamp()} : BOB : root:  test`);
             });
 
             app.get('/about', async (request, response) => {

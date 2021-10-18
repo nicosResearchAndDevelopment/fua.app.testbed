@@ -1,4 +1,5 @@
 const
+    path             = require("path"),
     EventEmitter     = require('events'),
     fetch            = require("node-fetch"),
     {exec}           = require("child_process"),
@@ -8,7 +9,7 @@ const
     //
     io_client        = require("socket.io-client"),
     _default_uri_    = "urn:tb:ec:ids:"
-; // const
+;const fs            = require("fs");
 let
     _uri_            = _default_uri_,
     ec               = undefined,
@@ -37,7 +38,11 @@ module.exports = ({
 
     _uri_ = (uri || _default_uri_);
 
-    const NODE = RunningProcess('node', {verbose: true});
+    const
+        ca_cert        = fs.readFileSync(path.join(__dirname, './cert/io/ca/ca.cert'), 'utf-8'),
+        io_client_cert = require(path.join(__dirname, './cert/io/client.js')),
+        NODE           = RunningProcess('node', {verbose: true})
+    ;
 
     if (ALICE) {
 
@@ -51,7 +56,11 @@ module.exports = ({
                 auth:               {
                     user:     ALICE.user['tb_ec_ids'].name,
                     password: ALICE.user['tb_ec_ids'].password
-                }
+                },
+                secure:             true,
+                ca:                 ca_cert,
+                cert:               io_client_cert.cert,
+                key:                io_client_cert.key
             },
             alice_socket = io_client.connect(url, options)
         ; // let

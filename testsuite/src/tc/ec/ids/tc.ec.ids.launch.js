@@ -14,7 +14,11 @@ module.exports = ({
                   }) => {
     const
         tc_root_urn = `${root_urn}ec:ids:tc:`,
-        tc_root_uri = `${root_uri}ec/ids/tc/`
+        tc_root_uri = `${root_uri}ec/ids/tc/`,
+        criterion   = require(`./tc.ec.ids.criterion`)({
+            root_uri: `${tc_root_uri}criterion/`,
+            root_urn: `${tc_root_urn}criterion:`
+        })
     ;
     let
         carry       = {}
@@ -24,6 +28,7 @@ module.exports = ({
                          tc_root_uri: tc_root_uri,
                          tc_root_urn: tc_root_urn,
                          agent:       agent,
+                         criterion:   criterion,
                          fn:          fn,
                          console_log: console_log = false
                      }) {
@@ -32,7 +37,8 @@ module.exports = ({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
                 agent:       agent,
-                console_log: console_log = false
+                criterion:   criterion,
+                console_log: console_log
             })
         ;
 
@@ -62,15 +68,27 @@ module.exports = ({
 
     Object.defineProperties(carry, {
         id:     {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
-        INF_01: {
+        //INF_01: {
+        //    value:          wrapper({
+        //        tc_root_uri: tc_root_uri,
+        //        tc_root_urn: tc_root_urn,
+        //        agent:       agent,
+        //        criterion:   criterion,
+        //        fn:          require(`./tc/tc.ec.ids.INF_01`),
+        //        console_log: console_log
+        //    }), enumerable: false
+        //}, // INF_01
+        // INF_01 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SUT_provides_self_description
+        SUT_provides_self_description: {
             value:          wrapper({
                 tc_root_uri: tc_root_uri,
                 tc_root_urn: tc_root_urn,
                 agent:       agent,
-                fn:          require(`./tc/tc.ec.ids.INF_01`),
+                criterion:   criterion,
+                fn:          require(`./tc/tc.ec.ids.SUT_provides_self_description.js`),
                 console_log: console_log
             }), enumerable: false
-        } // INF_01
+        }
     }); // Object.defineProperties(carry)
 
     Object.freeze(carry);

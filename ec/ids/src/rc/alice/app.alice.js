@@ -1,6 +1,7 @@
 const
+    fs        = require("fs"),
     path      = require('path'),
-    http      = require('http'),
+    http      = require('https'),
     express   = require('express'),
     socket_io = require('socket.io'),
     util      = require('@nrd/fua.core.util')
@@ -14,9 +15,19 @@ module.exports = ({
 
     (async (/* MAIN */) => {
         try {
+
             const
+                ca_cert           = fs.readFileSync(path.join(__dirname, './cert/ca/ca.cert'), 'utf-8'),
+                tls_certificates  = require(path.join(__dirname, './cert/tls-server/server.js')),
+                options           = {
+                    key:                tls_certificates.key,
+                    cert:               tls_certificates.cert,
+                    ca:                 ca_cert
+                    //,requestCert:        true
+                    //,rejectUnauthorized: true
+                },
                 app               = express(),
-                server            = http.createServer(app),
+                server            = http.createServer(options, app),
                 io                = socket_io(server)
                 ,
                 express_json      = express.json()
@@ -39,7 +50,7 @@ module.exports = ({
 
             app.get('/', (request, response) => {
                 //response.redirect('/browse');
-                response.send("ALICE : test");
+                response.send(`${util.timestamp()} : ALICE : root:  test`);
             });
 
             //await new Promise((resolve) =>

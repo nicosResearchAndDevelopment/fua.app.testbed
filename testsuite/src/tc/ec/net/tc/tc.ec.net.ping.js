@@ -1,10 +1,11 @@
 const
-    util = require("@nrd/fua.core.util"),
-    uuid = require("@nrd/fua.core.uuid"),
+    util           = require("@nrd/fua.core.util"),
+    uuid           = require("@nrd/fua.core.uuid"),
     //
-    name = "ping",
-    PASS = "PASS",
-    FAIL = "FAIL"
+    name           = "ping",
+    PASS           = "PASS",
+    FAIL           = "FAIL",
+    NOT_APPLICABLE = "NOT_APPLICABLE"
 ; // const
 
 module.exports = ({
@@ -12,12 +13,14 @@ module.exports = ({
                       tc_root_uri: tc_root_uri,
                       tc_root_urn: tc_root_urn,
                       agent:       agent,
+                      criterion:   criterion,
                       console_log: console_log = false
                   }) => {
 
     const
-        uri = `${tc_root_uri}${name}/`,
-        urn = `${tc_root_urn}${name}`
+        uri      = `${tc_root_uri}activity/${name}/`,
+        urn      = `${tc_root_urn}${name}`,
+        testCase = `${tc_root_uri}${name}/`
     ;
 
     //region ERROR
@@ -56,12 +59,23 @@ module.exports = ({
             if (!data.testResult)
                 error = new ErrorTestResultIsMissing();
 
-            if (!error)
+            if (!error) {
                 data.validationResult = {
-                    id:        `${uri}/validation/result/${uuid.v1()}`,
+                    id:        `${uri}validation/result/${uuid.v1()}`,
                     timestamp: util.timestamp(),
-                    value:     ((data.testResult.isAlive === true) ? PASS : FAIL)
+                    //value:     ((data.testResult.isAlive === true) ? PASS : FAIL),
+                    criterion: {
+                        IS_ALIVE: criterion.IS_ALIVE({
+                            id:          `${uri}validation/criterion/IS_ALIVE/${uuid.v1()}`,
+                            prov:        ping.id,
+                            testCase:    testCase,
+                            description: "SUT pinged",
+                            status:      ((data.testResult.isAlive === true) ? PASS : FAIL),
+                            timestamp:   util.timestamp()
+                        })
+                    }
                 };
+            } // if ()
             //endregion validation
 
         } catch (jex) {

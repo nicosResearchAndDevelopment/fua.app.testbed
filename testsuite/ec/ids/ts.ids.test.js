@@ -14,13 +14,28 @@ const
 ;
 
 const
-    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
-    operator       = "https://testbed.nicos-rd.com/domain/user#jlangkau",
+    operator = "https://testbed.nicos-rd.com/domain/user#jlangkau"
     //operator = "https://testbed.nicos-rd.com/domain/user#spetrac",
+;
+
+const
+    tc_console_log = true,
+    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+
     applicant_root = `${auditlog}/tb_ids_bob`,
     session_root   = `${applicant_root}/net`,
     applicant      = require(`${applicant_root}/config.json`)
 ;
+
+let
+    alice = "http://127.0.0.1:8099/",
+    bob   = {
+        schema: "http",
+        host:   "127.0.0.1",
+        port:   8098
+    },
+    data
+; // let
 
 function Session({
                      root: root
@@ -93,7 +108,8 @@ describe('ids', function () {
             //ec:          "net", // REM : "net" = default
             root_uri: testsuite_id,
             root_urn: "urn:ts:",
-            agent:    agent
+            agent:    agent,
+            console_log: tc_console_log
         });
         await new Promise((resolve, reject) => {
             agent.on('testbed_socket_connect', async () => {
@@ -103,46 +119,83 @@ describe('ids', function () {
 
     }); // before()
 
-    describe('INF_01', function () {
+    //describe('INF_01', function () {
+    //
+    //    //before(function () {
+    //    //
+    //    //}); // before()
+    //
+    //    //param = { // REM : ALICE gets BOBs selfDescription
+    //    //    'ec':      "ids",
+    //    //    'command': "requestApplicantsSelfDescription",
+    //    //operator: operator,
+    //    //    'param':   {
+    //    //        //'operator': "simon petrac",
+    //    //        'rc': alice,
+    //    //        // REM : Bob as applicant
+    //    //        'schema': bob.schema,
+    //    //        'host':   bob.host,
+    //    //        'port':   bob.port,
+    //    //        'path':   "/about"
+    //    //    }
+    //    //};
+    //    //
+    //    test(`should successfully 'ping' applicant <${applicant.host}>`, async () => await tc.INF_01(
+    //        agent.Token({
+    //            id:     undefined,
+    //            start:  undefined,
+    //            thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+    //        }),
+    //        /** data */ {
+    //            operator: operator,
+    //            param:    {
+    //                host: applicant.host
+    //            }
+    //        }, session)
+    //    ); // test
+    //
+    //    //after(function () {
+    //    //
+    //    //}); // after()
+    //
+    //}); // describe(INF_01)
+
+    describe('SUT_provides_self_description', function () {
 
         //before(function () {
         //
         //}); // before()
 
-        //param = { // REM : ALICE gets BOBs selfDescription
-        //    'ec':      "ids",
-        //    'command': "requestApplicantsSelfDescription",
-        //operator: operator,
-        //    'param':   {
-        //        //'operator': "simon petrac",
-        //        'rc': alice,
-        //        // REM : Bob as applicant
-        //        'schema': bob.schema,
-        //        'host':   bob.host,
-        //        'port':   bob.port,
-        //        'path':   "/about"
-        //    }
-        //};
-        //
-        test(`should successfully 'ping' applicant <${applicant.host}>`, async () => await tc.INF_01(
+        data = { // REM : ALICE gets BOBs selfDescription
+            'ec':      "ids",
+            'command': "requestApplicantsSelfDescription",
+            operator:  operator,
+            'param':   {
+                //'operator': "simon petrac",
+                'rc': alice,
+                // REM : Bob as applicant
+                'schema': bob.schema,
+                'host':   bob.host,
+                'port':   bob.port,
+                'path':   "/about"
+            }
+        };
+
+        test(`should successfully consume applicants <${applicant.host}> Self Description`, async () => await tc.SUT_provides_self_description(
             agent.Token({
                 id:     undefined,
                 start:  undefined,
                 thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
             }),
-            /** data */ {
-                operator: operator,
-                param:    {
-                    host: applicant.host
-                }
-            }, session)
+            data,
+            session)
         ); // test
 
         //after(function () {
         //
         //}); // after()
 
-    }); // describe(ping)
+    }); // describe(SUT_provides_self_description)
 
 }); // describe('ids')
 
