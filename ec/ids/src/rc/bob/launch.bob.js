@@ -3,8 +3,10 @@ const
     crypto         = require("crypto"),
     //
     util           = require('@nrd/fua.core.util'),
-    {parseArgv} = require('@nrd/fua.module.subprocess'),
+    {parseArgv}    = require('@nrd/fua.module.subprocess'),
     //
+    DatAuth        = require(`@nrd/fua.agent.amec/DatAuth`),
+
     {BobConnector} = require('./connector.bob.js')
 ; // const
 
@@ -14,7 +16,7 @@ let
 ;
 
 const {param, args} = parseArgv();
-config = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
+config              = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
 
 const {cert}                  = require(config['cert_client']);
 config['connectorPrivateKey'] = crypto.createPrivateKey(cert.connector.key.toString());
@@ -23,16 +25,15 @@ config['tlsPrivateKey']       = crypto.createPrivateKey(cert['tls-server'].key.t
 (async ({'config': config}) => {
     const
         bob_agent = new BobConnector({
-            'id':     config.id,
-            'SKIAKI': config.SKIAKI,
-            //
-            'privateKey': config.connectorPrivateKey,
-            //
-            'DAPS': config.DAPS,
-            //
+            'id':           config.id,
+            'SKIAKI':       config.SKIAKI,
+            'privateKey':   config.connectorPrivateKey,
+            'DAPS':         config.DAPS,
             'idle_timeout': config.idle_timeout
         })
     ; // const
+
+    bob_agent.amec.registerMechanism(DatAuth.prefLabel, DatAuth({connector: bob_agent}));
 
     require('./app.bob.js')({
         'agent':  bob_agent,

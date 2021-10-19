@@ -439,7 +439,8 @@ async function TestbedAgent({
             'uri':   `${id}ec/ids/`,
             'ALICE': {
                 'id':     alice_id,
-                'schema': "https",
+                //'schema': "https",
+                'schema': "http",
                 'host':   "127.0.0.1",
                 //'port':   8099,
                 'port':   parseInt(node_alice['fua:port'][0]['@value']),
@@ -460,7 +461,8 @@ async function TestbedAgent({
             'BOB':   {
                 'id': bob_id,
                 //
-                'schema': "https",
+                //'schema': "https",
+                'schema': "http",
                 'host':   "127.0.0.1",
                 'port':   parseInt(node_bob['fua:port'][0]['@value']),
                 'SKIAKI': node_bob['dapsm:skiaki'][0]['@value'],

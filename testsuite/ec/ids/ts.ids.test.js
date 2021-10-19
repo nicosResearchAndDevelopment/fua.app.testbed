@@ -28,8 +28,10 @@ const
 ;
 
 let
+    //alice = "https://127.0.0.1:8099/",
     alice = "http://127.0.0.1:8099/",
     bob   = {
+        //schema: "https",
         schema: "http",
         host:   "127.0.0.1",
         port:   8098

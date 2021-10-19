@@ -1,7 +1,8 @@
 const
     fs        = require("fs"),
     path      = require('path'),
-    http      = require('https'),
+    //http      = require('https'),
+    http      = require('http'),
     express   = require('express'),
     socket_io = require('socket.io'),
     util      = require('@nrd/fua.core.util')
@@ -27,7 +28,7 @@ module.exports = ({
                     //,rejectUnauthorized: true
                 },
                 app               = express(),
-                server            = http.createServer(options, app),
+                server            = http.createServer(app),
                 io                = socket_io(server)
                 ,
                 express_json      = express.json()
@@ -41,6 +42,32 @@ module.exports = ({
             //app.use(sessions);
 
             //io.use((socket, next) => sessions(socket.request, socket.request.res, next));
+
+            app.use(async (request, response, next) => {
+                let
+                    error = null,
+                    headers,
+                    content_type = "multipart",
+                    that
+                ;
+                //switch(content_type) {
+                //    case "multipart":
+                //        headers = {};
+                //        break;
+                //    case "......url_encoded.....":
+                //        // REM : WEB_FRONT_END
+                //        break;
+                //    default: // REM : called REST
+                //        headers = request.headers;
+                //        break;
+                //} // switch()
+                //
+                //that = await agent.amec.authenticate(headers);
+                //
+                //if (!that)
+                //    error = new Error(``);
+                next(error);
+            }); // app.use()
 
             app.post('/inbox', express.json(), (request, response, next) => {
                 // TODO
@@ -68,6 +95,16 @@ module.exports = ({
                         } // if ()
                     }); // agent.on('event')
 
+                    //server.on('connection', (tlsSocket)=> {
+                    //    console.log(`ALICE : tlsSocket.address() : ${tlsSocket.address()}`);
+                    //    console.log(`ALICE : tlsSocket.authorizationError : ${tlsSocket.address()}`);
+                    //
+                    //    debugger;
+                    //});
+                    //server.on('secureConnect', (tlsSocket)=> {
+                    //
+                    //    debugger;
+                    //});
                     io.on('connection', (socket) => {
 
                         if (!((config.user[socket.handshake.auth.user]) && (socket.handshake.auth.password === config.user[socket.handshake.auth.user].password)))

@@ -56,11 +56,11 @@ module.exports = ({
                 auth:               {
                     user:     ALICE.user['tb_ec_ids'].name,
                     password: ALICE.user['tb_ec_ids'].password
-                },
-                secure:             true,
-                ca:                 ca_cert,
-                cert:               io_client_cert.cert,
-                key:                io_client_cert.key
+                }
+            //,secure:             true,
+            //    ca:                 ca_cert,
+            //    cert:               io_client_cert.cert,
+            //    key:                io_client_cert.key
             },
             alice_socket = io_client.connect(url, options)
         ; // let
