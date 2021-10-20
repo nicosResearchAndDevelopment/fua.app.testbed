@@ -22,7 +22,7 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:           <https://www.nicos-rd.com/> .
-@prefix connector:            <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> .
+@prefix connector:            <https://gbx.nicos-rd.com/> .
 
 agent:
     a          ids:Participant ;
@@ -59,7 +59,7 @@ connector:
 
 # TODO: host
 # TODO: port (default)
-    rdfs:seeAlso           <https:/ec_ids_connector_nrd_gbx-03.nicos-rd.com/> ;
+    rdfs:seeAlso           <https:/gbx.nicos-rd.com/> ;
 ### OR
 #    tbm:history      <https://nicos-gbx-0-0-0.testbed.local/> ;
 ### OR
@@ -69,12 +69,12 @@ connector:
 
 connector:http_host
     a             ids:ConnectorEndpoint ;
-    ids:accessURL <https://marzipan.de> ;
+    ids:accessURL <https:/gbx.nicos-rd.com:8090/> ;
 .
 
 connector:auth_info
     a                ids:AuthInfo ;
-    ids:authService  <https://nrd-daps.nicos-rd.com/> ;
+    ids:authService  <https://nrd-daps.nicos-rd.com:8082/> ;
     ids:authStandard idsc:OAUTH2_JWT ;
 .
 

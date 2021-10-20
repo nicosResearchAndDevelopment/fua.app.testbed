@@ -28,13 +28,25 @@ const
 ;
 
 let
-    //alice = "https://127.0.0.1:8099/",
-    alice = "http://127.0.0.1:8099/",
-    bob   = {
+    testbed = {
         //schema: "https",
         schema: "http",
-        host:   "127.0.0.1",
-        port:   8098
+        //host:   "127.0.0.1",
+        host:   "testbed.nicos-rd.com",
+        port:   8080,
+        auth:   {
+            user:     "testsuite",
+            password: "marzipan" // TODO : password : HASH
+        }
+    },
+    //alice = "https://127.0.0.1:8099/",
+    alice   = "https://alice.nicos-rd.com:8099/",
+    bob     = {
+        schema: "https",
+        //schema: "http",
+        host: "bob.nicos-rd.com",
+        //host:   "127.0.0.1",
+        port: 8098
     },
     data
 ; // let
@@ -88,15 +100,6 @@ describe('ids', function () {
 
         let config = {
             port:    8081,
-            testbed: {
-                schema: "http",
-                host:   "127.0.0.1",
-                port:   8080,
-                auth:   {
-                    user:     "testsuite",
-                    password: "marzipan" // TODO : password : HASH
-                }
-            }
         };
 
         session = Session({root: session_root});
@@ -104,13 +107,13 @@ describe('ids', function () {
 
         agent = await TestsuiteAgent({
             id:      testsuite_id,
-            testbed: config.testbed
+            testbed: testbed
         });
         tc    = require('../../src/tc/ec/ids/tc.ec.ids.launch.js')({
             //ec:          "net", // REM : "net" = default
-            root_uri: testsuite_id,
-            root_urn: "urn:ts:",
-            agent:    agent,
+            root_uri:    testsuite_id,
+            root_urn:    "urn:ts:",
+            agent:       agent,
             console_log: tc_console_log
         });
         await new Promise((resolve, reject) => {

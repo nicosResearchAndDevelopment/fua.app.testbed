@@ -53,17 +53,17 @@ ec-ids:
 ##region cas
     idsecm:cas                              <CA> ;
 ##endregion cas
-    idsecm:daps                             <https://ec_ids_daps_nrd.nicos-rd.com/> ;
-    idsecm:daps                             <https://ec_ids_daps_fh_omejdn.nicos-rd.com/> ;
-    idsecm:ParIS                            <https://paris.nicos-rd.com/> ;
+    idsecm:daps                             <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps                             <https://omejdn-daps.nicos-rd.com/> ;
+    idsecm:ParIS                            <https://paris-fh.nicos-rd.com/> ;
 ##region participants
 #    idsecm:participants                     <https://ids.atos.net/> ;
 #    idsecm:participants                     <https://ids.sick.com/> ;
     idsecm:participants                     nicos-ag: ;
 ##endregion participants
 #    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
-    idsecm:connectors                       <https://ec_ids_connector_alice.nicos-rd.com/> ;
-    idsecm:connectors                       <https://ec_ids_connector_bob.nicos-rd.com/> ;
+    idsecm:connectors                       <https://alice.nicos-rd.com/> ;
+    idsecm:connectors                       <https://bob.nicos-rd.com/> ;
 ##region ecosystems
 #    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
 #    idsecm:ecosystems                       <https://testbed.nicos-rd.com/> ;
@@ -74,16 +74,16 @@ ec-ids:
 ##endregion ecosystems subs
 ##endregion ecosystems
 #    idsecm:islands          <> ;
-    idsecm:applicant                        <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> ;
+    idsecm:applicant                        <https://gbx.nicos-rd.com/> ;
     rdfs:isDefinedBy                        ec-ids: ;
 .
 
-<https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/>
+<https://gbx.nicos-rd.com/>
     a        tbm:Applicant_IDS_Connector ;
-    fua:port "8081"^^xsd:nonNegativeInteger ; ## default = 80
+    fua:port "8090"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
-<https://ec_ids_daps_nrd.nicos-rd.com/>
+<https://nrd-daps.nicos-rd.com/>
     a                idsecm:DAPS ;
     dapsm:privateKey """-----BEGIN RSA PRIVATE KEY-----
 MIIJJwIBAAKCAgEArby2Y6wxie4Yx/YmzJUQLGYw5+Go3Wf2jtYcbq3b4hDW2TOi
@@ -139,7 +139,7 @@ d9A7GPLXcjxq3CXxquxvNzlYPl8noXZwrOetboA7nt7MJZJ0amja9NnrGw==
     fua:port         "8082"^^xsd:nonNegativeInteger ; ## default = 80
 .
 
-<https://ec_ids_daps_fh_omejdn.nicos-rd.com/>
+<https://omejdn-daps.nicos-rd.com/>
     a        idsecm:DAPS ;
 ## REM: docker, local
     fua:port "4567"^^xsd:nonNegativeInteger ; ## default = 80

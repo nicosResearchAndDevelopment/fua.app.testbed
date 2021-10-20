@@ -2,41 +2,39 @@ const
     fs        = require("fs"),
     path      = require('path'),
     //http      = require('https'),
-    http      = require('http'),
+    //http      = require('http'),
     express   = require('express'),
     socket_io = require('socket.io'),
     util      = require('@nrd/fua.core.util')
     //ExpressSession = require('express-session')
-;
+; // const
 
 module.exports = ({
                       'agent':  agent,
                       'config': config
                   }) => {
 
+    const
+        http = require(config.schema)
+    ;
     (async (/* MAIN */) => {
         try {
+
             const
-                ca_cert           = fs.readFileSync(path.join(__dirname, './cert/ca/ca.cert'), 'utf-8'),
-                tls_certificates  = require(path.join(__dirname, './cert/tls-server/server.js')),
-                options           = {
-                    key:  tls_certificates.key,
-                    cert: tls_certificates.cert,
-                    ca:   ca_cert
-                    //,requestCert:        true
-                    //,rejectUnauthorized: true
-                },
                 app               = express(),
-                //server            = http.createServer(options, app),
-                server            = http.createServer(app),
+                server            = ((config.schema === "http") ? http.createServer(app) : http.createServer(config.server_options, app)),
                 io                = socket_io(server)
                 ,
                 express_json      = express.json()
-                //sessions     = ExpressSession(config.session)
             ; // const
             let
                 socket_controller = null
             ;
+
+            //server.on('secureConnection', (that) => {
+            //    //debugger;
+            //});
+
             app.disable('x-powered-by');
 
             //app.use(sessions);
@@ -45,7 +43,7 @@ module.exports = ({
 
             app.use(async (request, response, next) => {
                 let
-                    error = null,
+                    error        = null,
                     headers,
                     content_type = "multipart",
                     that
@@ -75,16 +73,9 @@ module.exports = ({
                 next();
             });
 
-            app.get('/', async (request, response) => {
+            app.get('/', (request, response) => {
                 //response.redirect('/browse');
-
-                response.send(`${util.timestamp()} : BOB : root:  test`);
-            });
-
-            app.get('/about', async (request, response) => {
-                //let that = await agent.amec.authenticate(request.headers);
-                let about = await agent.selfDescription({'requester_url': "none"});
-                response.send(JSON.stringify(about));
+                response.send(`${util.timestamp()} : ALICE : root:  test`);
             });
 
             //await new Promise((resolve) =>
@@ -92,7 +83,6 @@ module.exports = ({
             //);
 
             try {
-
                 server.listen(config.port, () => {
 
                     agent.on('event', (error, data) => {
@@ -101,12 +91,13 @@ module.exports = ({
                                 socket_controller.emit('event', error, undefined);
                             socket_controller.emit('event', null, data);
                         } // if ()
-                    });
+                    }); // agent.on('event')
 
                     //server.on('connection', (tlsSocket)=> {
-                    //    //console.log(`BOB : tlsSocket.address : ${tlsSocket.address()}`);
+                    //    console.log(`ALICE : tlsSocket.address() : ${tlsSocket.address()}`);
+                    //    console.log(`ALICE : tlsSocket.authorizationError : ${tlsSocket.address()}`);
                     //
-                    //    //debugger;
+                    //    debugger;
                     //});
                     //server.on('secureConnect', (tlsSocket)=> {
                     //
@@ -143,9 +134,6 @@ module.exports = ({
                             } // try
                         }); // socket.on('rc_getSelfDescriptionFromRC')
 
-                        //socket.on('on_RC_IDLE', (data, callback) => {
-                        //    agent.on('idle', callback);
-                        //});
                     }); // io.on('connection')
 
                 }); // server.listen()

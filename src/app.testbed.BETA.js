@@ -1,6 +1,6 @@
 const
     path           = require('path'),
-    http           = require('http'),
+    //http           = require('http'),
     express        = require('express'),
     //{exec}      = require("child_process"),
     socket_io      = require('socket.io'),
@@ -18,11 +18,15 @@ module.exports = ({
                       'config': config
                   }) => {
 
+    const
+        http = require((config.server.schema || "https"))
+    ;
+
     (async (/* MAIN */) => {
             try {
                 const
                     app          = express(),
-                    server       = http.createServer(app),
+                    server            = ((config.server.schema === "https") ? http.createServer(config.server.options, app) : http.createServer(app)),
                     io           = socket_io(server),
                     io_testsuite = io.of('/execute'),
 
@@ -64,10 +68,10 @@ module.exports = ({
 
                 config.ldp.space = agent.space;
 
-                app.use([
-                    //'/model',
-                    '/data'
-                ], LDPRouter(config.ldp));
+                //app.use([
+                //    //'/model',
+                //    '/data'
+                //], LDPRouter(config.ldp));
 
                 //region LDN
                 app.post('/inbox', express.json(), (request, response, next) => {
@@ -419,7 +423,8 @@ module.exports = ({
 
                 //endregion TEST
 
-                console.log('listening at http://localhost:' + config.server.port);
+                //console.log('listening at http://localhost:' + config.server.port);
+                console.log(`testbed app is listening at <${config.server.schema}://${config.server.host}:${config.server.port}>`);
 
             } catch
                 (err) {

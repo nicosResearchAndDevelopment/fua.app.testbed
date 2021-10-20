@@ -117,14 +117,10 @@ async function TestbedAgent({
                             }) {
 
     const
-        that                   = rdf.generateGraph(space.dataStore.dataset, undefined, {
-            'compact': true,
-            'meshed':  true,
-            'blanks':  true
-        }),
+
         rootUri                = "https://testbed.nicos-rd.com/domain/user#",
         testbed_config         = space.getNode(id),
-        testbed_config_data    = await testbed_config.read(),
+        testbed_config_data    = await testbed_config.load(),
         id_agent               = `${id}agent/`,
         implemented_task       = {
             // self topics
@@ -145,143 +141,20 @@ async function TestbedAgent({
     //region system
     //endregion system
 
-    //region amec
-
-    function BasicAuthentication_Leave_Factory({
-                                                   'id':           id,
-                                                   'rootUri':      rootUri,
-                                                   'encodeSecret': encodeSecret = undefined
-                                               }) {
-
-        let fn = async (credentials, users) => {
-            let
-                //id      = undefined,
-                //secret  = undefined,
-                user    = undefined
-            ;
-            credentials = Buffer.from(credentials, 'base64').toString('ascii').split(":");
-            //id          = ;
-            // TODO : secret      = credentials[1];
-            //secret = credentials[1];
-            if (encodeSecret)
-                credentials[1] = encodeSecret(credentials[1]);
-            user = await users.get(`${rootUri}${credentials[0]}`);
-            if (!user['dom:active'] || (user['dom:active'] && (user['dom:active'][0]['@value'] === "true")))
-                if (user['dom:password'][0]['@value'] === credentials[1])
-                    //return user;
-                    return {
-                        '@id':   user['@id'],
-                        '@type': user['@type']
-                    };
-            return undefined;
-        };
-        Object.defineProperties(fn, {
-            'id': {value: id, enumerable: false}
-        });
-        Object.freeze(fn);
-        return fn;
-    } // BasicAuthentication_Name_Factory
-
-    function IDS_DAT_Authentication_Factory({
-                                                'id':           id,
-                                                'rootUri':      rootUri,
-                                                'encodeSecret': encodeSecret = undefined
-                                            }) {
-
-        // REM : this will authenticate/validate requesting IDS-Connector, so, returning the user means:
-        // REM :    it is a correct requester!!! for this Connector-provider)
-        // REM :    So, we will NOT search it in our own registry...
-        // REM :    So, if we want to express, that given requester has to ALSO in providers registry
-        // REM :        we have to implemented it, too!!!
-        // REM : If we DO search it in our own registry, we do it for the purpose of fetching
-        // REM :    its Access Control (or whatever)
-
-        let fn = async (DAT, users) => {
-            //let
-            //    skiaki = undefined,
-            //    //secret  = undefined,
-            //    user   = undefined
-            //;
-            //skiaki     = DAT['sub'];
-            //skiaki     = (skiaki);
-
-            //id          = ;
-            // TODO : secret      = credentials[1];
-            //secret = credentials[1];
-            //if (encodeSecret)
-            //    credentials[1] = encodeSecret(credentials[1]);
-            //user = await users.get(`${rootUri}${credentials[0]}`);
-            //if (!user['dom:active'] || (user['dom:active'] && (user['dom:active'][0]['@value'] === "true")))
-            //    if (user['dom:password'][0]['@value'] === credentials[1])
-            //        return user;
-
-            return undefined;
-        }; // fn
-        Object.defineProperties(fn, {
-            'id': {value: id, enumerable: false}
-        });
-        Object.freeze(fn);
-        return fn;
-    } // IDS_DAT_Authentication_Factory
-
-    // TODO : new version
-    //amec.authMechanism('BasicAuthentication_Leave', BasicAuthentication_Leave_Factory({
-    //    'id':           `${id}amec/BasicAuthentication_Leave`,
-    //    'rootUri':      rootUri,
-    //    'encodeSecret': encodeSecret
-    //}));
-    //amec.authMechanism('IDS_DAT_Authentication', IDS_DAT_Authentication_Factory({
-    //    'id':           `${id}amec/IDS_DAT_Authentication`,
-    //    'rootUri':      rootUri,
-    //    'encodeSecret': encodeSecret
-    //}));
-
-    //amec.authMechanism('login', async function (request) {
-    //    // 1. get identification data
-    //    const
-    //        user     = request.body?.user,
-    //        password = request.body?.password;
-    //
-    //    // 2. reject invalid authentication
-    //    if (!user || !password) return null;
-    //    if (!tmp_users.has(user)) return null;
-    //    if (password !== tmp_users.get(user)) return null;
-    //
-    //    // 3. return auth on success
-    //    return {user};
-    //});
-    //
-    //amec.authMechanism('login-tfa', async function (request) {
-    //    // 1. get identification data
-    //    const
-    //        user     = request.body?.user,
-    //        password = request.body?.password,
-    //        tfa      = request.body?.tfa;
-    //
-    //    // 2. reject invalid authentication
-    //    if (!user || !password || !tfa) return null;
-    //    if (!tmp_users.has(user)) return null;
-    //    if (tfa.replace(/\D/g, '') !== request.session.tfa) return null;
-    //    if (password !== tmp_users.get(user)) return null;
-    //
-    //    // 3. return auth on success
-    //    return {user};
-    //});
-    //endregion amec
-
     //region domain
     let
-        domain_config = testbed_config['ecm:domain'][0],
+        domain_config = testbed_config.getNode('ecm:domain'),
         ec            = {},
         amec          = null // !!!
     ;
-    await domain_config.read();
+    await domain_config.load();
     const
         pep    = PEP({'id': `${id}PEP`}),
         domain = new Domain({
             //'id':    `${id}domain/`,
             'config': domain_config,
-            'amec':   amec
+            'amec':   amec,
+            space: space
         })
     ;
     //endregion domain
@@ -328,34 +201,34 @@ async function TestbedAgent({
         'scheduler':              {
             value: new Scheduler(scheduler), enumerable: true
         },
-        amec:          {
+        amec:                     {
             set(amc) {
                 if (amec === null)
                     amec = amc;
             }, enumerable: false
         },
-        authenticate:  {
+        authenticate:             {
             value: async (headers, mechanism) => {
                 return await amec.authenticate(headers, mechanism);
             }
         },
-        'PEP':         {
+        'PEP':                    {
             value: pep, enumerable: false
         },
-        'domain':      {
+        'domain':                 {
             value: domain, enumerable: true
         },
-        'space':       {
+        'space':                  {
             value: space, enumerable: true
         },
-        'inbox':       {
+        'inbox':                  {
             value:         async (message) => {
                 if (testsuite_inbox_socket)
                     testsuite_inbox_socket.emit();
                 return undefined;
             }, enumerable: true
         }, // inbox
-        'executeTest': {
+        'executeTest':            {
             value:         async (data) => {
                 try {
                     let
@@ -385,22 +258,6 @@ async function TestbedAgent({
 
     //region ec
 
-    //region ec.ip
-    //// TODO : instance shield
-    //let {ip} = require("../../ec/ip/src/tb.ec.ip.js");
-    //ip.uri   = `${id}ec/ids/`;
-    //ip.on('event', (error, data) => {
-    //    //eventEmitter.emit('event', error, data);
-    //    //debugger;
-    //});
-    //ip.on('error', (error) => {
-    //    //eventEmitter.emit('event', error, data);
-    //    debugger;
-    //});
-    //ec['ip'] = ip;
-    //Object.freeze(ec['ip']);
-    //endregion ec.ip
-
     //region ec.net
     // TODO : instance shield
     let {net} = require("../../ec/net/src/tb.ec.net.js");
@@ -426,56 +283,49 @@ async function TestbedAgent({
     // TODO : instance shield
 
     const
-        alice_id   = "https://ec_ids_connector_alice.nicos-rd.com/",
+        alice_id   = "https://alice.nicos-rd.com/",
         node_alice = space.getNode(alice_id),
-        bob_id     = "https://ec_ids_connector_bob.nicos-rd.com/",
+        bob_id     = "https://bob.nicos-rd.com/",
         node_bob   = space.getNode(bob_id)
     ;
-    await node_alice.read();
-    await node_bob.read();
+    await node_alice.load();
+    await node_bob.load();
 
     let
         ids = require("../../ec/ids/src/tb.ec.ids.js")({
             'uri':   `${id}ec/ids/`,
             'ALICE': {
-                'id':     alice_id,
-                //'schema': "https",
-                'schema': "http",
-                'host':   "127.0.0.1",
-                //'port':   8099,
-                'port':   parseInt(node_alice['fua:port'][0]['@value']),
-                'SKIAKI': node_alice['dapsm:skiaki'][0]['@value'],
+                'id': alice_id,
+                'schema': node_alice.getLiteral('fua:schema').value,
+                'host': node_alice.getLiteral('fua:host').value,
+                'port': parseInt(node_alice.getLiteral('fua:port').value),
+                'SKIAKI': node_alice.getLiteral('dapsm:skiaki').value,
                 //
                 'user': {
                     'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
                 },
-                //
-                'idle_timeout': parseInt(node_alice['idsecm:idle_timeout'][0]['@value']),
-                //'idle_timeout': 1,
-                //
+                'idle_timeout': parseInt(node_alice.getLiteral('idsecm:idle_timeout').value),
                 'DAPS':        {
-                    'default': node_alice['idsecm:daps_default'][0]['@id']
+                    'default': node_alice.getNode('idsecm:daps_default').id
                 },
                 'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
             }, // ALICE
             'BOB':   {
                 'id': bob_id,
-                //
-                //'schema': "https",
-                'schema': "http",
-                'host':   "127.0.0.1",
-                'port':   parseInt(node_bob['fua:port'][0]['@value']),
-                'SKIAKI': node_bob['dapsm:skiaki'][0]['@value'],
+                'schema': node_bob.getLiteral('fua:schema').value,
+                'host': node_bob.getLiteral('fua:host').value,
+                'port': parseInt(node_bob.getLiteral('fua:port').value),
+                'SKIAKI': node_bob.getLiteral('dapsm:skiaki').value,
                 //
                 'user': {
                     "tb_ec_ids": {'name': "tb_ec_ids", 'password': "marzipan"}
                 },
                 //
-                'idle_timeout': parseInt(node_bob['idsecm:idle_timeout'][0]['@value']),
+                'idle_timeout': parseInt(node_bob.getLiteral('idsecm:idle_timeout').value),
                 //'idle_timeout': 1,
                 //
                 'DAPS':        {
-                    'default': node_bob['idsecm:daps_default'][0]['@id']
+                    'default': node_bob.getNode('idsecm:daps_default').id
                 },
                 'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"
             }

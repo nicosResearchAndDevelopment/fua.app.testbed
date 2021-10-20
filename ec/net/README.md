@@ -2,5 +2,10 @@
 
 - [ttl](./resources/tb.ec.net.ttl)
 
+
+## portscan (nmap)
+
+[portscan (nmap)](https://nmap.org/book/port-scanning-tutorial.html)
+
 ---
 

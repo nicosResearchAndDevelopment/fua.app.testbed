@@ -5,7 +5,9 @@ const
 ;
 
 exports.server = {
-    port: 8080
+    schema: "https",
+    host:   "testbed.nicos-rd.com",
+    port:   8080
 };
 
 exports.login = {
@@ -63,6 +65,7 @@ exports.persistence = {
     module:  '@nrd/fua.module.persistence.inmemory',
     options: {},
     load:    [
+        {'dct:identifier': path.join(__root, 'model/tbm.ttl'), 'dct:format': 'text/turtle'},
         {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
         //region domain
         //region domain : users

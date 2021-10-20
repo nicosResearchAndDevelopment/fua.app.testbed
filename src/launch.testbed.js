@@ -1,5 +1,7 @@
 const
+    fs          = require("fs").http = require("https"),
     path        = require('path'),
+    //
     config      = require('./config/config.testbed.js'),
     util        = require('@nrd/fua.core.util'),
     //
@@ -10,7 +12,7 @@ const
     //amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
-    Space       = require(path.join(util.FUA_JS_LIB, 'module.space/next/module.space.js'))
+    {Space}     = require('@nrd/fua.module.space')
     //
 ; // const
 
@@ -167,17 +169,17 @@ async function createSpace(config) {
         context   = config.context || {},
         factory   = new persistence.DataFactory(context),
         // local protected data for data models
-        dataset   = new persistence.Dataset(null, factory),
+        //dataset   = new persistence.Dataset(null, factory),
         // persistent data that can be manipulated by resources
         dataStore = new DataStore(config.datastore.options, factory);
 
     // 4. if a load is configured for the space, import available data files into the dataset
-    if (config.load) {
-        const resultArr = await rdf.loadDataFiles(config.load, factory);
-        for (let result of resultArr) {
-            if (result.dataset) dataset.add(result.dataset);
-        }
-    }
+    //if (config.load) {
+    //    const resultArr = await rdf.loadDataFiles(config.load, factory);
+    //    for (let result of resultArr) {
+    //        if (result.dataset) dataset.add(result.dataset);
+    //    }
+    //}
     // 5. if a load is configured for the datastore, import available data files into the datastore
     //    this should only be done, if the datastore is an inmemory store
     if (dataStore.dataset && config.datastore.load) {
@@ -194,16 +196,34 @@ async function createSpace(config) {
     //debugger;
     //console.log(tmp);
 
+    //let that = rdf.generateGraph(dataStore.dataset, {
+    //    compact: false,
+    //    strings:   false,
+    //    meshed:  true,
+    //    blanks:  true
+    //});
+
     // 7. create a space out of the collected components and return it
-    return new Space({context, factory, dataset, dataStore});
+    return new Space({store: dataStore});
 }
 
-//region new style :: TEST
-(async (/* TEST */) => {
+const
+    tls_certificates = require('../cert/tls-server/server.js')
+;
+
+config.server.options = {
+    key:                tls_certificates.key,
+    cert:               tls_certificates.cert,
+    ca:                 tls_certificates.ca,
+    requestCert:        false,
+    rejectUnauthorized: false
+};
+
+
+(async () => {
 
     const
         space         = await createSpace(config.space),
-        //testbed_agent   = new TestbedAgent({
         testbed_agent = await TestbedAgent({
             'testbed_id':   "https://testbed.nicos-rd.com/",
             'scheduler':    testbed_scheduler,
@@ -221,6 +241,9 @@ async function createSpace(config) {
 
     amec = new Amec();
 
+    amec.on('authentication-error', (error) => {
+        debugger;
+    });
     //let users     = await testbed_agent.domain.users();
     let basicAuth = BasicAuth({
         domain: testbed_agent.domain
@@ -241,5 +264,4 @@ async function createSpace(config) {
         'config': config
     });
 
-})(/* TEST */).catch(console.error);
-//endregion new style :: TEST
+})().catch(console.error);

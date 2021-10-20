@@ -22,7 +22,7 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:           <https://www.nicos-rd.com/> .
-@prefix connector:            <https://ec_ids_connector_nrd_gbx-03.nicos-rd.com/> .
+@prefix connector:            <https://gbx.nicos-rd.com/> .
 
 ##region DAPS user
 connector:
@@ -33,23 +33,23 @@ connector:
 #    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
 ## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
     dapsm:skiaki
-                             "E9:8A:9D:AB:41:B8:DD:A2:49:68:72:82:81:5F:67:7B:5F:C8:C5:5D:keyid:88:61:3B:14:33:AD:2F:1A:1D:11:A0:BD:A9:5B:A9:8A:F4:04:B4:3E"^^xsd:string ;
+                             "31:F7:81:81:36:16:11:B6:A2:33:05:9B:C0:2B:1A:25:7D:AB:44:21keyid:2F:5D:3D:FB:FD:CD:E5:37:17:9F:F1:57:4B:69:32:63:38:AC:12:BE"^^xsd:string ;
     dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAv0VflpZFwwPjiNeNShtj
-CnPS/HQyJnsf34URkuGuJEw0obC7YnX1hTty1x12jf1Bt/6b5ybl5HOM//rPLjhG
-XpzF3h4VwRmfQgsTzKh637HQbiLIocx8Y/cH6vRdAstRvLu9UP6oQFcU1K87ghPe
-mXQBnuMlxA4q62G+v9jLW/UQQ7lgUykH1IzLug5ICMh2P2TrNzbSQY27sHPzVleQ
-YPCvfIFAczBVW0bEwnPnppCGS1g+20VpdfqwLjuP2lDpqSkYexEfrixWcAm/mKHX
-QRXr+BBayuU2NVnGPYczp+7epicFbVAqnXBGXUN/jwtUrMFFIUEI3J89AE0XO67+
-xxUyTby8W/kkG0cIJnP+ZjwILD7m84XuM++SqQHQS3Dg/v3GU6ZuyPwijgSVeoj4
-4ddlxu3s2cn12bB1jdUkIjfH0U6c9n343vxJEjSWrHM8ir4alARbZxj5epY8MbLs
-e79I9pcganv8QmcykoPEAOacg4gON3lepcdb3kkK/xj95mn8Uxf/7A80/yQyfDTd
-8OogeVBGMnV2z1s5f9KBuw8Dd3GS0QD0vUGq6hJLXg80dypEae05CY/PBNGwdwXb
-hmgkIWjAz65/2c3vKYzinHewOf5JR3rxwg70895EYaVR9nd2Ye0LgTuDGtoeBHvi
-DMCSexKC33noXRGhBWXM2ukCAwEAAQ==
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAu975c/6oH54cImCDpH40
+xvE9iP73SSpkM8/T1J4vxXkJ8GNJ1wbysEJzydIJztnZwlAxYv0EiqDMu0txN5qD
+d8fiy8cYGOzfEu2zPkXR4CjlcnZXYBGgWnutdE8xtu4DAPER1OA+aGcfnKWqRRQu
+kww4v0ikHqwWgEPAPfU7yrD5wUXj1hugx1aOK3w5tsfMR2gY4XkARKfCB2LxjnPR
+db9T5rfCs/Wsyktd4hPMwBZRkR+qz3hSAMju+Z7KhX318pfFOtp6OiXyuogW+JPF
+8RssMlVP6La3MhdUy/cfe26+zrMzzO9TsxHJ4BkGnFjXNPVqYjozVK5hNEIyCR4d
+U9IVmXGB4HTUCbzUDmK/GEjj5LxEB0NH/e9yPIt3pgZiUNmfLJdsuYonJQURzqto
+vZFBX3n5dArBSpixYpGSnRVaCexqcJwpv4cF4kCZ9WMkklmmmMVFXQXkf7cYUw0e
+tE/Z8zDeafK7X/Z/+EP6El/PStLoRFzhEPaEnQo+LDjwmi89BMpzU12I75o2y82U
+lju0UOm8fdxIyo4kz/OTi4o1Z2UPy5n2giBGaPrW6oaiMHzrahLM7lGSJCa7u7OY
+enSmWry2W1nRMpAbWRfMtVWY+beC8rLbvgPSqGMdSGNwWxpJoYYubjFkEVKbZHuf
+PXzpMB1IwxJeEoXucdgUHUUCAwEAAQ==
 -----END PUBLIC KEY-----"""^^xsd:string ;
 ## TODO: woher kommt der 'referringConnector'?????
-    dapsm:referringConnector "https:/ec_ids_connector_nrd_gbx-03.nicos-rd.com/"^^xsd:string ;
+    dapsm:referringConnector "https:/gbx.nicos-rd.com/"^^xsd:string ;
 ## TODO: <dapsm:securityProfile> to ids
     dapsm:securityProfile    "idsc:BASE_CONNECTOR_SECURITY_PROFILE"^^xsd:string ;
 #    dapsm:securityProfile    <idsc:BASE_CONNECTOR_SECURITY_PROFILE> ;

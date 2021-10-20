@@ -18,7 +18,7 @@
 
 @base <https://testbed.nicos-rd.com/> .
 @prefix tb:             <https://testbed.nicos-rd.com/> .
-@prefix ts:             <https://testbed.nicos-rd.com/testsuite/> .
+@prefix ts:             <https://testsuite.nicos-rd.com/> .
 
 tb:
     a                tbm:Testbed ;
@@ -63,8 +63,8 @@ tb:Users
 ##endregion tb : operators
 
 ##region ec : ids : DAPS : user
-    ldp:member       <https://ec_ids_connector_alice.nicos-rd.com/> ;
-    ldp:member       <https://ec_ids_connector_bob.nicos-rd.com/> ;
+    ldp:member       <https://alice.nicos-rd.com/> ;
+    ldp:member       <https://bob.nicos-rd.com/> ;
 ## ec : ids : DAPS : user :: CUT
     ldp:member       <https://testbed.nicos-rd.com/domain/user#ec_ids_connector_nrd_gbx-03> ;
 ##endregion ec : ids : DAPS : user

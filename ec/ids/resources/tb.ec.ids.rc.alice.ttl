@@ -25,7 +25,7 @@
 #@prefix appl:           <https://localhost:8090/> .
 #@prefix appl:           <https://applicant/> .
 @prefix agent:                                  <https://www.nicos-rd.com/> .
-@prefix connector:                              <https://ec_ids_connector_alice.nicos-rd.com/> .
+@prefix connector:                              <https://alice.nicos-rd.com/> .
 
 agent:
     a          ids:Participant ;
@@ -43,7 +43,7 @@ connector:
 
 ##region IDS
     ids:title              "IDS-RC-ALICE" ;
-    ids:description        "Alice, Remote Control Connector for EcoSystem 'IDS'" ;
+    ids:description        "ALICE, Remote Control Connector for EcoSystem 'IDS'" ;
     ids:maintainer         agent: ;
     ids:curator            agent: ;
     ids:physicalLocation   [ a ids:Location ; ] ;
@@ -58,6 +58,9 @@ connector:
 
 ##region configuration
 ##region RC
+#    fua:schema             "http"^^xsd:string ;
+    fua:schema             "https"^^xsd:string ;
+    fua:host               "alice.nicos-rd.com"^^xsd:string ;
     fua:port               "8099"^^xsd:nonNegativeInteger ; ## default = 80
     idsecm:daps            <https://nrd-daps.nicos-rd.com/> ;
     idsecm:daps_default    <https://nrd-daps.nicos-rd.com/> ;
@@ -84,7 +87,7 @@ connector:
 
 connector:http_host
     a             ids:ConnectorEndpoint ;
-    ids:accessURL "https://ec_ids_connector_alice.nicos-rd.com/" ;
+    ids:accessURL "https://alice.nicos-rd.com/" ;
 .
 
 connector:auth_info
@@ -102,23 +105,23 @@ connector:
 #    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
 ## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
     dapsm:skiaki
-                             "D7:FC:1E:AE:44:D6:6D:12:5E:D1:A6:9E:05:2D:AF:49:5D:50:6D:1C:keyid:88:61:3B:14:33:AD:2F:1A:1D:11:A0:BD:A9:5B:A9:8A:F4:04:B4:3E"^^xsd:string ;
+                             "F4:54:38:64:25:A7:AE:4B:5D:65:4A:DF:69:16:C7:BD:51:46:13:B0:keyid:2F:5D:3D:FB:FD:CD:E5:37:17:9F:F1:57:4B:69:32:63:38:AC:12:BE"^^xsd:string ;
     dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA0gKeXKUCZHMSSxzSqg9v
-+B5ClEyq0WmHkcecYy78ucC0d5bCvDjLZHoxvO0rubaWfTnqO1pzosLq5mY4V+f3
-RZbQE800TzapkVQALunl3/nNILoJ8W85026Iu2V8nqCbKvB3FxT2BjTkaEd13eo+
-eBBfw9ns1iBKCh5dCcXZa2UoZSCtmy1hoauy9ymvJW0PGQLimLrq0L1L6k1AolhN
-wSBk5IlEPsrHvQ0k2hQ2hYut8kvXtoDzmvr2oNvBmkwN6B1YsDgrvU3uGiieUhCD
-QVMUEg/eHnqJgf2UY1kV8flK/YvvFi4pIg/8YTaU3lN0GRtRPLz7ZnYC1DFIRuDB
-ZvTtyBZqA2LmYmZwvrkbHjCjYdec0ViMT519/V9vz3QTCNQzGUfiAEBgIjWEpAD1
-T1+TCQD1VUaO+NiOZ50J+XnXzmRGqWWwtzmJZO9QDSDoOdHD7EVztgaSt8KztxJC
-U1Ntf5tbJLvho+F6BD8VQjzBO8PUu9Wd6v60y5zjve844sBqWZM6kRU7eUqFN07W
-qFV1jtiNsMQinRtnKFwVivbQobgd1GbPg5jeomwgwq93SLS4JBru29NshSTlSxsQ
-3B1kLnJ01djo2UmrIYgE0Rm9TCAVIl24SF4aHL2J/SSjcIaEy/10tSyyvibJqdf6
-ElJ5B3g4D+3mPTwohaeySnsCAwEAAQ==
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsEhbDd0skAJqC+ty+B9I
+3ai0FU9j0TTBlquUXsI8cpoeH2e3Z1/OeMoWHf2jS33t3LSnNT/a+aPISiXcld4D
+VhjD3/8pfMFgRiTfMXFzbs0ITYBMdtkk7rNKQJL5kLnPmnMuHW1Q9A+z8Bayi3BK
+FzbsJcZrMrGkRwKmksmWFwlLFAOvlxQ3OnaRMJqT7h1hr2trx07qeBEnQ7KVQofP
+Yo6DCYpdKTxiXO09ekntFgFrh8uCgpxt+4AiMgSJ79xHfj9r+WqgDUTzb99WSMU9
+qYTYNoLS79Q2vM455P2Qa6cb0GQ4bEZlPzWTk5Ep/ciR1MesbQr1zbgakC4Ex5dI
+BM+Vo8W2J1oInbSHsLZxRuRBNhxZR4QsadyyYzmoxwGiWBgpiJNqGO4JXPmtGwND
+iXpfXuDobFw09/Qh+t+Dmzr0pQJ3DGAMkMeCetDQe/+fEx7RnbEBTnaZVMFXSk/x
+2Ge+fw0mwvAIGulhaSgsBoToHBiiyPTbZC2j77Cp8v/B2IQlWz9a3qgddgBdYUC1
+qEUu3RPMbT3kSKccxWx3gICdJX6E9W9WbuDowO6E0OoedTP5zYHUNPEBjmAH2NJP
+fQo48wXvRyitjK8fxM7LNczZXHwe46pP5pQOjJBpKZRAhIre+h6mFPEP0M/6o5w2
+YxT+zORvxpgufrSAPS00XbECAwEAAQ==
 -----END PUBLIC KEY-----"""^^xsd:string ;
 ## TODO: woher kommt der 'referringConnector'?????
-    dapsm:referringConnector "https://ec_ids_connector_alice.nicos-rd.com"^^xsd:string ;
+    dapsm:referringConnector "https://alice.nicos-rd.com"^^xsd:string ;
 ## TODO: <dapsm:securityProfile> to ids
     dapsm:securityProfile    "idsc:BASE_CONNECTOR_SECURITY_PROFILE"^^xsd:string ;
 #    dapsm:securityProfile    <idsc:BASE_CONNECTOR_SECURITY_PROFILE> ;
@@ -129,7 +132,5 @@ ElJ5B3g4D+3mPTwohaeySnsCAwEAAQ==
     dapsm:scope              "ids_connector_attributes"^^xsd:string ;
 .
 ##endregion DAPS user
-
-
 
 ## EOF

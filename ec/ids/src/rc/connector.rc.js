@@ -1,5 +1,6 @@
 const
     path            = require('path'),
+    //http            = require('https'),
     //
     fetch           = require("node-fetch"),
     //
@@ -17,7 +18,7 @@ function randomLeave(pre) {
 
 //endregion fn
 
-class AliceConnector extends BaseConnector {
+class RcConnector extends BaseConnector {
 
     #idle           = (timeout) => {
         let
@@ -43,11 +44,13 @@ class AliceConnector extends BaseConnector {
     #idle_semaphore = null;
     #idle_timeout   = 30; // REM : seconds
     #about_wait_map = new Map();
+    #http_agent    = null;
 
     constructor({
                     'id':         id,
                     'SKIAKI':     SKIAKI,
                     'privateKey': privateKey,
+                    'http_agent': http_agent,
                     'DAPS':       DAPS = {'default': undefined},
                     //
                     'idle_timeout': idle_timeout = 30 // REM : seconds
@@ -59,6 +62,8 @@ class AliceConnector extends BaseConnector {
             'privateKey': privateKey,
             'DAPS':       DAPS
         });
+
+        this.#http_agent = http_agent;
 
         this.#idle_timeout = ((idle_timeout && idle_timeout >= 1) ? idle_timeout : 1);
 
@@ -152,7 +157,10 @@ class AliceConnector extends BaseConnector {
             result.start = event.start;
 
             const
-                response = await fetch(result.target),
+                //response = await fetch(result.target,{rejectUnauthorized: false}),
+                response = await fetch(result.target, {
+                    agent: this.#http_agent
+                }),
                 body     = await response.text()
             ;
 
@@ -219,6 +227,6 @@ class AliceConnector extends BaseConnector {
     } // rc_waitForApplicantsSelfDescriptionRequest
     //endregion rc
 
-} // AliceConnector
+} // RcConnector
 
-exports.AliceConnector = AliceConnector;
+exports.RcConnector = RcConnector;
