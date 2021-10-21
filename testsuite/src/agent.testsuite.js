@@ -1,6 +1,7 @@
 const
     path         = require('path'),
     EventEmitter = require('events'),
+    io_client    = require("socket.io-client"),
     //
     util         = require('@nrd/fua.core.util'),
     uuid         = require('@nrd/fua.core.uuid'),
@@ -52,10 +53,10 @@ class ErrorTestsuiteCallbackMissingOnTopic extends Error {
 //endregion ERROR
 
 async function TestsuiteAgent({
-                                  id:       id = undefined,
-                                  prefix:   prefix = _prefix_,
+                                  id:     id = undefined,
+                                  prefix: prefix = _prefix_,
                                   //validate: validate = undefined,
-                                  testbed:  testbed = undefined
+                                  testbed: testbed = undefined
                               }) {
 
     function event(event) {
@@ -235,25 +236,8 @@ async function TestsuiteAgent({
         }));
 
     Object.defineProperties(testsuite, {
-        id:     {value: id, enumerable: true},
-        prefix: {value: prefix, enumerable: true},
-        //test:  {
-        //    value:         async (token) => {
-        //        try {
-        //            let testResult              = await testbed_emit("test", token.data);
-        //            token.data.testResult       = testResult;
-        //            token.data.validationResult = await validate.ec[token.data.ec][token.data.command]({
-        //                id:         `${testsuite.id}validation/ec/${token.data.ec}/${token.data.command}/${uuid.v1()}`,
-        //                testResult: token.data.testResult
-        //            });
-        //            token.end                   = util.timestamp();
-        //            return token;
-        //        } catch (jex) {
-        //            throw(jex);
-        //        } // try
-        //    }, enumerable: false
-        //}, // test
-
+        id:        {value: id, enumerable: true},
+        prefix:    {value: prefix, enumerable: true},
         testcases: {
             set(tc) {
                 if (testcases !== null)
@@ -358,16 +342,10 @@ async function TestsuiteAgent({
     //region testbed io client
 
     const
-        io             = require("socket.io-client"),
-        testbed_socket = io(`${testbed.schema}://${testbed.host}:${testbed.port}/execute`, {
-            reconnectionDelayMax: 10000,
-            reconnect:            true,
-            rejectUnauthorized:   false,
-            auth:                 testbed.auth
-        })
+        testbed_socket = io_client(`${testbed.schema}://${testbed.host}:${testbed.port}/execute`, testbed.options)
     ; // const
 
-    testbed_socket.on("connect", async () => {
+    testbed_socket.on("connect", async (that) => {
         testbed_emit = util.promisify(testbed_socket.emit).bind(testbed_socket);
         eventEmitter.emit('event', {
             message: `testbed_socket connect.`
@@ -396,7 +374,7 @@ async function TestsuiteAgent({
 } // TestsuiteAgent
 
 Object.defineProperties(TestsuiteAgent, {
-    id: {value: "http://www.nicos-rd.com/fua/testbed#Testsuite", enumerable: true}
+    id: {value: "http://www.nicos-rd.com/fua/testbed#TestsuiteAgent", enumerable: true}
 });
 Object.freeze(TestsuiteAgent);
 

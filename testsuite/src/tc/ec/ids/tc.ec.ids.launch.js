@@ -68,17 +68,6 @@ module.exports = ({
 
     Object.defineProperties(carry, {
         id:     {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
-        //INF_01: {
-        //    value:          wrapper({
-        //        tc_root_uri: tc_root_uri,
-        //        tc_root_urn: tc_root_urn,
-        //        agent:       agent,
-        //        criterion:   criterion,
-        //        fn:          require(`./tc/tc.ec.ids.INF_01`),
-        //        console_log: console_log
-        //    }), enumerable: false
-        //}, // INF_01
-        // INF_01 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SUT_provides_self_description
         SUT_provides_self_description: {
             value:          wrapper({
                 tc_root_uri: tc_root_uri,
@@ -88,7 +77,18 @@ module.exports = ({
                 fn:          require(`./tc/tc.ec.ids.SUT_provides_self_description.js`),
                 console_log: console_log
             }), enumerable: false
-        }
+        }, // SUT_provides_self_description
+        //
+        rc_refreshDAT: {
+            value:          wrapper({
+                tc_root_uri: tc_root_uri,
+                tc_root_urn: tc_root_urn,
+                agent:       agent,
+                criterion:   criterion,
+                fn:          require(`./rc/rc.ec.ids.rc_refreshDAT.js`),
+                console_log: console_log
+            }), enumerable: false
+        } // SUT_provides_self_description
     }); // Object.defineProperties(carry)
 
     Object.freeze(carry);

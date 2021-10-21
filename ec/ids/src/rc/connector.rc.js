@@ -44,7 +44,7 @@ class RcConnector extends BaseConnector {
     #idle_semaphore = null;
     #idle_timeout   = 30; // REM : seconds
     #about_wait_map = new Map();
-    #http_agent    = null;
+    #http_agent     = null;
 
     constructor({
                     'id':         id,
@@ -128,6 +128,57 @@ class RcConnector extends BaseConnector {
     } // constructor()
 
     //region rc
+
+    async rc_refreshDAT(param) {
+
+        clearTimeout(this.#idle_semaphore);
+
+        let
+            event = {
+                'id':     randomLeave(this.id + "event/"),
+                'type':   "event",
+                'prov':   this.id,
+                'method': "rc_refreshDAT",
+                'step':   "called",
+                'start':  util.timestamp()
+            }
+        ;
+        try {
+
+            let
+                daps = ((param.daps) ? param.daps : "default"),
+                result = {
+                    'id':                randomLeave(`${this.id}rc_refreshDAT/result/`),
+                    'thread':            param.thread,
+                    'prov':              `${this.id}rc_refreshDAT`,
+                    //'target':            `${param.schema}://${param.host}${((!!param.port) ? ":" + param.port : "")}${param.path}`,
+                    'operationalResult': undefined
+                }
+            ; // let
+
+            result.start = event.start;
+
+            const
+                DAT = this.getDAT({'daps': param.daps})
+            ;
+
+            // TODO :
+            //result.operationalResult = JSON.parse(body);
+            result.end = util.timestamp();
+
+            event.end = result.end;
+            this.emit('event', null, event);
+
+            this.#idle_semaphore = this.#idle(this.#idle_timeout);
+            return result;
+        } catch (jex) {
+            event.error = jex;
+            event.end   = util.timestamp();
+            this.emit('event', event, undefined);
+            throw(jex);
+        } // try
+    } // rc_refreshDAT()
+
     async rc_requestApplicantsSelfDescription(param) {
 
         clearTimeout(this.#idle_semaphore);

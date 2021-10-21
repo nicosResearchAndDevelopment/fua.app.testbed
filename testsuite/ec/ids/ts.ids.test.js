@@ -9,6 +9,7 @@ const
     tc_root_urn                     = `urn:ts:ec:ids:tc:`,
     tc_root_uri                     = `${testsuite_id}ec/ids/tc/`,
     //
+    cert                            = require('../../cert/tls-server/server.js'),
     {TestsuiteAgent}                = require('../../src/agent.testsuite.js')// REM: as agent
     //Portscan                        = require('../../src/agent.testsuite.js')
 ;
@@ -21,35 +22,43 @@ const
 const
     tc_console_log = true,
     auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
-
     applicant_root = `${auditlog}/tb_ids_bob`,
-    session_root   = `${applicant_root}/net`,
+    session_root   = `${applicant_root}/ids`,
     applicant      = require(`${applicant_root}/config.json`)
 ;
 
 let
-    testbed = {
-        //schema: "https",
-        schema: "http",
-        //host:   "127.0.0.1",
-        host:   "testbed.nicos-rd.com",
-        port:   8080,
-        auth:   {
-            user:     "testsuite",
-            password: "marzipan" // TODO : password : HASH
+    testbed_io = {
+        schema:  "https",
+        host:    "testbed.nicos-rd.com",
+        port:    8080,
+        options: {
+            key:                  cert.key,
+            cert:                 cert.cert,
+            ca:                   cert.ca,
+            requestCert:          false, // REM : server ONLY
+            rejectUnauthorized:   false,
+            reconnectionDelayMax: 10000,
+            reconnect:            true,
+            auth:                 {
+                user:     "testsuite",
+                password: "marzipan" // TODO : password : HASH
+            }
         }
     },
-    //alice = "https://127.0.0.1:8099/",
-    alice   = "https://alice.nicos-rd.com:8099/",
-    bob     = {
+    alice      = "https://alice.nicos-rd.com:8099/",
+    bob        = {
         schema: "https",
-        //schema: "http",
-        host: "bob.nicos-rd.com",
-        //host:   "127.0.0.1",
-        port: 8098
+        host:   "bob.nicos-rd.com",
+        port:   8098
     },
     data
 ; // let
+
+const
+    RC  = alice,
+    SUT = bob
+;
 
 function Session({
                      root: root
@@ -86,7 +95,7 @@ function Session({
     return session;
 }
 
-describe('ids', function () {
+describe('IDS', function () {
 
     this.timeout(0);
 
@@ -99,7 +108,7 @@ describe('ids', function () {
     before(async function () {
 
         let config = {
-            port:    8081,
+            port: 8081
         };
 
         session = Session({root: session_root});
@@ -107,7 +116,7 @@ describe('ids', function () {
 
         agent = await TestsuiteAgent({
             id:      testsuite_id,
-            testbed: testbed
+            testbed: testbed_io
         });
         tc    = require('../../src/tc/ec/ids/tc.ec.ids.launch.js')({
             //ec:          "net", // REM : "net" = default
@@ -167,30 +176,60 @@ describe('ids', function () {
 
     describe('SUT_provides_self_description', function () {
 
-        //before(function () {
-        //
-        //}); // before()
-
-        data = { // REM : ALICE gets BOBs selfDescription
-            'ec':      "ids",
-            'command': "requestApplicantsSelfDescription",
-            operator:  operator,
-            'param':   {
-                //'operator': "simon petrac",
-                'rc': alice,
-                // REM : Bob as applicant
-                'schema': bob.schema,
-                'host':   bob.host,
-                'port':   bob.port,
-                'path':   "/about"
-            }
-        };
+        before(function () {
+            data = { // REM : ALICE gets BOBs selfDescription
+                ec:       "ids",
+                command:  "requestApplicantsSelfDescription",
+                operator: operator,
+                param:    {
+                    rc:     RC,
+                    schema: SUT.schema,
+                    host:   SUT.host,
+                    port:   SUT.port,
+                    path:   "/about"
+                }
+            };
+        }); // before()
 
         test(`should successfully consume applicants <${applicant.host}> Self Description`, async () => await tc.SUT_provides_self_description(
             agent.Token({
                 id:     undefined,
                 start:  undefined,
-                thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+                thread: `${util.timestamp()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
+            }),
+            data,
+            session)
+        ); // test
+
+        //after(function () {
+        //
+        //}); // after()
+
+    }); // describe(SUT_provides_self_description)
+
+    describe('rc_refreshDAT', function () {
+
+        before(() => {
+            data = { // REM : ALICE gets BOBs selfDescription
+                ec:       "ids",
+                command:  "rc_refreshDAT",
+                operator: operator,
+                param:    {
+                    rc:        RC,
+                    daps:      "default",
+                    rc_daps:   {
+                        nbf: 12234234234
+                    },
+                    verifyDAT: true
+                }
+            };
+        }); // before()
+
+        test(`should refresh RC's <${RC}> DAT`, async () => await tc.rc_refreshDAT(
+            agent.Token({
+                id:     undefined,
+                start:  undefined,
+                thread: `${util.timestamp()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
             }),
             data,
             session)

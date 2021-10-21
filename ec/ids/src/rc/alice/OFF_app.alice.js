@@ -99,7 +99,7 @@ module.exports = ({
                     //
                     //    debugger;
                     //});
-                    //server.on('secureConnect', (tlsSocket)=> {
+                    //server.on('secureConnection', (tlsSocket)=> {
                     //
                     //    debugger;
                     //});
@@ -110,6 +110,13 @@ module.exports = ({
 
                         socket_controller = socket;
                         //debugger;
+
+                        socket_controller.on('rc_refreshDAT', (param, callback) => {
+                            agent.rc_waitForApplicantsSelfDescriptionRequest(param, (error, data) => {
+                                callback(error, data);
+                            });
+                        }); // socket.on('rc_refreshDAT')
+
                         socket_controller.on('rc_requestApplicantsSelfDescription', async (param, callback) => {
                             try {
                                 let result = await agent.rc_requestApplicantsSelfDescription(param);

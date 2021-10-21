@@ -99,7 +99,7 @@ module.exports = ({
                     //
                     //    debugger;
                     //});
-                    //server.on('secureConnect', (tlsSocket)=> {
+                    //server.on('secureConnection', (tlsSocket)=> {
                     //
                     //    debugger;
                     //});
@@ -109,7 +109,16 @@ module.exports = ({
                             throw new Error(``);
 
                         socket_controller = socket;
-                        //debugger;
+
+                        socket_controller.on('rc_refreshDAT', async (param, callback) => {
+                            try {
+                                let result = await agent.rc_refreshDAT(param);
+                                callback(null, result);
+                            } catch (error) {
+                                callback(error, undefined);
+                            } // try
+                        }); // socket.on('rc_refreshDAT')
+
                         socket_controller.on('rc_requestApplicantsSelfDescription', async (param, callback) => {
                             try {
                                 let result = await agent.rc_requestApplicantsSelfDescription(param);

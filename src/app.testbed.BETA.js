@@ -26,7 +26,7 @@ module.exports = ({
             try {
                 const
                     app          = express(),
-                    server            = ((config.server.schema === "https") ? http.createServer(config.server.options, app) : http.createServer(app)),
+                    server       = ((config.server.schema === "https") ? http.createServer(config.server.options, app) : http.createServer(app)),
                     io           = socket_io(server),
                     io_testsuite = io.of('/execute'),
 
@@ -35,27 +35,30 @@ module.exports = ({
 
                 let
                     testsuite_socket = null
-                    //,
-                    //that             = rdf.generateGraph(
-                    //    agent.space.dataStore.dataset,
-                    //    'minimal'
-                    //    //{'compact': true, 'meshed': true, 'blanks': false}
-                    //)
                 ;
 
-                //const graph = new Map((compactDoc['@graph'] || [compactDoc]).map((node) => [node['@id'], node]));
-                //that.get("https://testbed.nicos-rd.com/");
-
-                //let executeTestResult = await agent.executeTest({}).catch((err) => {
-                //    err;
-                //    //debugger;
+                server.on('secureConnection', (tlsSocket) => {
+                    //console.log(JSON.stringify(tlsSocket.getCipher(), "", "\t"));
+                    //console.log(JSON.stringify(tlsSocket.getPeerCertificate(true).raw.toString('base64'), "", "\t"));
+                    //debugger;
+                });
+                server.on('error', (error) => {
+                    debugger;
+                });
+                //server.on('keylog', (line, tlsSocket) => {
+                //    debugger;
+                //    if (tlsSocket.remoteAddress !== '...')
+                //        return; // Only log keys for a particular IP
+                //    //logFile.write(line);
                 //});
-
                 app.disable('x-powered-by');
 
                 app.use(sessions);
 
-                io.use((socket, next) => sessions(socket.request, socket.request.res, next));
+                io.use((socket, next) => {
+                    //debugger;
+                    return sessions(socket.request, socket.request.res, next)
+                });
 
                 // REM: uncomment to enable authentication
                 //app.use('/login', testbed.createLogin(config.login, amec));
@@ -82,14 +85,22 @@ module.exports = ({
                 //endregion LDN
 
                 //region DAPS
-                app.post('/keystore.json', express.json(), (request, response, next) => {
+                app.get('/keystore.json', express.json(), (request, response, next) => {
+
+                    response.send({timestamp: `${util.timestamp()}`});
+                    next();
+                });
+                app.post('/token', express.json(), async (request, response, next) => {
                     // TODO
+                    debugger;
+                    const DAT = await agent.DAPS.generateDAT({});
                     console.log(request.body);
                     next();
                 });
-                app.post('/token', express.json(), (request, response, next) => {
+                app.post('/vc', express.json(), async (request, response, next) => {
                     // TODO
-                    //agent.DAPS();
+                    debugger;
+                    const DAT = await agent.DAPS.generateVC({});
                     console.log(request.body);
                     next();
                 });
@@ -165,10 +176,8 @@ module.exports = ({
                                 'command': command,
                                 'param':   param
                             });
-                            //token.thread.push(`${util.timestamp()} : TESTBED : app : <tb.app.testsuite_socket.on> : test : before : callback`);
                             token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
                             callback(null, token, result);
-
                         } catch (jex) {
                             // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             let error = {
@@ -182,6 +191,10 @@ module.exports = ({
                     }); // testsuite_socket.on("test")
 
                 }); // io_testsuite.on('connection')
+
+                //io_testsuite.on('error', (error) => {
+                //    debugger;
+                //});
 
                 agent.on('event', (error, data) => {
                     console.log("app.testbed :: agent : event :: >>>");

@@ -99,7 +99,7 @@ module.exports = ({
                     //
                     //    //debugger;
                     //});
-                    //server.on('secureConnect', (tlsSocket)=> {
+                    //server.on('secureConnection', (tlsSocket)=> {
                     //
                     //    debugger;
                     //});

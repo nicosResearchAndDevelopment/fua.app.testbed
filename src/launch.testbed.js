@@ -12,6 +12,7 @@ const
     //amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
+    {DAPS}      = require(path.join(util.FUA_JS_LIB, 'ids/ids.agent.daps/src/agent.DAPS.beta.js')),
     {Space}     = require('@nrd/fua.module.space')
     //
 ; // const
@@ -38,7 +39,7 @@ const
             '@type': "foaf:Agent"
         },
         // TODO : hier könnte man vielleicht auch duration "PT1.42S" gehen?!?
-        'idle_emit_threshold': {'@type': "xsd:decimal", '@value': /** seconds */ 1.0},
+        'idle_emit_threshold': {'@type': "xsd:decimal", '@value': /** seconds */ 60.0},
         'hasTRS':              "http://dbpedia.org/resource/Unix_time"
     }, // testbed_scheduler
     testbed_system          = {
@@ -208,27 +209,44 @@ async function createSpace(config) {
 }
 
 const
-    tls_certificates = require('../cert/tls-server/server.js')
+    server_tls_certificates     = require('../cert/tls-server/server.js'),
+    daps_connector_certificates = require('./daps/cert/connector/client.js')
 ;
 
 config.server.options = {
-    key:                tls_certificates.key,
-    cert:               tls_certificates.cert,
-    ca:                 tls_certificates.ca,
+    key:                server_tls_certificates.key,
+    cert:               server_tls_certificates.cert,
+    ca:                 server_tls_certificates.ca,
     requestCert:        false,
-    rejectUnauthorized: false
+    rejectUnauthorized: true
 };
-
 
 (async () => {
 
     const
-        space         = await createSpace(config.space),
+        space           = await createSpace(config.space),
+        daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
+        nrd_daps_config = space.getNode(daps_id)
+    ;
+    //await nrd_daps_config.load();
+    //let json_nrd_daps_config = nrd_daps_config.toJSON();
+
+    const daps        = new DAPS({
+            id:      `${daps_id}agent/`,
+            rootUri: "https://testbed.nicos-rd.com/domain/user#",
+            domain:  null,                                            // REM : set by testbed-agent
+            //
+            privateKey:      daps_connector_certificates.privateKey,
+            jwt_payload_iss: daps_id
+        }
+    );
+    const
         testbed_agent = await TestbedAgent({
-            'testbed_id':   "https://testbed.nicos-rd.com/",
-            'scheduler':    testbed_scheduler,
-            'space':        space,
-            'encodeSecret': (secret) => {
+            testbed_id:   "https://testbed.nicos-rd.com/",
+            scheduler:    testbed_scheduler,
+            space:        space,
+            daps:         daps,
+            encodeSecret: (secret) => {
                 return `${secret}_salt`;
             }
         }) // new TestbedAgent()

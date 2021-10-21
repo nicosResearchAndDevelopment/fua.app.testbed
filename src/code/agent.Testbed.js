@@ -214,21 +214,21 @@ function TestbedAgent({
 Object.defineProperties(TestbedAgent, {
     '@context': {
         value:          [{
-            "@base": "http://testbed.nicos-rd.com",
+            "@base": "https://testbed.nicos-rd.com",
             "vocab": "/",
-            "tb":    "http://testbed.nicos-rd.com/",
-            "tbm":   "http://testbed.nicos-rd.com/",
+            "tb":    "https://testbed.nicos-rd.com/",
+            "tbm":   "https://testbed.nicos-rd.com/",
             //
-            "sysm": "http://www.nicos-rd.com/fua/agent/system#",
-            "domm": "http://www.nicos-rd.com/fua/agent/domain#",
+            "sysm": "https://www.nicos-rd.com/fua/agent/system#",
+            "domm": "https://www.nicos-rd.com/fua/agent/domain#",
             //
-            "system": "http://www.nicos-rd.com/fua/agent/system#system",
-            "domain": "http://www.nicos-rd.com/fua/agent/domain#domain",
+            "system": "https://www.nicos-rd.com/fua/agent/system#system",
+            "domain": "https://www.nicos-rd.com/fua/agent/domain#domain",
             // TODO : ha to be switched, when testsuite has its own app...
-            "testsuite": "http://testsuite.nicos-rd.com/"
+            "testsuite": "https://testsuite.nicos-rd.com/"
         }], enumerable: true
     },
-    '@id':      {value: "http://www.nicos-rd.com/fua/testbed#TestbedAgent/"}
+    '@id':      {value: "https://www.nicos-rd.com/fua/testbed#TestbedAgent/"}
 });
 
 exports.TestbedAgent = TestbedAgent;

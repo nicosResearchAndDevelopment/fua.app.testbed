@@ -139,6 +139,20 @@ module.exports = ({
                 } // try
             }, enumerable: false
         }, // selfTest
+        'rc_refreshDAT':        {
+            value:         async (param) => {
+                try {
+                    if (!connected && socket)
+                        throw(new Error(`tb.ec.ids : rc_refreshDAT : io NOT connected.`));
+                    let result = await rc.get(param.rc)('rc_refreshDAT', param);
+                    //throw (new Error()); // TEST : only
+                    return result;
+                } catch (jex) {
+                    ec_ids.emit('error', jex);
+                    throw(jex);
+                } // try
+            }, enumerable: false
+        }, // refreshRcDAT
         'requestApplicantsSelfDescription':        {
             value:         async (param) => {
                 try {

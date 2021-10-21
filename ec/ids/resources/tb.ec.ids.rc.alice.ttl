@@ -62,8 +62,8 @@ connector:
     fua:schema             "https"^^xsd:string ;
     fua:host               "alice.nicos-rd.com"^^xsd:string ;
     fua:port               "8099"^^xsd:nonNegativeInteger ; ## default = 80
-    idsecm:daps            <https://nrd-daps.nicos-rd.com/> ;
-    idsecm:daps_default    <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps            <https://nrd-daps.nicos-rd.com:8080/> ;
+    idsecm:daps_default    <https://nrd-daps.nicos-rd.com:8080/> ;
     idsecm:idle_timeout    "30"^^xsd:nonNegativeInteger ;
 ##endregion RC
 ##endregion configuration

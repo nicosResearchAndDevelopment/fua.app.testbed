@@ -9,8 +9,8 @@ const
     testsuite_id     = "https://testsuite.nicos-rd.com/",
 
     testbed          = {
-        schema: "http",
-        host:   "127.0.0.1",
+        schema: "https",
+        host:   "testbed.nicos-rd.com",
         port:   8080,
         auth:   {
             user:     "testsuite",

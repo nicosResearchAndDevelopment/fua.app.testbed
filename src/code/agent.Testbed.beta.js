@@ -31,11 +31,8 @@ const
         }
     }
     //
-    ,
-    //{DAPS}       = require(path.join(util.FUA_JS_LIB, 'impl/ids/ids.agent.daps/src/agent.DAPS.beta.js'))
     //{ids}        = require("../../ec/ids/src/tb.ec.ids.js"),
     //{ip}         = require("../../ec/ip/src/tb.ec.ip.beta.js")
-    DAPS         = false
 ;
 
 const {ip} = require("../../ec/ip/src/tb.ec.ip.js"); // const
@@ -110,10 +107,11 @@ function randomLeave(pre) {
 //endregion fn
 
 async function TestbedAgent({
-                                'testbed_id':   id = "asdf",
-                                'scheduler':    scheduler,
-                                'space':        space,
-                                'encodeSecret': encodeSecret = undefined
+                                testbed_id:   id = "asdf",
+                                scheduler:    scheduler,
+                                space:        space,
+                                daps:         daps = null,
+                                encodeSecret: encodeSecret = undefined
                             }) {
 
     const
@@ -154,20 +152,20 @@ async function TestbedAgent({
             //'id':    `${id}domain/`,
             'config': domain_config,
             'amec':   amec,
-            space: space
+            space:    space
         })
     ;
     //endregion domain
 
     Object.defineProperties(testbedAgent, {
-        'id':                     {value: id, enumerable: true},
-        'testsuite_inbox_socket': {
+        id:                     {value: id, enumerable: true},
+        testsuite_inbox_socket: {
             set(socket) {
                 if (!testsuite_inbox_socket)
                     testsuite_inbox_socket = socket;
             }, enumerable: false
         },
-        'on':                     {
+        on:                     {
             value:              Object.defineProperties((topic, callback) => {
                     let
                         error  = null,
@@ -198,37 +196,37 @@ async function TestbedAgent({
                     'id': {value: `${id}on`, enumerable: true}
                 }), enumerable: true
         }, // on
-        'scheduler':              {
+        scheduler:              {
             value: new Scheduler(scheduler), enumerable: true
         },
-        amec:                     {
+        amec:                   {
             set(amc) {
                 if (amec === null)
                     amec = amc;
             }, enumerable: false
         },
-        authenticate:             {
+        authenticate:           {
             value: async (headers, mechanism) => {
                 return await amec.authenticate(headers, mechanism);
             }
         },
-        'PEP':                    {
+        PEP:                    {
             value: pep, enumerable: false
         },
-        'domain':                 {
+        domain:                 {
             value: domain, enumerable: true
         },
-        'space':                  {
+        space:                  {
             value: space, enumerable: true
         },
-        'inbox':                  {
+        inbox:                  {
             value:         async (message) => {
                 if (testsuite_inbox_socket)
                     testsuite_inbox_socket.emit();
                 return undefined;
             }, enumerable: true
         }, // inbox
-        'executeTest':            {
+        executeTest:            {
             value:         async (data) => {
                 try {
                     let
@@ -295,26 +293,26 @@ async function TestbedAgent({
         ids = require("../../ec/ids/src/tb.ec.ids.js")({
             'uri':   `${id}ec/ids/`,
             'ALICE': {
-                'id': alice_id,
+                'id':     alice_id,
                 'schema': node_alice.getLiteral('fua:schema').value,
-                'host': node_alice.getLiteral('fua:host').value,
-                'port': parseInt(node_alice.getLiteral('fua:port').value),
+                'host':   node_alice.getLiteral('fua:host').value,
+                'port':   parseInt(node_alice.getLiteral('fua:port').value),
                 'SKIAKI': node_alice.getLiteral('dapsm:skiaki').value,
                 //
-                'user': {
+                'user':         {
                     'tb_ec_ids': {'name': "tb_ec_ids", 'password': "marzipan"}
                 },
                 'idle_timeout': parseInt(node_alice.getLiteral('idsecm:idle_timeout').value),
-                'DAPS':        {
+                'DAPS':         {
                     'default': node_alice.getNode('idsecm:daps_default').id
                 },
-                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
+                'cert_client':  "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
             }, // ALICE
             'BOB':   {
-                'id': bob_id,
+                'id':     bob_id,
                 'schema': node_bob.getLiteral('fua:schema').value,
-                'host': node_bob.getLiteral('fua:host').value,
-                'port': parseInt(node_bob.getLiteral('fua:port').value),
+                'host':   node_bob.getLiteral('fua:host').value,
+                'port':   parseInt(node_bob.getLiteral('fua:port').value),
                 'SKIAKI': node_bob.getLiteral('dapsm:skiaki').value,
                 //
                 'user': {
@@ -342,25 +340,10 @@ async function TestbedAgent({
     ec['ids'] = ids;
     Object.freeze(ec['ids']);
 
-    if (DAPS) {
-        //Object.defineProperty(ec['ids'], 'ids', {
-        //
-        //});
-        let
-            daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
-            nrd_daps_config = space.getNode(daps_id)
-        ;
-        await nrd_daps_config.read()
+    if (daps) {
+        daps.domain = domain;
         Object.defineProperty(testbedAgent, 'DAPS', {
-            value:         new DAPS({
-                    'id':      `${daps_id}agent/`,
-                    'rootUri': rootUri,
-                    'domain':  domain,
-                    //
-                    'privateKey':      nrd_daps_config['dapsm:privateKey'][0]['@value'],
-                    'jwt_payload_iss': daps_id
-                }
-            ), enumerable: false
+            value: daps, enumerable: false
         }); // Object.defineProperty()
     } // if (DAPS)
 
