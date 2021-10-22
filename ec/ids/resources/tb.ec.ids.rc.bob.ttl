@@ -104,20 +104,20 @@ connector:
 #    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
 ## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
     dapsm:skiaki
-                             "32:BC:7E:0C:02:4B:45:3C:64:9F:CE:C9:ED:F9:97:3A:20:71:F5:3C:keyid:2F:5D:3D:FB:FD:CD:E5:37:17:9F:F1:57:4B:69:32:63:38:AC:12:BE"^^xsd:string ;
+                             """5D:6C:64:09:0B:BA:54:D8:B4:77:AD:24:12:8B:4A:9F:22:96:F7:91:keyid:B2:86:93:B9:34:0F:6F:CA:D4:1A:C0:3E:C6:BF:E1:A0:A0:D0:ED:5E"""^^xsd:string ;
     dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA439zAG42rcbhlRU7cRZU
-FxS3msJ5UM3epew3FyCAu/2fymdDRdhCgiUoRFFOUWgK2clos7eaNdjLgWskaQ2B
-TjPJb/5Z61UxALrRAdBJgMkha2Pk/RTqwHRSRxTYv4BayDLgvxvT/t76EAE4NuyR
-qpuWmXtcNYWL2VwDshsKEpfTnm61z/5Fdn947C+rB3r2irBf0TsOSxB4MQ4P4QUJ
-K9+yeq56ywYAr164S00MNFWOsrZzPWb7SZveraFaoSJ0ldS/4i5cfURb+hKb4diY
-RF7xbPLXLly9xKLd9PsO46rQFjtrf0wXwRyLSJfxlmitcoGKuMeeP39Xa+dDexhe
-cwH1ogRcCuOdVu8aANh9AbHNhSEB2SaC7nWOgR2VoONp3zN3Tu45cl+mxh4R5GuZ
-Ov7am4qWsRym3IX9toIg1XIfnVwi0JtT6v83rwxaQIBimsqKHzi3GWiXzr9kTp19
-YyAgPVfot4cCDSqbaKcPufcBxWSRfp4KpzK9Ylts7vYlaadM6o/DItX4fuaARWmS
-RidC0HhYqWhvIDej5t0y1kij0DwJk5LBt1lUOiFRojIf4ic24KWmtxzkQq4RERK5
-S5+vG0k/uv/T2xMf4hQiTdS/pbjHBwtl7QplY+utKoR8VoBG9x2G3SMlquqi0JOo
-Y96dUor5iYVu1tTXxAOKxwECAwEAAQ==
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsp7aZuH9ClPHDiJ13zor
+Db57pbNqCYtz3W6CYK2ThT/nVLNwQAWAhNpKhqJLMoHd47eivAEURju7OqyWe2cF
+qawJMw+iC09u4h0KsvbjfuT7p2GEPNL2P6RaYfgsS5lExwJweRwgcg9c7VK7Qz1S
+Xu5ba+R4NM/pJ97x1v20DJ7XPsUv3tzf1DIAfkNSzZflGzwAm2t8pZmB+0MGSyB4
+PQFCPKUN/OI9Lymci0npPMyAc8cjl8MH37dbOc5LhdS7km7iJ4eJ9Zw+sFvu1Shk
+Y4bY2iPZsKD9Gm2jlYpkUunz7QU0E6HYpAu4vOFLHa8j69GBCwvEdi47ghfFSfVy
+NAvq88AjzXDrsW0pEqxhqk2RxhzBmSxwCZjdystlKbcmwcOLTFCBDYUobr3V8teF
+p9OlbAd0YWkNDO2lKkg9u05ho5qA7DxyK2id0NsB9jGLTICIdqTlTUDOdwGcM/OY
+0NYDaaO4BqOcA0JHJLkcQf6nvESfAd1dsfEpyHJPals0u/ms4jPa2Ioz4KN9/SKk
+28gukYHUXzKlK/U1QCzcMabFsiF3oBCFqmJCcp4fOis7b5vILfIlr/O+aHIGqj6r
++m1uhgOwgk9cV2Pd//QpxGDvPR+8fcl+xSMgR5k5WLi6Db9zsgRAxsALY5yWiN/g
+JHS0ZwlRXmkS120xv7jp5jkCAwEAAQ==
 -----END PUBLIC KEY-----"""^^xsd:string ;
 ## TODO: woher kommt der 'referringConnector'?????
     dapsm:referringConnector "https://bob.nicos-rd.com"^^xsd:string ;

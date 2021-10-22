@@ -43,26 +43,30 @@ module.exports = ({
         ;
 
         return async (token, data, session) => {
-            let result = await _fn_(token, data);
-            if (session) {
-                let node = {
-                    testcase: _fn_.name,
-                    token:    result.token,
-                    data:     result.data
-                };
-                if (result.error)
-                    node.error = {
-                        id:        result.error.id,
-                        timestamp: result.error.timestamp,
-                        code:      result.error.code,
-                        prov:      result.error.prov,
-                        message:   result.error.message
+            try {
+                let result = await _fn_(token, data);
+                if (session) {
+                    let node = {
+                        testcase: _fn_.name,
+                        token:    result.token,
+                        data:     result.data
                     };
-                await session.write(node);
-            } // if ()
-            if (result.error)
-                throw(result.error);
-            return result;
+                    if (result.error)
+                        node.error = {
+                            id:        result.error.id,
+                            timestamp: result.error.timestamp,
+                            code:      result.error.code,
+                            prov:      result.error.prov,
+                            message:   result.error.message
+                        };
+                    await session.write(node);
+                } // if ()
+                if (result.error)
+                    throw(result.error);
+                return result;
+            } catch (jex) {
+                throw (jex);
+            } // try
         };
     } // function wrapper()
 
@@ -88,7 +92,7 @@ module.exports = ({
                 fn:          require(`./rc/rc.ec.ids.rc_refreshDAT.js`),
                 console_log: console_log
             }), enumerable: false
-        } // SUT_provides_self_description
+        } // rc_refreshDAT
     }); // Object.defineProperties(carry)
 
     Object.freeze(carry);

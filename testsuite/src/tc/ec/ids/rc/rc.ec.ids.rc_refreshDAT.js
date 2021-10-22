@@ -76,7 +76,7 @@ module.exports = ({
                 data.validationResult = {
                     id:        `${uri}/validation/result/${uuid.v1()}`,
                     timestamp: util.timestamp(),
-                    value:     ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL)
+                    status:     ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL)
                 };
             } // if ()
             //endregion validation

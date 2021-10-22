@@ -60,6 +60,7 @@ class RcConnector extends BaseConnector {
             'id':         id,
             'SKIAKI':     SKIAKI,
             'privateKey': privateKey,
+            'http_agent': http_agent,
             'DAPS':       DAPS
         });
 
@@ -159,7 +160,7 @@ class RcConnector extends BaseConnector {
             result.start = event.start;
 
             const
-                DAT = this.getDAT({'daps': param.daps})
+                DAT = await this.getDAT({'daps': param.daps})
             ;
 
             // TODO :

@@ -2,6 +2,7 @@ const
     path           = require('path'),
     //http           = require('http'),
     express        = require('express'),
+    bodyParser     = require('body-parser'),
     //{exec}      = require("child_process"),
     socket_io      = require('socket.io'),
     //config         = require('./config/config.testbed.js'),
@@ -37,8 +38,11 @@ module.exports = ({
                     testsuite_socket = null
                 ;
 
+                server.on('connection', (tlsSocket) => {
+                    //debugger;
+                });
                 server.on('secureConnection', (tlsSocket) => {
-                    //console.log(JSON.stringify(tlsSocket.getCipher(), "", "\t"));
+                    console.log(JSON.stringify(tlsSocket.getCipher(), "", "\t"));
                     //console.log(JSON.stringify(tlsSocket.getPeerCertificate(true).raw.toString('base64'), "", "\t"));
                     //debugger;
                 });
@@ -54,27 +58,13 @@ module.exports = ({
                 app.disable('x-powered-by');
 
                 app.use(sessions);
-
-                io.use((socket, next) => {
-                    //debugger;
-                    return sessions(socket.request, socket.request.res, next)
-                });
-
-                // REM: uncomment to enable authentication
-                //app.use('/login', testbed.createLogin(config.login, amec));
-                //app.use('/', (request, response, next) => {
-                //    if (request.session.auth) next();
-                //    else response.redirect('/login');
-                //});
-
+                // parse application/x-www-form-urlencoded
+                app.use(bodyParser.urlencoded({extended: false}))
+                // parse application/json
+                app.use(bodyParser.json())
                 app.use('/browse', testbed.createBrowser(config.browser));
 
                 config.ldp.space = agent.space;
-
-                //app.use([
-                //    //'/model',
-                //    '/data'
-                //], LDPRouter(config.ldp));
 
                 //region LDN
                 app.post('/inbox', express.json(), (request, response, next) => {
@@ -85,18 +75,35 @@ module.exports = ({
                 //endregion LDN
 
                 //region DAPS
-                app.get('/keystore.json', express.json(), (request, response, next) => {
 
+                app.post('/token', express.json(), async (request, response, next) => {
+                    // TODO
+                    let error = undefined;
+                    try {
+                        //debugger;
+                        //console.log(request.body);
+                        //const DAT = await agent.DAPS.generateDAT(request.body);
+                        const DAT = await agent.DAPS.generateDAT({
+                            client_assertion:      request.body.client_assertion,
+                            client_assertion_type: request.body.client_assertion_type,
+                            grant_type:            request.body.grant_type,
+                            scope:                 request.body.scope
+                        });
+
+                        //console.log(`DAT : ${DAT}`);
+                        response.send(DAT);
+                    } catch (jex) {
+                        response.status(404); //Send error response here
+                        error = jex;
+                    } // try
+                    next(error);
+                });
+
+                app.get('/.well-known/jwks.json', express.json(), (request, response, next) => {
                     response.send({timestamp: `${util.timestamp()}`});
                     next();
                 });
-                app.post('/token', express.json(), async (request, response, next) => {
-                    // TODO
-                    debugger;
-                    const DAT = await agent.DAPS.generateDAT({});
-                    console.log(request.body);
-                    next();
-                });
+
                 app.post('/vc', express.json(), async (request, response, next) => {
                     // TODO
                     debugger;
@@ -125,6 +132,11 @@ module.exports = ({
                 //        });
                 //    }
                 //} // for ()
+
+                io.use((socket, next) => {
+                    //debugger;
+                    return sessions(socket.request, socket.request.res, next)
+                });
 
                 io.on('connection', (socket) => {
 
@@ -439,8 +451,7 @@ module.exports = ({
                 //console.log('listening at http://localhost:' + config.server.port);
                 console.log(`testbed app is listening at <${config.server.schema}://${config.server.host}:${config.server.port}>`);
 
-            } catch
-                (err) {
+            } catch (err) {
                 console.error(err?.stack ?? err);
                 debugger;
                 process.exit(1);

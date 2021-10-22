@@ -218,7 +218,7 @@ config.server.options = {
     cert:               server_tls_certificates.cert,
     ca:                 server_tls_certificates.ca,
     requestCert:        false,
-    rejectUnauthorized: true
+    rejectUnauthorized: false
 };
 
 (async () => {
