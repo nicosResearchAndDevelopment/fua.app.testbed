@@ -5,7 +5,7 @@ const
     util        = require('@nrd/fua.core.util'),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
-    Space       = require(path.join(util.FUA_JS_LIB, 'module.space/next/module.space.js')),
+    Space       = require(path.join(util.FUA_JS_LIB, 'module.space/src/module.space.js')),
     WebLogin    = require(path.join(util.FUA_JS_LIB, 'web.login/src/web.login.js')),
     WebLib      = require(path.join(util.FUA_JS_LIB, 'web.lib/src/web.lib.js'));
 
