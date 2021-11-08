@@ -76,13 +76,13 @@ module.exports = ({
 
                 //region DAPS
 
-                app.post('/token', express.json(), async (request, response, next) => {
+                app.post(agent.DAPS.token_path, express.json(), async (request, response, next) => {
                     // TODO
-                    let error = undefined;
+                    let error = null;
                     try {
                         //debugger;
                         //console.log(request.body);
-                        //const DAT = await agent.DAPS.generateDAT(request.body);
+
                         const DAT = await agent.DAPS.generateDAT({
                             client_assertion:      request.body.client_assertion,
                             client_assertion_type: request.body.client_assertion_type,
@@ -90,7 +90,6 @@ module.exports = ({
                             scope:                 request.body.scope
                         });
 
-                        //console.log(`DAT : ${DAT}`);
                         response.send(DAT);
                     } catch (jex) {
                         response.status(404); //Send error response here
@@ -99,12 +98,13 @@ module.exports = ({
                     next(error);
                 });
 
-                app.get('/.well-known/jwks.json', express.json(), (request, response, next) => {
-                    response.send({timestamp: `${util.timestamp()}`});
+                app.get(agent.DAPS.jwks_path, express.json(), async (request, response, next) => {
+                    //response.send({timestamp: `${util.timestamp()}`});
+                    response.send(agent.DAPS.jwks);
                     next();
                 });
 
-                app.post('/vc', express.json(), async (request, response, next) => {
+                app.post(agent.DAPS.vc_path, express.json(), async (request, response, next) => {
                     // TODO
                     debugger;
                     const DAT = await agent.DAPS.generateVC({});

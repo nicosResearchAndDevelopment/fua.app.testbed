@@ -226,22 +226,17 @@ config.server.options = {
     const
         space           = await createSpace(config.space),
         daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
-        nrd_daps_config = space.getNode(daps_id)
-    ;
-    //await nrd_daps_config.load();
-    //let json_nrd_daps_config = nrd_daps_config.toJSON();
-
-    const daps        = new DAPS({
+        nrd_daps_config = space.getNode(daps_id),
+        daps            = new DAPS({
             id:      `${daps_id}agent/`,
             rootUri: "https://testbed.nicos-rd.com/domain/user#",
             domain:  null,                                            // REM : set by testbed-agent
             //
+            publicKey:       daps_connector_certificates.publicKey,
             privateKey:      daps_connector_certificates.privateKey,
             jwt_payload_iss: daps_id
-        }
-    );
-    const
-        testbed_agent = await TestbedAgent({
+        }),
+        testbed_agent   = await TestbedAgent({
             testbed_id:   "https://testbed.nicos-rd.com/",
             scheduler:    testbed_scheduler,
             space:        space,
@@ -250,7 +245,6 @@ config.server.options = {
                 return `${secret}_salt`;
             }
         }) // new TestbedAgent()
-
     ; // const
 
     let
@@ -259,6 +253,7 @@ config.server.options = {
 
     amec = new Amec();
 
+    // TODO : to app-layer!
     amec.on('authentication-error', (error) => {
         debugger;
     });
