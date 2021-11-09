@@ -232,6 +232,12 @@ config.server.options = {
             rootUri: "https://testbed.nicos-rd.com/domain/user#",
             domain:  null,                                            // REM : set by testbed-agent
             //
+            keys:            {
+                default: {
+                    publicKey:  daps_connector_certificates.publicKey,
+                    privateKey: daps_connector_certificates.privateKey
+                }
+            },
             publicKey:       daps_connector_certificates.publicKey,
             privateKey:      daps_connector_certificates.privateKey,
             jwt_payload_iss: daps_id

@@ -100,10 +100,6 @@ class ErrorTestbedCallbackMissingOnTopic extends Error {
 
 //region fn
 
-function randomLeave(pre) {
-    return `${pre}${uuid.v4()}`;
-}
-
 //endregion fn
 
 async function TestbedAgent({
@@ -242,7 +238,6 @@ async function TestbedAgent({
                         if (!command) {
                             throw(new ErrorTestbedUnkownCommand({prov: `${id}executeTest`, command: command}));
                         } else {
-                            //token.data.param.thread = (param.param.thread || randomLeave(`${id_agent}thread/`));
                             let result = await command(data.param);
                             return result;
                         } // if ()

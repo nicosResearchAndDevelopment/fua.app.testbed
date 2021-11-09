@@ -100,7 +100,7 @@ module.exports = ({
 
                 app.get(agent.DAPS.jwks_path, express.json(), async (request, response, next) => {
                     //response.send({timestamp: `${util.timestamp()}`});
-                    response.send(agent.DAPS.jwks);
+                    response.send(agent.DAPS.publicKeyStore);
                     next();
                 });
 
