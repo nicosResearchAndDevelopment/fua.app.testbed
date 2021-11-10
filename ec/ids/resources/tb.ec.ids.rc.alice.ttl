@@ -105,7 +105,7 @@ connector:
 #    domain:membership           <http://localhost/domain/memberships/asdfasdfsfasdfasdfasdfasdfasdff/> ;
 ## TODO: <dapsm:skiaki> da sollte man mal drüber nachdenken, ob das notwendig ist, da eine Rücktranslatierung aus URI-leave möglich wäre...
     dapsm:skiaki
-                             """F4:54:38:64:25:A7:AE:4B:5D:65:4A:DF:69:16:C7:BD:51:46:13:B0:keyid:2F:5D:3D:FB:FD:CD:E5:37:17:9F:F1:57:4B:69:32:63:38:AC:12:BE"""^^xsd:string ;
+                             """D3:64:3F:3B:D0:3A:0B:01:FE:8E:5D:C5:F3:97:B3:E2:8D:40:3D:25:keyid:B2:86:93:B9:34:0F:6F:CA:D4:1A:C0:3E:C6:BF:E1:A0:A0:D0:ED:5E"""^^xsd:string ;
     dapsm:publicKey          """-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA3ndPws5hwHNCy1Y4Foup
 D3CK+LaaJU5UPJ8ld7O6Yl2M9uEos/hh5Yj3KzTnlUKzdbOZbwSeLHeu9Cvnho/s
