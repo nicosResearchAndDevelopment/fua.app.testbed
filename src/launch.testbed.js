@@ -226,6 +226,7 @@ config.server.options = {
     const
         space           = await createSpace(config.space),
         daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
+        jwt_payload_iss = "https://testbed.nicos-rd.com:8080",
         nrd_daps_config = space.getNode(daps_id),
         daps            = new DAPS({
             id:      `${daps_id}agent/`,
@@ -240,7 +241,7 @@ config.server.options = {
             },
             publicKey:       daps_connector_certificates.publicKey,
             privateKey:      daps_connector_certificates.privateKey,
-            jwt_payload_iss: daps_id
+            jwt_payload_iss: jwt_payload_iss
         }),
         testbed_agent   = await TestbedAgent({
             testbed_id:   "https://testbed.nicos-rd.com/",
