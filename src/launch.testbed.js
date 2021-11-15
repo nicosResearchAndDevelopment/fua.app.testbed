@@ -224,26 +224,28 @@ config.server.options = {
 (async () => {
 
     const
-        space           = await createSpace(config.space),
-        daps_id         = "https://nrd-daps.nicos-rd.com/", // TODO : config
-        jwt_payload_iss = "https://testbed.nicos-rd.com:8080",
-        nrd_daps_config = space.getNode(daps_id),
-        daps            = new DAPS({
+        space                    = await createSpace(config.space),
+        daps_id                  = "https://nrd-daps.nicos-rd.com/", // TODO : config
+        jwt_payload_iss          = "https://testbed.nicos-rd.com:8080",
+        tweak_DAT_custom_enabled = true,
+        nrd_daps_config          = space.getNode(daps_id),
+        daps                     = new DAPS({
             id:      `${daps_id}agent/`,
             rootUri: "https://testbed.nicos-rd.com/domain/user#",
             domain:  null,                                            // REM : set by testbed-agent
             //
-            keys:            {
+            keys:                     {
                 default: {
                     publicKey:  daps_connector_certificates.publicKey,
                     privateKey: daps_connector_certificates.privateKey
                 }
             },
-            publicKey:       daps_connector_certificates.publicKey,
-            privateKey:      daps_connector_certificates.privateKey,
-            jwt_payload_iss: jwt_payload_iss
+            publicKey:                daps_connector_certificates.publicKey,
+            privateKey:               daps_connector_certificates.privateKey,
+            jwt_payload_iss:          jwt_payload_iss,
+            tweak_DAT_custom_enabled: tweak_DAT_custom_enabled
         }),
-        testbed_agent   = await TestbedAgent({
+        testbed_agent            = await TestbedAgent({
             testbed_id:   "https://testbed.nicos-rd.com/",
             scheduler:    testbed_scheduler,
             space:        space,
