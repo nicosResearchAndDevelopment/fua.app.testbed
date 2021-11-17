@@ -265,6 +265,7 @@ config.server.options = {
     // TODO : to app-layer!
     amec.on('authentication-error', (error) => {
         debugger;
+        throw(new Error(`amec : authentication-error`));
     });
     //let users     = await testbed_agent.domain.users();
     let basicAuth = BasicAuth({
