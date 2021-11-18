@@ -243,7 +243,8 @@ config.server.options = {
             publicKey:                daps_connector_certificates.publicKey,
             privateKey:               daps_connector_certificates.privateKey,
             jwt_payload_iss:          jwt_payload_iss,
-            tweak_DAT_custom_enabled: tweak_DAT_custom_enabled
+            tweak_DAT_custom_enabled: tweak_DAT_custom_enabled,
+            tweak_DAT_custom_max_size: 10000 // TODO : config
         }),
         testbed_agent            = await TestbedAgent({
             testbed_id:   "https://testbed.nicos-rd.com/",
