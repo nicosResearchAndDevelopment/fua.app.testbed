@@ -7,146 +7,139 @@ const
     util           = require('@nrd/fua.core.util'),
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
-    LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
-    amec           = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js'))
-
-    //
-
+    LDPRouter      = require('@nrd/fua.middleware.ldp'),
+    amec           = new (require('@nrd/fua.agent.amec'))()
 ;
 
-//region new style
-// TODO: get schemata
-// TODO: get agents (testbed) data
-const
-    testbed_app             = {
-        '@context':    [],
-        '@id':         "http://testbed.nicos-rd.com/app/",
-        '@type':       "http_//www.nicos-rd.com/fua/testbed#TestbedApp",
-        'owner':       "http://www.nicos-rd.com",
-        'domainOwner': "http://www.nicos-rd.com/DOMAIN/owner/",
-        'systemOwner': "http://www.nicos-rd.com/SYSTEM/owner/",
-        'agent':       undefined, // REM : will be set later...
-        'service':     null
-    }, // testbed_app
-    testbed_scheduler       = {
-        '@id':   "http://testbed.nicos-rd.com/scheduler/",
-        '@type': "http://www.nicos-rd.com/fua/agent/scheduler#Scheduler",
-        'owner': {
-            '@id':   testbed_app.systemOwner,
-            '@type': "foaf:Agent"
-        },
-        // TODO : hier könnte man vielleicht auch duration "PT1.42S" gehen?!?
-        'idle_emit_threshold': {'@type': "xsd:decimal", '@value': /** seconds */ 1.0},
-        'hasTRS':              "http://dbpedia.org/resource/Unix_time"
-    }, // testbed_scheduler
-    testbed_system          = {
-        '@id':       "http://testbed.nicos-rd.com/system/",
-        '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
-        'owner':     {
-            '@id':   testbed_app.systemOwner,
-            '@type': "foaf:Agent"
-        },
-        'time':      {
-            '@type':  "fua.agent.Time",
-            'hasTRS': "http://dbpedia.org/resource/Unix_time"
-        },
-        'lifecycle': {
-            '@type':             "time:Instant",
-            'time:hasBeginning': {
-                '@type':                   "time:Instant",
-                'time:inXSDDateTimeStamp': "2019-12-14T12:35:25.047Z"
-            }
-        }
-    }, // testbed_system
-    testbed_domain          = {
-        '@id':         "http://testbed.nicos-rd.com/domain/",
-        'owner':       {
-            '@id':   testbed_app.domainOwner,
-            '@type': "foaf:Agent"
-        },
-        'users':       { // REM: as ldp:BasicContainer
-            '@id': "http://testbed.nicos-rd.com/domain/users/"
-        },
-        'groups':      { // REM: as ldp:BasicContainer
-            '@id': "http://testbed.nicos-rd.com/domain/groups/"
-        },
-        'roles':       { // REM: as ldp:BasicContainer
-            '@id': "http://testbed.nicos-rd.com/domain/roles/"
-        },
-        'memberships': { // REM: as ldp:BasicContainer
-            '@id': "http://testbed.nicos-rd.com/domain/memberships/"
-        },
-        'credentials': { // REM: as ldp:BasicContainer
-            '@id': "http://testbed.nicos-rd.com/domain/credentials/"
-        }
-    }, // testbed_domain
-    testbed_agent_testsuite = { // REM: as agent
-        '@id': "http://testbed.nicos-rd.com/testsuite/",
-        // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
-        'domain': "set by testbed (so we'll take 'testbed.domain')"
-    }, // testbed_testsuite
-    testbed_agent_node      = { // REM: ...is coming from generated graph.
-        '@id':       "http://testbed.nicos-rd.com/agent/",
-        'owner':     {
-            '@id': testbed_app.owner
-        },
-        'holder':    testbed_app,
-        'scheduler': testbed_scheduler,
-        'system':    testbed_system,
-        'domain':    testbed_domain,
-        'testsuite': testbed_agent_testsuite
-    }, // agent_node
-    {TestbedAgent}          = require('./code/agent.Testbed.beta.js'),// REM: as agent
-    // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    testbed_agent_util      = {
-        'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
-            // TODO : context is array?
-            let result = false;
-            for (let i = 0; ((!result) && (i < context.length)); i++) {
-                result = ((context[i][prefix]) ? true : false)
-            } // for (i)
-            return result;
-        },
-        'idAsBlankNode':    function (namespace = "") {
-            //return `_:${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
-            return `_:${namespace}${testbed_agent_util['randomLeaveId']()}`;
-        },
-        'randomLeaveId':    function () {
-            return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
-        }
-    },
-    testbed_agent_context   = [],
-    testbed_agent           = new TestbedAgent({
-        'id':        testbed_agent_node['@id'],
-        'scheduler': testbed_scheduler,
-        'system':    testbed_system,
-        'domain':    testbed_domain
-    }), // new TestbedAgent()
-    {Testsuite}             = require('./code/agent.Testsuite.js'), // REM: as agent
-    testsuite_agent         = new Testsuite({
-        'id':        testbed_agent_testsuite['@id'],
-        'system':    testbed_agent.system,
-        'scheduler': testbed_agent.scheduler,
-        'testbed':   testbed_agent
-    }) // new Testsuite()
-;
-testbed_app['agent']        = testbed_agent;
-
-//region new style :: TEST
-(async (/* TEST */) => {
-    //let
-    //    testbed_agent_presentation = await testbed_app['agent']()
-    //;
-    testbed_agent;
-
-    let
-        scheduler_status   = testbed_agent.scheduler.status,
-        scheduler_isProper = testbed_agent.scheduler.isProper
-    ;
-    debugger;
-})(/* TEST */).catch(console.error);
-//endregion new style :: TEST
-//endregion new style
+// (async (/* TEST */) => {
+//     // TODO: get schemata
+//     // TODO: get agents (testbed) data
+//     const
+//         testbed_app             = {
+//             '@context':    [],
+//             '@id':         "http://testbed.nicos-rd.com/app/",
+//             '@type':       "http_//www.nicos-rd.com/fua/testbed#TestbedApp",
+//             'owner':       "http://www.nicos-rd.com",
+//             'domainOwner': "http://www.nicos-rd.com/DOMAIN/owner/",
+//             'systemOwner': "http://www.nicos-rd.com/SYSTEM/owner/",
+//             'agent':       undefined, // REM : will be set later...
+//             'service':     null
+//         }, // testbed_app
+//         testbed_scheduler       = {
+//             '@id':   "http://testbed.nicos-rd.com/scheduler/",
+//             '@type': "http://www.nicos-rd.com/fua/agent/scheduler#Scheduler",
+//             'owner': {
+//                 '@id':   testbed_app.systemOwner,
+//                 '@type': "foaf:Agent"
+//             },
+//             // TODO : hier könnte man vielleicht auch duration "PT1.42S" gehen?!?
+//             'idle_emit_threshold': {'@type': "xsd:decimal", '@value': /** seconds */ 1.0},
+//             'hasTRS':              "http://dbpedia.org/resource/Unix_time"
+//         }, // testbed_scheduler
+//         testbed_system          = {
+//             '@id':       "http://testbed.nicos-rd.com/system/",
+//             '@type':     "http://www.nicos-rd.com/fua/agent/System#Device",
+//             'owner':     {
+//                 '@id':   testbed_app.systemOwner,
+//                 '@type': "foaf:Agent"
+//             },
+//             'time':      {
+//                 '@type':  "fua.agent.Time",
+//                 'hasTRS': "http://dbpedia.org/resource/Unix_time"
+//             },
+//             'lifecycle': {
+//                 '@type':             "time:Instant",
+//                 'time:hasBeginning': {
+//                     '@type':                   "time:Instant",
+//                     'time:inXSDDateTimeStamp': "2019-12-14T12:35:25.047Z"
+//                 }
+//             }
+//         }, // testbed_system
+//         testbed_domain          = {
+//             '@id':         "http://testbed.nicos-rd.com/domain/",
+//             'owner':       {
+//                 '@id':   testbed_app.domainOwner,
+//                 '@type': "foaf:Agent"
+//             },
+//             'users':       { // REM: as ldp:BasicContainer
+//                 '@id': "http://testbed.nicos-rd.com/domain/users/"
+//             },
+//             'groups':      { // REM: as ldp:BasicContainer
+//                 '@id': "http://testbed.nicos-rd.com/domain/groups/"
+//             },
+//             'roles':       { // REM: as ldp:BasicContainer
+//                 '@id': "http://testbed.nicos-rd.com/domain/roles/"
+//             },
+//             'memberships': { // REM: as ldp:BasicContainer
+//                 '@id': "http://testbed.nicos-rd.com/domain/memberships/"
+//             },
+//             'credentials': { // REM: as ldp:BasicContainer
+//                 '@id': "http://testbed.nicos-rd.com/domain/credentials/"
+//             }
+//         }, // testbed_domain
+//         testbed_agent_testsuite = { // REM: as agent
+//             '@id': "http://testbed.nicos-rd.com/testsuite/",
+//             // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
+//             'domain': "set by testbed (so we'll take 'testbed.domain')"
+//         }, // testbed_testsuite
+//         testbed_agent_node      = { // REM: ...is coming from generated graph.
+//             '@id':       "http://testbed.nicos-rd.com/agent/",
+//             'owner':     {
+//                 '@id': testbed_app.owner
+//             },
+//             'holder':    testbed_app,
+//             'scheduler': testbed_scheduler,
+//             'system':    testbed_system,
+//             'domain':    testbed_domain,
+//             'testsuite': testbed_agent_testsuite
+//         }, // agent_node
+//         {TestbedAgent}          = require('./code/agent.Testbed.beta.js'),// REM: as agent
+//         // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
+//         testbed_agent_util      = {
+//             'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
+//                 // TODO : context is array?
+//                 let result = false;
+//                 for (let i = 0; ((!result) && (i < context.length)); i++) {
+//                     result = ((context[i][prefix]) ? true : false)
+//                 } // for (i)
+//                 return result;
+//             },
+//             'idAsBlankNode':    function (namespace = "") {
+//                 //return `_:${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
+//                 return `_:${namespace}${testbed_agent_util['randomLeaveId']()}`;
+//             },
+//             'randomLeaveId':    function () {
+//                 return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
+//             }
+//         },
+//         testbed_agent_context   = [],
+//         testbed_agent           = await TestbedAgent({
+//             'id':        testbed_agent_node['@id'],
+//             'scheduler': testbed_scheduler,
+//             'system':    testbed_system,
+//             'domain':    testbed_domain
+//         }), // new TestbedAgent()
+//         {Testsuite}             = require('./code/agent.Testsuite.js'), // REM: as agent
+//         testsuite_agent         = new Testsuite({
+//             'id':        testbed_agent_testsuite['@id'],
+//             'system':    testbed_agent.system,
+//             'scheduler': testbed_agent.scheduler,
+//             'testbed':   testbed_agent
+//         }) // new Testsuite()
+//     ;
+//     testbed_app['agent']        = testbed_agent;
+//
+//     //let
+//     //    testbed_agent_presentation = await testbed_app['agent']()
+//     //;
+//     testbed_agent;
+//
+//     let
+//         scheduler_status   = testbed_agent.scheduler.status,
+//         scheduler_isProper = testbed_agent.scheduler.isProper
+//     ;
+//     debugger;
+// })(/* TEST */).catch(console.error);
 
 const
     // TODO build a proper agent amec with a concise api
@@ -156,7 +149,7 @@ const
         ["jlangkau@marzipan.com", "@8mT7Q@SPHvB6sYvy*M3"]
     ]);
 
-amec.authMechanism('login', async function (request) {
+amec.registerMechanism('login', async function (request) {
     // 1. get identification data
     const
         user     = request.body?.user,
@@ -171,7 +164,7 @@ amec.authMechanism('login', async function (request) {
     return {user};
 });
 
-amec.authMechanism('login-tfa', async function (request) {
+amec.registerMechanism('login-tfa', async function (request) {
     // 1. get identification data
     const
         user     = request.body?.user,
@@ -227,7 +220,7 @@ amec.authMechanism('login-tfa', async function (request) {
 
         // REM an alternative would be to use url-parameters
         for (let [ecName, ec] of Object.entries(testbed.ecosystems)) {
-            for (let [fnName, fn] of Object.entries(ec.fn)) {
+            if (ec.fn) for (let [fnName, fn] of Object.entries(ec.fn)) {
                 testbed.assert(util.isFunction(fn), `expected ${ecName}->${fnName} to be a function`);
                 const route = `/${ecName}/${fnName}`;
                 app.post(route, express_json, async function (request, response, next) {

@@ -41,12 +41,12 @@ module.exports = ({
     const
         ca_cert        = fs.readFileSync(path.join(__dirname, './cert/io/ca/ca.cert'), 'utf-8'),
         io_client_cert = require(path.join(__dirname, './cert/io/client.js')),
-        NODE           = RunningProcess('node', {verbose: true})
+        NODE           = RunningProcess('node', {verbose: true, cwd: __dirname})
     ;
 
     if (ALICE) {
 
-        ALICE_PROC = NODE(`../ec/ids/src/rc/alice/launch.alice.js`, {config: `"${Buffer.from(JSON.stringify(ALICE)).toString('base64')}"`});
+        ALICE_PROC = NODE(`./rc/alice/launch.alice.js`, {config: `"${Buffer.from(JSON.stringify(ALICE)).toString('base64')}"`});
 
         let
             url          = `${ALICE.schema}://${ALICE.host}:${ALICE.port}/`,
@@ -57,10 +57,10 @@ module.exports = ({
                     user:     ALICE.user['tb_ec_ids'].name,
                     password: ALICE.user['tb_ec_ids'].password
                 }
-            //,secure:             true,
-            //    ca:                 ca_cert,
-            //    cert:               io_client_cert.cert,
-            //    key:                io_client_cert.key
+                //,secure:             true,
+                //    ca:                 ca_cert,
+                //    cert:               io_client_cert.cert,
+                //    key:                io_client_cert.key
             },
             alice_socket = io_client.connect(url, options)
         ; // let
@@ -81,7 +81,7 @@ module.exports = ({
 
     if (BOB) {
 
-        BOB_PROC = NODE(`../ec/ids/src/rc/bob/launch.bob.js`, {config: `"${Buffer.from(JSON.stringify(BOB)).toString('base64')}"`});
+        BOB_PROC = NODE(`./rc/bob/launch.bob.js`, {config: `"${Buffer.from(JSON.stringify(BOB)).toString('base64')}"`});
 
         let url     = `${BOB.schema}://${BOB.host}:${BOB.port}/`;
         let options = {
@@ -139,7 +139,7 @@ module.exports = ({
                 } // try
             }, enumerable: false
         }, // selfTest
-        'rc_refreshDAT':        {
+        'rc_refreshDAT':                           {
             value:         async (param) => {
                 try {
                     if (!connected && socket)

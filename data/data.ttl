@@ -1,0 +1,93 @@
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:            <http://www.w3.org/2002/07/owl#>.
+@prefix ldp:            <http://www.w3.org/ns/ldp#> .
+@prefix dct:            <http://purl.org/dc/terms/> .
+@prefix foaf:           <http://xmlns.com/foaf/0.1/> .
+@prefix odrl:           <http://www.w3.org/ns/odrl/2/> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix fua:            <https://www.nicos-rd.com.org/fua#> .
+@prefix dom:            <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix nicos-ag:       <https://www.nicos-ag.com/> .
+@prefix nrd:            <https://www.nicos-rd.com/> .
+@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+
+@base <https://testbed.nicos-rd.com/> .
+
+<data/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/test/> ;
+    ldp:contains <data/person/> ;
+.
+
+<data/test/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/test/recursive/> ;
+    ldp:contains <data/test/hello> ;
+    ldp:contains <data/test/example> ;
+.
+
+<data/test/recursive/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/test/lorem> ;
+    ldp:contains <data/test/random> ;
+    ldp:contains <data/test/> ;
+.
+
+<data/test/hello>
+    a              ldp:NonRDFSource ;
+    dct:identifier "./hello.txt" ;
+    dct:format     "text/plain" ;
+.
+
+<data/test/lorem>
+    a              ldp:NonRDFSource ;
+    dct:identifier "./lorem.txt" ;
+    dct:format     "text/plain" ;
+.
+
+<data/test/random>
+    a              ldp:NonRDFSource ;
+    dct:identifier "./random.txt" ;
+    dct:format     "text/plain" ;
+.
+
+<data/test/example>
+    a          ldp:RDFSource ;
+    rdfs:label "Example"@en ;
+    rdfs:label "Beispiel"@de ;
+.
+
+<data/person/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/person/spetrac> ;
+    ldp:contains <data/person/jlangkau> ;
+    ldp:contains <data/person/gbrost> ;
+.
+
+<data/person/spetrac>
+    a                 ldp:RDFSource, foaf:Agent ;
+    foaf:givenName    "Simon" ;
+    foaf:familyName   "Petrac" ;
+    ldp:constrainedby [ a                odrl:Policy ;
+                        odrl:target      <data/person/spetrac> ;
+                        odrl:permission  [ a             odrl:Permission ;
+                                           odrl:action   odrl:transfer ;
+                                           odrl:assigner <data/person/spetrac> ] ;
+                        odrl:prohibition [ a               odrl:Prohibition ;
+                                           odrl:action     odrl:use ;
+                                           odrl:assigner   <data/person/jlangkau> ;
+                                           odrl:constraint [ a                 odrl:Constraint ;
+                                                             odrl:leftOperand  odrl:dateTime ;
+                                                             odrl:operator     odrl:lt ;
+                                                             odrl:rightOperand "2021-12-31T23:59:59.99999"^^xsd:dateTime ] ] ] ;
+    owl:sameAs        <domain/users#spetrac> ;
+.
+
+<data/person/jlangkau>
+    a               ldp:RDFSource, foaf:Agent ;
+    foaf:givenName  "Jörg" ;
+    foaf:familyName "Langkau" ;
+    owl:sameAs      <domain/users#jlangkau> ;
+.

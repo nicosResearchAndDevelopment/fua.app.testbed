@@ -1,5 +1,6 @@
 const
-    fs          = require("fs").http = require("https"),
+    fs          = require("fs"),
+    http        = require("https"),
     path        = require('path'),
     //
     config      = require('./config/config.testbed.js'),
@@ -8,7 +9,7 @@ const
     Amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
     BasicAuth   = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/mechanisms/BasicAuth.js')),
     testbed     = require('./code/main.testbed.js'),
-    LDPRouter   = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js')),
+    LDPRouter   = require('@nrd/fua.middleware.ldp'),
     //amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
@@ -191,7 +192,8 @@ async function createSpace(config) {
     }
 
     // 6. make sure the datastore is available (ping) by requesting its size
-    await dataStore.size();
+    const size = await dataStore.size();
+    if (!size) throw new Error('the space is empty');
 
     //const tmp = rdf.generateGraph(dataStore.dataset, undefined, {'compact': true, 'meshed': true, 'blanks': true});
     //debugger;
@@ -234,16 +236,16 @@ config.server.options = {
             rootUri: "https://testbed.nicos-rd.com/domain/user#",
             domain:  null,                                            // REM : set by testbed-agent
             //
-            keys:                     {
+            keys:                      {
                 default: {
                     publicKey:  daps_connector_certificates.publicKey,
                     privateKey: daps_connector_certificates.privateKey
                 }
             },
-            publicKey:                daps_connector_certificates.publicKey,
-            privateKey:               daps_connector_certificates.privateKey,
-            jwt_payload_iss:          jwt_payload_iss,
-            tweak_DAT_custom_enabled: tweak_DAT_custom_enabled,
+            publicKey:                 daps_connector_certificates.publicKey,
+            privateKey:                daps_connector_certificates.privateKey,
+            jwt_payload_iss:           jwt_payload_iss,
+            tweak_DAT_custom_enabled:  tweak_DAT_custom_enabled,
             tweak_DAT_custom_max_size: 10000 // TODO : config
         }),
         testbed_agent            = await TestbedAgent({

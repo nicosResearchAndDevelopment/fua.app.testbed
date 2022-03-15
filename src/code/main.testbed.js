@@ -5,7 +5,7 @@ const
     util        = require('@nrd/fua.core.util'),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
-    Space       = require(path.join(util.FUA_JS_LIB, 'module.space/src/module.space.js')),
+    {Space}     = require('@nrd/fua.module.space'),
     WebLogin    = require(path.join(util.FUA_JS_LIB, 'web.login/src/web.login.js')),
     WebLib      = require(path.join(util.FUA_JS_LIB, 'web.lib/src/web.lib.js'));
 
@@ -83,7 +83,7 @@ testbed.createSpace = async function (config) {
     //console.log(tmp);
 
     // 7. create a space out of the collected components and return it
-    return new Space({context, factory, dataset, dataStore});
+    return new Space({store: dataStore});
 };
 
 /**
@@ -106,7 +106,7 @@ testbed.createLogin = function (config, amec) {
     route.use(express.json());
     route.use(express.urlencoded({extended: false}));
 
-    // 3. add the login web page to the route 
+    // 3. add the login web page to the route
     route.get('/', WebLogin(config));
 
     // 4. add the login mechanism to the route

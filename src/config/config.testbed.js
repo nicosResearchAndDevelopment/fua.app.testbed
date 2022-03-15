@@ -62,38 +62,53 @@ exports.session = {
 };
 
 exports.persistence = {
-    module:  '@nrd/fua.module.persistence.inmemory',
-    options: {},
-    load:    [
-        {'dct:identifier': path.join(__root, 'model/tbm.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
-        //region domain
-        //region domain : users
-        {'dct:identifier': path.join(__root, 'domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
-        //endregion domain : users
-        //endregion domain
-        //region ids
-        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.alice.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.bob.ttl'), 'dct:format': 'text/turtle'},
-        //endregion ids
-        {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
-        //region DAPS
-        //region DAPS :: user
-        //{
-        //    'dct:identifier': path.join(__root, 'ec/ids/resources/nrd-daps/user/nrd_gbx03.ttl'),
-        //    'dct:format':     'text/turtle'
-        //},
-        //endregion DAPS :: user
-        //endregion DAPS
-        //region applicant
-        //region applicant : gbx
-        {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'},
-        {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.daps.user.ttl'), 'dct:format': 'text/turtle'}
-        //endregion applicant : gbx
-        //endregion applicant
-    ]
+    module:  '@nrd/fua.module.persistence.filesystem',
+    options: {
+        defaultFile: 'file://data.ttl',
+        loadFiles:   [
+            {
+                'dct:identifier': path.join(__root, 'data/load.json'),
+                'dct:format':     'application/fua.load+json'
+            },
+            // require('@nrd/fua.resource.ontology'),
+            // require('@nrd/fua.resource.universe'),
+            //
+            {'dct:identifier': path.join(__root, 'model/tbm.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
+            //region domain
+            //region domain : users
+            {'dct:identifier': path.join(__root, 'domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
+            //endregion domain : users
+            //endregion domain
+            //region ids
+            {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
+            {
+                'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.alice.ttl'),
+                'dct:format':     'text/turtle'
+            },
+            {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.bob.ttl'), 'dct:format': 'text/turtle'},
+            //endregion ids
+            {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
+            //region DAPS
+            //region DAPS :: user
+            //{
+            //    'dct:identifier': path.join(__root, 'ec/ids/resources/nrd-daps/user/nrd_gbx03.ttl'),
+            //    'dct:format':     'text/turtle'
+            //},
+            //endregion DAPS :: user
+            //endregion DAPS
+            //region applicant
+            //region applicant : gbx
+            {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'},
+            {
+                'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.daps.user.ttl'),
+                'dct:format':     'text/turtle'
+            }
+            //endregion applicant : gbx
+            //endregion applicant
+        ]
+    }
 };
 
 exports.rdf = {

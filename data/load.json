@@ -1,0 +1,52 @@
+{
+  "@context": "fua.load.rdf",
+  "dct:identifier": "./load.json",
+  "dct:format": "application/fua.load+json",
+  "dct:title": "load.json",
+  "dct:alternative": "GBX Loader",
+  "dct:requires": [
+    {
+      "dct:identifier": "./root.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "root.ttl",
+      "dct:alternative": "GBX Root"
+    },
+    {
+      "@id": "file://data.ttl",
+      "dct:identifier": "./data.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "data.ttl",
+      "dct:alternative": "GBX Data"
+    },
+    {
+      "dct:identifier": "./domain/domain.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "domain.ttl",
+      "dct:alternative": "GBX Domain"
+    },
+    {
+      "dct:identifier": "./domain/users/test.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "test.ttl",
+      "dct:alternative": "User: test"
+    },
+    {
+      "dct:identifier": "./domain/users/spetrac.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "spetrac.ttl",
+      "dct:alternative": "User: spetrac"
+    },
+    {
+      "dct:identifier": "./domain/users/jlangkau.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "jlangkau.ttl",
+      "dct:alternative": "User: jlangkau"
+    },
+    {
+      "dct:identifier": "./domain/groups/admin.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "admin.ttl",
+      "dct:alternative": "Group: admin"
+    }
+  ]
+}

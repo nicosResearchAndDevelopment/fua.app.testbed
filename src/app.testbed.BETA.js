@@ -10,7 +10,7 @@ const
     util           = require('@nrd/fua.core.util'),
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
-    LDPRouter      = require(path.join(util.FUA_JS_LIB, 'impl/ldp/agent.ldp/next/router.ldp.js'))
+    LDPRouter      = require('@nrd/fua.middleware.ldp')
 ; // const
 
 module.exports = ({
@@ -65,6 +65,11 @@ module.exports = ({
                 app.use('/browse', testbed.createBrowser(config.browser));
 
                 config.ldp.space = agent.space;
+
+                app.use([
+                    '/model',
+                    '/data'
+                ], LDPRouter(config.ldp));
 
                 //region LDN
                 app.post('/inbox', express.json(), (request, response, next) => {

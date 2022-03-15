@@ -10,7 +10,8 @@ const
     {Time}       = require(path.join(util.FUA_JS_LIB, 'agent.Time/src/agent.Time.js')),
     {Scheduler}  = require(path.join(util.FUA_JS_LIB, 'agent.Scheduler/src/agent.Scheduler.js')),
     {Domain}     = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js')),
-    {PEP}        = require(path.join(util.FUA_JS_LIB, 'module.PEP/src/module.PEP.beta.js')),
+    // {PEP}        = require(path.join(util.FUA_JS_LIB, 'module.PEP/src/module.PEP.beta.js')),
+    {PEP}        = require(path.join(util.FUA_JS_LIB, 'decide/PEP/src/decide.PEP.js')),
 
     //{System}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
     //{Device}    = require(path.join(util.FUA_JS_LIB, 'agent.System/src/agent.System.beta.js')),
@@ -143,7 +144,7 @@ async function TestbedAgent({
     ;
     await domain_config.load();
     const
-        pep    = PEP({'id': `${id}PEP`}),
+        pep    = new PEP({'id': `${id}PEP`}),
         domain = new Domain({
             //'id':    `${id}domain/`,
             'config': domain_config,
@@ -301,7 +302,8 @@ async function TestbedAgent({
                 'DAPS':         {
                     'default': node_alice.getNode('idsecm:daps_default').id
                 },
-                'cert_client':  "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
+                // 'cert_client':  "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js"
+                'cert_client': path.join(__dirname, '../../ec/ids/src/rc/alice/cert/index.js')
             }, // ALICE
             'BOB':   {
                 'id':     bob_id,
@@ -317,10 +319,11 @@ async function TestbedAgent({
                 'idle_timeout': parseInt(node_bob.getLiteral('idsecm:idle_timeout').value),
                 //'idle_timeout': 1,
                 //
-                'DAPS':        {
+                'DAPS': {
                     'default': node_bob.getNode('idsecm:daps_default').id
                 },
-                'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"
+                // 'cert_client': "C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js"
+                'cert_client': path.join(__dirname, '../../ec/ids/src/rc/bob/cert/index.js')
             }
         });
     ids.uri = `${id}ec/ids/`;
