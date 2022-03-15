@@ -10,7 +10,7 @@ const
     util           = require('@nrd/fua.core.util'),
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
-    LDPRouter      = require('@nrd/fua.middleware.ldp')
+    Middleware_LDP = require('@nrd/fua.middleware.ldp')
 ; // const
 
 module.exports = ({
@@ -64,12 +64,11 @@ module.exports = ({
                 app.use(bodyParser.json());
                 app.use('/browse', testbed.createBrowser(config.browser));
 
-                config.ldp.space = agent.space;
-
-                app.use([
-                    '/model',
-                    '/data'
-                ], LDPRouter(config.ldp));
+                app.use(['/data', '/model'], Middleware_LDP({
+                    space:      agent.space,
+                    rootFolder: path.join(__dirname, '../data/resource'),
+                    baseIRI:    'https://testbed.nicos-rd.com'
+                }));
 
                 //region LDN
                 app.post('/inbox', express.json(), (request, response, next) => {
@@ -152,9 +151,16 @@ module.exports = ({
                     //    return;
                     //}
 
-                    socket.emit('printMessage', {
-                        'prov': '[Testbed]',
-                        'msg':  'Welcome to NRD-Testbed!'
+                    socket.on('subscribe', ({room}) => {
+                        switch (room) {
+                            case 'terminal':
+                                socket.emit('printMessage', {
+                                    'prov': '[Testbed]',
+                                    'msg':  'Welcome to NRD-Testbed!'
+                                });
+                                socket.join('terminal');
+                                break;
+                        }
                     });
                 }); // io.on('connection')
 
@@ -219,6 +225,10 @@ module.exports = ({
                         console.error(error);
                     console.log(data);
                     console.log("app.testbed :: agent : event :: <<<");
+                    io.to('terminal').emit('printData', {
+                        'prov': '[Testbed]',
+                        'data': data
+                    });
                     if (testsuite_socket) {
                         //debugger;
                         // TODO : streamline
@@ -229,6 +239,10 @@ module.exports = ({
                     console.log("app.testbed :: agent : error :: >>>");
                     console.error(error);
                     console.log("app.testbed :: agent : error :: <<<");
+                    io.to('terminal').emit('printError', {
+                        'prov':  '[Testbed]',
+                        'error': '' + (error?.stack ?? error)
+                    });
                     if (testsuite_socket) {
                         //debugger;
                         // TODO : streamline

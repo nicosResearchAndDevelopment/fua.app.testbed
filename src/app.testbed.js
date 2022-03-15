@@ -7,7 +7,7 @@ const
     util           = require('@nrd/fua.core.util'),
     testbed        = require('./code/main.testbed.js'),
     ExpressSession = require('express-session'),
-    LDPRouter      = require('@nrd/fua.middleware.ldp'),
+    Middleware_LDP = require('@nrd/fua.middleware.ldp'),
     amec           = new (require('@nrd/fua.agent.amec'))()
 ;
 
@@ -206,6 +206,12 @@ amec.registerMechanism('login-tfa', async function (request) {
         app.use('/browse', testbed.createBrowser(config.browser));
 
         config.ldp.space = space;
+
+        app.use('/data', Middleware_LDP({
+            space:      space,
+            rootFolder: path.join(__dirname, '../data/resource'),
+            baseIRI:    'https://testbed.nicos-rd.com'
+        }));
 
         app.use([
             //'/model',

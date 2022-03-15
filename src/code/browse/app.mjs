@@ -107,6 +107,7 @@ socket
             `<span color="green">connected</span> <span color="grey">${socketID}</span>`,
             '[IO]'
         );
+        socket.emit('subscribe', {room: 'terminal'});
     })
     .on('disconnect', () => {
         setup.terminal.printLn(
@@ -125,6 +126,22 @@ socket
         const {'msg': message, 'prov': provenance} = payload;
         setup.terminal.printLn(
             `<span color="yellow">${message}</span>`,
+            provenance || '[IO]'
+        );
+    })
+    .on('printData', (payload) => {
+        const {'data': data, 'prov': provenance} = payload;
+        const message                            = JSON.stringify(data, null, '\t').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;').replace(/\n/g, '<br>');
+        setup.terminal.printLn(
+            `<span color="white">${message}</span>`,
+            provenance || '[IO]'
+        );
+    })
+    .on('printError', (payload) => {
+        const {'error': error, 'prov': provenance} = payload;
+        const message                              = error.replace(/ /g, '&nbsp;&nbsp;&nbsp;&nbsp;').replace(/\n/g, '<br>');
+        setup.terminal.printLn(
+            `<span color="red">${message}</span>`,
             provenance || '[IO]'
         );
     });

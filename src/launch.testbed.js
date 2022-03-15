@@ -9,7 +9,6 @@ const
     Amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
     BasicAuth   = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/mechanisms/BasicAuth.js')),
     testbed     = require('./code/main.testbed.js'),
-    LDPRouter   = require('@nrd/fua.middleware.ldp'),
     //amec        = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.next.js')),
     rdf         = require('@nrd/fua.module.rdf'),
     persistence = require('@nrd/fua.module.persistence'),
