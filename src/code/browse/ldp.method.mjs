@@ -7,7 +7,7 @@ const
         'ldp':  'http://www.w3.org/ns/ldp#'
     },
     _baseURL           = (({protocol, host}) => protocol + '//' + host + '/')(new URL(document.baseURI)),
-    _baseURI           = (({hostname}) => 'http://' + hostname + '/')(new URL(document.baseURI)),
+    _baseURI           = (({protocol, hostname}) => protocol + '//' + hostname + '/')(new URL(document.baseURI)),
     _StringValidator   = (re) => (str) => is.string(str) && re.test(str),
     _isApplicationJSON = _StringValidator(/application\/(?:ld\+)?json/);
 
@@ -20,7 +20,15 @@ export function resolveURL(url) {
 
 export function resolveURI(url) {
     if (url.startsWith(_baseURL)) url = url.substr(_baseURL.length);
-    return new URL(url, _baseURI).toString();
+    let uri = new URL(url, _baseURI).toString(), matched_prefix = '', matched_iri = '';
+    for (let [prefix, iri] of Object.entries(_context)) {
+        if (url.startsWith(iri) && iri.length > matched_iri.length) {
+            matched_prefix = prefix;
+            matched_iri    = iri;
+        }
+    }
+    if (matched_prefix) uri = matched_prefix + ':' + uri.substr(matched_iri.length);
+    return uri;
 }
 
 export async function GET(uri) {
@@ -29,7 +37,6 @@ export async function GET(uri) {
 
     const
         targetURL = resolveURL(uri),
-        targetURI = resolveURI(uri),
         response  = await fetch(targetURL, {
             method:  'GET',
             cache:   'no-store',
@@ -57,6 +64,9 @@ export async function GET(uri) {
         assert(!nodes.has(node['@id']), 'expected @graph to not contain duplicate nodes');
         nodes.set(node['@id'], node);
     }
+
+    const
+        targetURI = resolveURI(uri);
 
     assert(nodes.has(targetURI), 'expected @graph to contain the requested uri');
     const targetNode = (function _nonCircularMeshing(node, blacklist) {
