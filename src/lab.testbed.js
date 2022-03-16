@@ -1,4 +1,4 @@
-module.exports = async function TestbedTesting(
+module.exports = async function TestbedLab(
     {
         'agent': agent,
         'space': space

@@ -17,7 +17,7 @@ const
     server_tls_certificates     = require('../cert/tls-server/server.js'),
     daps_connector_certificates = require('./daps/cert/connector/client.js'),
     TestbedApp                  = require('./app.testbed.js'),
-    TestbedTesting              = require('./testing.testbed.js')
+    TestbedLab                  = require('./lab.testbed.js')
 ; // const
 
 /**
@@ -248,7 +248,7 @@ util.asyncIIFE(async function Main() {
         'amec':   amec
     });
 
-    await TestbedTesting({
+    await TestbedLab({
         'space': space,
         'agent': testbed_agent
     });
