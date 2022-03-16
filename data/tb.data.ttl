@@ -18,7 +18,6 @@
 <data/>
     a            ldp:BasicContainer ;
     ldp:contains <data/test/> ;
-    ldp:contains <data/person/> ;
 .
 
 <data/test/>
@@ -57,37 +56,4 @@
     a          ldp:RDFSource ;
     rdfs:label "Example"@en ;
     rdfs:label "Beispiel"@de ;
-.
-
-<data/person/>
-    a            ldp:BasicContainer ;
-    ldp:contains <data/person/spetrac> ;
-    ldp:contains <data/person/jlangkau> ;
-    ldp:contains <data/person/gbrost> ;
-.
-
-<data/person/spetrac>
-    a                 ldp:RDFSource, foaf:Agent ;
-    foaf:givenName    "Simon" ;
-    foaf:familyName   "Petrac" ;
-    ldp:constrainedby [ a                odrl:Policy ;
-                        odrl:target      <data/person/spetrac> ;
-                        odrl:permission  [ a             odrl:Permission ;
-                                           odrl:action   odrl:transfer ;
-                                           odrl:assigner <data/person/spetrac> ] ;
-                        odrl:prohibition [ a               odrl:Prohibition ;
-                                           odrl:action     odrl:use ;
-                                           odrl:assigner   <data/person/jlangkau> ;
-                                           odrl:constraint [ a                 odrl:Constraint ;
-                                                             odrl:leftOperand  odrl:dateTime ;
-                                                             odrl:operator     odrl:lt ;
-                                                             odrl:rightOperand "2021-12-31T23:59:59.99999"^^xsd:dateTime ] ] ] ;
-    owl:sameAs        <domain/users#spetrac> ;
-.
-
-<data/person/jlangkau>
-    a               ldp:RDFSource, foaf:Agent ;
-    foaf:givenName  "Jörg" ;
-    foaf:familyName "Langkau" ;
-    owl:sameAs      <domain/users#jlangkau> ;
 .

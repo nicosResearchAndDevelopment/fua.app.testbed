@@ -146,6 +146,5 @@ socket
         );
     });
 
-setup.tree.addRoot(space.getNode('/model/'));
 setup.tree.addRoot(space.getNode('/data/'));
 setup.terminal.printLn('ready', setup.prompt);

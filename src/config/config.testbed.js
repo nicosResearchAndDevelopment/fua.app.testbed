@@ -67,8 +67,11 @@ exports.persistence = {
         defaultFile: 'file://data.ttl',
         loadFiles:   [
             {
-                'dct:identifier': path.join(__root, 'data/load.json'),
-                'dct:format':     'application/fua.load+json'
+                '@id':             'file://data.ttl',
+                'dct:identifier':  path.join(__root, 'data/tb.data.ttl'),
+                'dct:format':      'text/turtle',
+                'dct:title':       'data.ttl',
+                'dct:alternative': 'GBX Data'
             },
             // require('@nrd/fua.resource.ontology'),
             // require('@nrd/fua.resource.universe'),

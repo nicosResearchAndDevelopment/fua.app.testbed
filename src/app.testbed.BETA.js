@@ -64,7 +64,7 @@ module.exports = ({
                 app.use(bodyParser.json());
                 app.use('/browse', testbed.createBrowser(config.browser));
 
-                app.use(['/data', '/model'], Middleware_LDP({
+                app.use('/data', Middleware_LDP({
                     space:      agent.space,
                     rootFolder: path.join(__dirname, '../data/resource'),
                     baseIRI:    'https://testbed.nicos-rd.com'
