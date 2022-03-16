@@ -6,18 +6,19 @@ const
     //
     Amec                        = require('@nrd/fua.agent.amec'),
     BasicAuth                   = require('@nrd/fua.agent.amec/BasicAuth'),
-    testbed                     = require('./code/main.testbed.js'),
     rdf                         = require('@nrd/fua.module.rdf'),
     persistence                 = require('@nrd/fua.module.persistence'),
     {DAPS}                      = require('@nrd/fua.ids.agent.daps'),
     {Space}                     = require('@nrd/fua.module.space'),
     //
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    {TestbedAgent}              = require('./code/agent.Testbed.beta.js'), // REM: as agent
+    {TestbedAgent}              = require('./code/agent.Testbed.js'), // REM: as agent
     // {Testsuite}                 = require('./code/agent.Testsuite.js'),
     server_tls_certificates     = require('../cert/tls-server/server.js'),
     daps_connector_certificates = require('./daps/cert/connector/client.js'),
-    TestbedApp                  = require('./app.testbed.BETA.js'); // const
+    TestbedApp                  = require('./app.testbed.js'),
+    TestbedTesting              = require('./testing.testbed.js')
+; // const
 
 /**
  * @param {object} config
@@ -31,25 +32,25 @@ const
  */
 async function createSpace(config) {
     // 1. check input arguments
-    testbed.assert(util.isObject(config),
+    util.assert(util.isObject(config),
         'createSpace : expected config to be an object', TypeError);
-    testbed.assert(util.isObject(config.datastore),
+    util.assert(util.isObject(config.datastore),
         'createSpace : expected config.datastore to be an object', TypeError);
-    testbed.assert(util.isString(config.datastore.module),
+    util.assert(util.isString(config.datastore.module),
         'createSpace : expected config.datastore.module to be a string', TypeError);
-    testbed.assert(util.isNull(config.datastore.options) || util.isObject(config.datastore.options),
+    util.assert(util.isNull(config.datastore.options) || util.isObject(config.datastore.options),
         'createSpace : expected config.datastore.options to be an object', TypeError);
-    testbed.assert(util.isNull(config.datastore.load) || util.isObjectArray(config.datastore.load),
+    util.assert(util.isNull(config.datastore.load) || util.isObjectArray(config.datastore.load),
         'createSpace : expected config.datastore.load to be an array of objects', TypeError);
-    testbed.assert(util.isNull(config.context) || util.isObject(config.context),
+    util.assert(util.isNull(config.context) || util.isObject(config.context),
         'createSpace : expected config.context to be an object', TypeError);
-    testbed.assert(util.isNull(config.load) || util.isObjectArray(config.load),
+    util.assert(util.isNull(config.load) || util.isObjectArray(config.load),
         'createSpace : expected config.load to be an array of objects', TypeError);
 
     // 2. require the persistence module, to be able to make the persistence configurable
     // (this is an exception, normally you would try to avoid requiring in any place other than the top of the script)
     const DataStore = require(config.datastore.module);
-    testbed.assert(persistence.DataStore.isPrototypeOf(DataStore),
+    util.assert(persistence.DataStore.isPrototypeOf(DataStore),
         'createSpace : expected DataStore to be a subclass of persistence.DataStore', TypeError);
 
     // 3. create the necessary components for the space, like factory and datastore
@@ -245,6 +246,11 @@ util.asyncIIFE(async function Main() {
         'agent':  testbed_agent,
         'config': config,
         'amec':   amec
+    });
+
+    await TestbedTesting({
+        'space': space,
+        'agent': testbed_agent
     });
 
 }); // Main

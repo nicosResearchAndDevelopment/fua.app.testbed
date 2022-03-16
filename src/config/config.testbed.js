@@ -53,8 +53,6 @@ exports.login = {
     }
 };
 
-exports.browser = null;
-
 exports.session = {
     resave:            false,
     saveUninitialized: false,
