@@ -16,7 +16,8 @@ const
 module.exports = ({
                       'space':  space = null,
                       'agent':  agent,
-                      'config': config
+                      'config': config,
+                      'amec':   amec
                   }) => {
 
     const
@@ -163,6 +164,15 @@ module.exports = ({
                         }
                     });
                 }); // io.on('connection')
+
+                amec.on('authentication-error', (error) => {
+                    const errStr = '' + (error?.stack ?? error);
+                    console.error(errStr);
+                    io.to('terminal').emit('printError', {
+                        'prov':  '[Testbed]',
+                        'error': errStr
+                    });
+                });
 
                 io_testsuite.use(async (socket, next) => {
                     //debugger;

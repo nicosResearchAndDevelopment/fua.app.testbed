@@ -108,6 +108,7 @@ async function TestbedAgent({
                                 scheduler:    scheduler,
                                 space:        space,
                                 daps:         daps = null,
+                                amec:         amec = null, // !!!
                                 encodeSecret: encodeSecret = undefined
                             }) {
 
@@ -139,8 +140,7 @@ async function TestbedAgent({
     //region domain
     let
         domain_config = testbed_config.getNode('ecm:domain'),
-        ec            = {},
-        amec          = null // !!!
+        ec            = {}
     ;
     await domain_config.load();
     const
