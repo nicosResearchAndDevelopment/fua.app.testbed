@@ -93,7 +93,7 @@ async function createSpace(config) {
     return new Space({store: dataStore});
 }
 
-util.asyncIIFE(async function Main() {
+(async function Main() {
 
     const
         testbed_app              = {
@@ -253,4 +253,8 @@ util.asyncIIFE(async function Main() {
         'agent': testbed_agent
     });
 
+})().catch((err) => {
+    util.logError(err);
+    debugger;
+    process.exit(1);
 }); // Main
