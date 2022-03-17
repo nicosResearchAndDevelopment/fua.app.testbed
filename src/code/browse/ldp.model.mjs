@@ -1,4 +1,4 @@
-import {assert, is} from '/browse/lib/web.lib.core.mjs';
+import {assert, is} from '/browse/lib/core.mjs';
 
 export const ns = {
     rdf:  val => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' + val,

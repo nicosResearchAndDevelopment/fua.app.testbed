@@ -1,4 +1,4 @@
-import {assert, is} from '/browse/lib/web.lib.core.mjs';
+import {assert, is} from '/browse/lib/core.mjs';
 import * as model from './ldp.model.mjs';
 
 const

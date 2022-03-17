@@ -3,8 +3,8 @@
  * {@link https://www.w3.org/TR/ldp/ Linked Data Platform 1.0}
  */
 
-import {assert, is} from '/browse/lib/web.lib.core.mjs';
-import * as emitter from '/browse/lib/web.lib.core.emitter.mjs';
+import {assert, is} from '/browse/lib/core.mjs';
+import * as emitter from '/browse/lib/core.emitter.mjs';
 import * as method from './ldp.method.mjs';
 import * as model from './ldp.model.mjs';
 

@@ -2,8 +2,8 @@ import * as setup from './app.setup.mjs';
 import * as space from './ldp.space.mjs';
 import * as model from './ldp.model.mjs';
 
-import io from '/browse/ext/socket.io/wrapper.io.mjs';
-import FA from '/browse/lib/ext/fontawesome-4.7.0.mjs';
+import io from './ext/socket.io/wrapper.io.mjs';
+import FA from '/browse/ext/fontawesome-4.7.0.mjs';
 
 let
     selectedNode = null,

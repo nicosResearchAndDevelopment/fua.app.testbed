@@ -9,8 +9,8 @@ const
     util                       = require('@nrd/fua.core.util'),
     ExpressSession             = require('express-session'),
     Middleware_LDP             = require('@nrd/fua.middleware.ldp'),
-    WebLogin                   = require(path.join(util.FUA_JS_LIB, 'web.login/src/web.login.js')),
-    WebLib                     = require(path.join(util.FUA_JS_LIB, 'web.lib/src/web.lib.js'))
+    Middleware_WEB             = require('@nrd/fua.middleware.web'),
+    Middleware_WEB_login       = require('@nrd/fua.middleware.web/login')
 ; // const
 
 module.exports = async function TestbedApp(
@@ -37,33 +37,13 @@ module.exports = async function TestbedApp(
     //     testsuite_socket = null
     // ;
 
-    // server.on('connection', (tlsSocket) => {
-    //     //debugger;
-    // });
-    // server.on('secureConnection', (tlsSocket) => {
-    //     console.log(JSON.stringify(tlsSocket.getCipher(), "", '\t'));
-    //     //console.log(JSON.stringify(tlsSocket.getPeerCertificate(true).raw.toString('base64'), "", '\t'));
-    //     //debugger;
-    // });
-    // server.on('error', (error) => {
-    //     debugger;
-    // });
-    // server.on('keylog', (line, tlsSocket) => {
-    //    debugger;
-    //    if (tlsSocket.remoteAddress !== '...')
-    //        return; // Only log keys for a particular IP
-    //    //logFile.write(line);
-    // });
-
     app.disable('x-powered-by');
 
     app.use(sessions);
-    // parse application/x-www-form-urlencoded
     app.use(express.urlencoded({extended: false}));
-    // parse application/json
     app.use(express.json());
 
-    app.use('/browse/lib', WebLib());
+    app.use('/browse', Middleware_WEB());
     app.use('/browse', express.static(path.join(__dirname, 'code/browse')));
 
     app.use('/data', Middleware_LDP({
