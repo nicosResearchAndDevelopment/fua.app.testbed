@@ -1,16 +1,16 @@
 const
-    path           = require('path'),
-    http           = require('http'),
-    https          = require('https'),
-    express        = require('express'),
-    bodyParser     = require('body-parser'),
-    socket_io      = require('socket.io'),
-    rdf            = require('@nrd/fua.module.rdf'),
-    util           = require('@nrd/fua.core.util'),
-    ExpressSession = require('express-session'),
-    Middleware_LDP = require('@nrd/fua.middleware.ldp'),
-    WebLogin       = require(path.join(util.FUA_JS_LIB, 'web.login/src/web.login.js')),
-    WebLib         = require(path.join(util.FUA_JS_LIB, 'web.lib/src/web.lib.js'))
+    path                       = require('path'),
+    http                       = require('http'),
+    https                      = require('https'),
+    express                    = require('express'),
+    {CloudEvent, HTTP: ceHTTP} = require('cloudevents'),
+    socket_io                  = require('socket.io'),
+    rdf                        = require('@nrd/fua.module.rdf'),
+    util                       = require('@nrd/fua.core.util'),
+    ExpressSession             = require('express-session'),
+    Middleware_LDP             = require('@nrd/fua.middleware.ldp'),
+    WebLogin                   = require(path.join(util.FUA_JS_LIB, 'web.login/src/web.login.js')),
+    WebLib                     = require(path.join(util.FUA_JS_LIB, 'web.lib/src/web.lib.js'))
 ; // const
 
 module.exports = async function TestbedApp(
@@ -58,9 +58,9 @@ module.exports = async function TestbedApp(
 
     app.use(sessions);
     // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({extended: false}));
+    app.use(express.urlencoded({extended: false}));
     // parse application/json
-    app.use(bodyParser.json());
+    app.use(express.json());
 
     app.use('/browse/lib', WebLib());
     app.use('/browse', express.static(path.join(__dirname, 'code/browse')));
@@ -239,14 +239,31 @@ module.exports = async function TestbedApp(
 
     agent.on('event', (error, data) => {
         console.log('app.testbed :: agent : event :: >>>');
-        if (error)
+        if (error) {
             console.error(error);
-        console.log(data);
-        console.log('app.testbed :: agent : event :: <<<');
-        io.to('terminal').emit('printData', {
-            'prov': '[Testbed]',
-            'data': data
-        });
+            io.to('terminal').emit('printError', {
+                'prov':  '[Testbed]',
+                'error': '' + (error?.stack ?? error)
+            });
+        }
+        if (data) {
+            console.log(data);
+            const cloudEvent = new CloudEvent({
+                // '@context':      'https://github.com/cloudevents/spec/blob/v1.0/spec.md',
+                // specversion: '1.0',
+                type:   [data.type, data.method, data.step].filter(val => val).join(':'),
+                id:     data.id,
+                source: data.prov || 'https://testbed.nicos-rd.com',
+                time:   data.end || data.start || new Date().toISOString()
+                // datacontenttype: 'application/json',
+                // data:            data
+            });
+            io.to('terminal').emit('printData', {
+                // 'prov': '[Testbed]',
+                'prov': '[CloudEvent]',
+                'data': cloudEvent
+            });
+        }
         // if (testsuite_socket) {
         //     //debugger;
         //     // TODO : streamline
@@ -254,16 +271,18 @@ module.exports = async function TestbedApp(
         // } // if ()
         // REM: not like above, better:
         // io.to('testsuite').emit('event', error, data);
+        console.log('app.testbed :: agent : event :: <<<');
     }); // agent.on('event')
 
     agent.on('error', (error) => {
         console.log('app.testbed :: agent : error :: >>>');
-        console.error(error);
-        console.log('app.testbed :: agent : error :: <<<');
-        io.to('terminal').emit('printError', {
-            'prov':  '[Testbed]',
-            'error': '' + (error?.stack ?? error)
-        });
+        if (error) {
+            console.error(error);
+            io.to('terminal').emit('printError', {
+                'prov':  '[Testbed]',
+                'error': '' + (error?.stack ?? error)
+            });
+        }
         // if (testsuite_socket) {
         //     //debugger;
         //     // TODO : streamline
@@ -273,6 +292,7 @@ module.exports = async function TestbedApp(
         // io.to('testsuite').emit('error', {
         //     'error': error
         // });
+        console.log('app.testbed :: agent : error :: <<<');
     }); // agent.on('error')
 
     app.get('/', (request, response) => {
