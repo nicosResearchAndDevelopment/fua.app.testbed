@@ -29,8 +29,9 @@ module.exports = async function TestbedApp(
             : http.createServer(app),
         io           = socket_io(server),
         io_testsuite = io.of('/execute'),
-        express_json = express.json(),
-        sessions     = ExpressSession(config.session);
+        sessions     = ExpressSession(config.session),
+        baseURI      = config.server.schema + '://' + config.server.host,
+        baseURL      = baseURI + ':' + config.server.port;
 
     // let
     //     testsuite_socket = null
@@ -68,7 +69,7 @@ module.exports = async function TestbedApp(
     app.use('/data', Middleware_LDP({
         space:      agent.space,
         rootFolder: path.join(__dirname, '../data/resource'),
-        baseIRI:    'https://testbed.nicos-rd.com'
+        baseIRI:    baseURI
     }));
 
     //region LDN
@@ -192,6 +193,7 @@ module.exports = async function TestbedApp(
     io_testsuite.on('connection', (socket) => {
 
         agent.testsuite_inbox_socket = socket;
+        // testsuite_socket             = socket;
 
         socket.on('test', async (token, test, callback) => {
             token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
@@ -251,10 +253,10 @@ module.exports = async function TestbedApp(
             const cloudEvent = new CloudEvent({
                 // '@context':      'https://github.com/cloudevents/spec/blob/v1.0/spec.md',
                 // specversion: '1.0',
-                type:   [data.type, data.method, data.step].filter(val => val).join(':'),
+                type:   [data.type, data.method, data.step].filter(val => val).join('.'),
                 id:     data.id,
-                source: data.prov || 'https://testbed.nicos-rd.com',
-                time:   data.end || data.start || new Date().toISOString()
+                source: data.prov || baseURI,
+                time:   data.end || data.start
                 // datacontenttype: 'application/json',
                 // data:            data
             });
@@ -303,7 +305,7 @@ module.exports = async function TestbedApp(
         server.listen(config.server.port, resolve)
     );
 
-    console.log(`testbed app is listening at <${config.server.schema}://${config.server.host}:${config.server.port}>`);
+    console.log(`testbed app is listening at <${baseURL}>`);
 
 }; // module.exports
 
