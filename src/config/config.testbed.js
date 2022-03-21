@@ -74,11 +74,11 @@ exports.persistence = {
             // require('@nrd/fua.resource.ontology'),
             // require('@nrd/fua.resource.universe'),
             //
-            {'dct:identifier': path.join(__root, 'model/tbm.ttl'), 'dct:format': 'text/turtle'},
-            {'dct:identifier': path.join(__root, 'tb.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'data/model/tbm.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'data/tb.ttl'), 'dct:format': 'text/turtle'},
             //region domain
             //region domain : users
-            {'dct:identifier': path.join(__root, 'domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'data/domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
             //endregion domain : users
             //endregion domain
             //region ids
@@ -101,9 +101,9 @@ exports.persistence = {
             //endregion DAPS
             //region applicant
             //region applicant : gbx
-            {'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'data/applicant/nicos.gbx.0-0-1.ttl'), 'dct:format': 'text/turtle'},
             {
-                'dct:identifier': path.join(__root, 'applicant/nicos.gbx.0-0-1.daps.user.ttl'),
+                'dct:identifier': path.join(__root, 'data/applicant/nicos.gbx.0-0-1.daps.user.ttl'),
                 'dct:format':     'text/turtle'
             }
             //endregion applicant : gbx

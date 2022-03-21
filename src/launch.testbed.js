@@ -15,7 +15,7 @@ const
     {TestbedAgent}              = require('./code/agent.Testbed.js'), // REM: as agent
     // {Testsuite}                 = require('./code/agent.Testsuite.js'),
     server_tls_certificates     = require('../cert/tls-server/server.js'),
-    daps_connector_certificates = require('./daps/cert/connector/client.js'),
+    daps_connector_certificates = require('../cert/daps/connector/client.js'),
     TestbedApp                  = require('./app.testbed.js'),
     TestbedLab                  = require('./lab.testbed.js')
 ; // const
