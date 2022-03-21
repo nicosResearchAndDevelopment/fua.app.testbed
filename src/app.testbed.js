@@ -15,23 +15,30 @@ const
 
 module.exports = async function TestbedApp(
     {
-        'space':  space = null,
-        'agent':  agent,
-        'config': config,
-        'amec':   amec
+        'config':        config,
+        'agent':         agent,
+        'serverNode':    serverNode,
+        'serverOptions': serverOptions,
+        'amec':          amec
     }
 ) {
 
     const
+        host         = (serverNode.id.match(/^\w+:\/\/([^/#:]+)(?=[/#:]|$)/) || [null, 'localhost'])[1],
+        schema       = serverNode.getLiteral('fua:schema').valueOf(),
+        port         = serverNode.getLiteral('fua:port').valueOf(),
         app          = express(),
-        server       = (config.server.schema === 'https')
-            ? https.createServer(config.server.options, app)
+        server       = (schema === 'https')
+            ? https.createServer(serverOptions, app)
             : http.createServer(app),
+        listen       = util.promisify(server.listen).bind(server),
         io           = socket_io(server),
         io_testsuite = io.of('/execute'),
-        sessions     = ExpressSession(config.session),
-        baseURI      = config.server.schema + '://' + config.server.host,
-        baseURL      = baseURI + ':' + config.server.port;
+        sessions     = ExpressSession({
+            resave:            false,
+            saveUninitialized: false,
+            secret:            serverNode.id
+        });
 
     // let
     //     testsuite_socket = null
@@ -49,7 +56,7 @@ module.exports = async function TestbedApp(
     app.use('/data', Middleware_LDP({
         space:      agent.space,
         rootFolder: path.join(__dirname, '../data/resource'),
-        baseIRI:    baseURI
+        baseIRI:    serverNode.id.replace(/[/#]$/, '')
     }));
 
     //region LDN
@@ -146,15 +153,6 @@ module.exports = async function TestbedApp(
         });
     }); // io.on('connection')
 
-    amec.on('authentication-error', (error) => {
-        const errStr = '' + (error?.stack ?? error);
-        console.error(errStr);
-        io.to('terminal').emit('printError', {
-            'prov':  '[Testbed]',
-            'error': errStr
-        });
-    });
-
     io_testsuite.use(async (socket, next) => {
         //debugger;
 
@@ -207,9 +205,14 @@ module.exports = async function TestbedApp(
 
     }); // io_testsuite.on('connection')
 
-    //io_testsuite.on('error', (error) => {
-    //    debugger;
-    //});
+    amec.on('authentication-error', (error) => {
+        const errStr = '' + (error?.stack ?? error);
+        console.error(errStr);
+        io.to('terminal').emit('printError', {
+            'prov':  '[Testbed]',
+            'error': errStr
+        });
+    });
 
     server.on('error', (error) => {
         console.error(error);
@@ -235,7 +238,7 @@ module.exports = async function TestbedApp(
                 // specversion: '1.0',
                 type:   [data.type, data.method, data.step].filter(val => val).join('.'),
                 id:     data.id,
-                source: data.prov || baseURI,
+                source: data.prov || serverNode.id,
                 time:   data.end || data.start
                 // datacontenttype: 'application/json',
                 // data:            data
@@ -281,11 +284,8 @@ module.exports = async function TestbedApp(
         response.redirect('/browse');
     });
 
-    await new Promise((resolve) =>
-        server.listen(config.server.port, resolve)
-    );
-
-    console.log(`testbed app is listening at <${baseURL}>`);
+    await listen(port);
+    console.log(`testbed app is listening at <${schema}://${host}:${port}/>`);
 
 }; // module.exports
 

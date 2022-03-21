@@ -22,30 +22,24 @@ const
 
 /**
  * @param {object} config
+ * @param {object} [config.context]
  * @param {object} config.datastore
  * @param {string} config.datastore.module
  * @param {object} [config.datastore.options]
- * @param {Array<object>} [config.datastore.load]
- * @param {object} [config.context]
- * @param {Array<object>} [config.load]
  * @returns {Space}
  */
 async function createSpace(config) {
     // 1. check input arguments
     util.assert(util.isObject(config),
         'createSpace : expected config to be an object', TypeError);
+    util.assert(util.isNull(config.context) || util.isObject(config.context),
+        'createSpace : expected config.context to be an object', TypeError);
     util.assert(util.isObject(config.datastore),
         'createSpace : expected config.datastore to be an object', TypeError);
     util.assert(util.isString(config.datastore.module),
         'createSpace : expected config.datastore.module to be a string', TypeError);
     util.assert(util.isNull(config.datastore.options) || util.isObject(config.datastore.options),
         'createSpace : expected config.datastore.options to be an object', TypeError);
-    util.assert(util.isNull(config.datastore.load) || util.isObjectArray(config.datastore.load),
-        'createSpace : expected config.datastore.load to be an array of objects', TypeError);
-    util.assert(util.isNull(config.context) || util.isObject(config.context),
-        'createSpace : expected config.context to be an object', TypeError);
-    util.assert(util.isNull(config.load) || util.isObjectArray(config.load),
-        'createSpace : expected config.load to be an array of objects', TypeError);
 
     // 2. require the persistence module, to be able to make the persistence configurable
     // (this is an exception, normally you would try to avoid requiring in any place other than the top of the script)
@@ -57,30 +51,11 @@ async function createSpace(config) {
     const
         context   = config.context || {},
         factory   = new persistence.DataFactory(context),
-        // local protected data for data models
-        // dataset   = new persistence.Dataset(null, factory),
-        // persistent data that can be manipulated by resources
         dataStore = new DataStore(config.datastore.options, factory);
 
-    // 4. if a load is configured for the space, import available data files into the dataset
-    // if (config.load) {
-    //    const resultArr = await rdf.loadDataFiles(config.load, factory);
-    //    for (let result of resultArr) {
-    //        if (result.dataset) dataset.add(result.dataset);
-    //    }
-    // }
-    // 5. if a load is configured for the datastore, import available data files into the datastore
-    //    this should only be done, if the datastore is an inmemory store
-    if (dataStore.dataset && config.datastore.load) {
-        const resultArr = await rdf.loadDataFiles(config.datastore.load, factory);
-        for (let result of resultArr) {
-            if (result.dataset) dataStore.dataset.add(result.dataset);
-        }
-    }
-
-    // 6. make sure the datastore is available (ping) by requesting its size
+    // 4. make sure the datastore is available (ping) by requesting its size
     const size = await dataStore.size();
-    if (!size) throw new Error('the space is empty');
+    util.assert(size, 'createSpace : expected space to not be empty', TypeError);
 
     // let that = rdf.generateGraph(dataStore.dataset, {
     //    compact: false,
@@ -89,9 +64,9 @@ async function createSpace(config) {
     //    blanks:  true
     // });
 
-    // 7. create a space out of the collected components and return it
+    // 5. create a space out of the collected components and return it
     return new Space({store: dataStore});
-}
+} // createSpace
 
 (async function Main() {
 
@@ -193,10 +168,11 @@ async function createSpace(config) {
         },
         testbed_agent_context    = [],
         space                    = await createSpace(config.space),
-        daps_id                  = 'https://nrd-daps.nicos-rd.com/', // TODO : config
+        testbedNode              = await space.getNode(config.server.id).load(),
+        daps_id                  = testbedNode.id, // TODO : config
         jwt_payload_iss          = 'https://testbed.nicos-rd.com:8080',
         tweak_DAT_custom_enabled = true,
-        nrd_daps_config          = space.getNode(daps_id),
+        nrdDapsNode              = await space.getNode(daps_id).load(),
         daps                     = new DAPS({
             id:      `${daps_id}agent/`,
             rootUri: 'https://testbed.nicos-rd.com/domain/user#',
@@ -231,21 +207,21 @@ async function createSpace(config) {
         domain: testbed_agent.domain
     }));
 
-    config.server.options = {
-        key:                server_tls_certificates.key,
-        cert:               server_tls_certificates.cert,
-        ca:                 server_tls_certificates.ca,
-        requestCert:        false,
-        rejectUnauthorized: false
-    };
-
     testbed_app.agent = testbed_agent;
 
     await TestbedApp({
-        'space':  space,
-        'agent':  testbed_agent,
-        'config': config,
-        'amec':   amec
+        'space':         space,
+        'serverNode':    testbedNode,
+        'serverOptions': {
+            key:                server_tls_certificates.key,
+            cert:               server_tls_certificates.cert,
+            ca:                 server_tls_certificates.ca,
+            requestCert:        false,
+            rejectUnauthorized: false
+        },
+        'agent':         testbed_agent,
+        'config':        config,
+        'amec':          amec
     });
 
     await TestbedLab({

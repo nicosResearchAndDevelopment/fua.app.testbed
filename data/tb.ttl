@@ -29,7 +29,8 @@ tb:
     ecm:provider     nrd: ;
     ecm:domain       tb:domain ;
 ##
-    fua:port         "80"^^xsd:nonNegativeInteger ; ## default = 80
+    fua:schema       "https"^^xsd:string ; ## default = http
+    fua:port         "8080"^^xsd:nonNegativeInteger ; ## default = 80
 ##
     ecm:ecosystem    <https://testbed.nicos-rd.com/ec/ids/> ;
     ecm:ecosystem    <https://testbed.nicos-rd.com/ec/gax/> ;

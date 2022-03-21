@@ -1,7 +1,7 @@
 module.exports = async function TestbedLab(
     {
-        'agent': agent,
-        'space': space
+        'agent':      agent,
+        'serverNode': serverNode
     }
 ) {
 
