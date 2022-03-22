@@ -12,7 +12,7 @@ const
     {Space}                     = require('@nrd/fua.module.space'),
     //
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    {TestbedAgent}              = require('./code/agent.Testbed.js'), // REM: as agent
+    TestbedAgent_next           = require('./code/agent.Testbed.next.js'),
     // {Testsuite}                 = require('./code/agent.Testsuite.js'),
     server_tls_certificates     = require('../cert/tls-server/server.js'),
     daps_connector_certificates = require('../cert/daps/connector/client.js'),
@@ -191,16 +191,13 @@ async function createSpace(config) {
             tweak_DAT_custom_max_size: 10000 // TODO : config
         }),
         amec                     = new Amec(),
-        testbed_agent            = await TestbedAgent({
-            testbed_id:   'https://testbed.nicos-rd.com/',
-            scheduler:    testbed_scheduler,
-            space:        space,
-            daps:         daps,
-            amec:         amec,
-            encodeSecret: (secret) => {
-                return `${secret}_salt`;
-            }
-        }) // new TestbedAgent()
+        testbed_agent            = await TestbedAgent_next.create({
+            id:               testbedNode.id,
+            space:            space,
+            amec:             amec,
+            daps:             daps,
+            schedulerOptions: testbed_scheduler
+        })
     ; // const
 
     amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({

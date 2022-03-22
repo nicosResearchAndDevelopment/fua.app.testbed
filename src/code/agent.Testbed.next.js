@@ -6,21 +6,8 @@ const
     Amec         = require('@nrd/fua.agent.amec'),
     {Scheduler}  = require(path.join(util.FUA_JS_LIB, 'agent.Scheduler/src/agent.Scheduler.js')),
     {Domain}     = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js')),
-    {PEP}        = require('@nrd/fua.decide.pep');
-
-function _addEcNet(ec) {
-    const {net} = require('../../ec/net/src/tb.ec.net.js');
-    net.on('event', (error, data) => {
-        eventEmitter.emit('event', error, data);
-        debugger;
-    });
-    net.on('error', (error) => {
-        //eventEmitter.emit('event', error, data);
-        debugger;
-    });
-    ec['net'] = net;
-    Object.freeze(ec['net']);
-} // _addEcNet
+    {PEP}        = require('@nrd/fua.decide.pep'),
+    {DAPS}       = require('@nrd/fua.ids.agent.daps');
 
 class TestbedAgent {
 
@@ -29,6 +16,7 @@ class TestbedAgent {
     #space        = null;
     #amec         = null;
     #scheduler    = null;
+    #daps         = null;
 
     #initState   = -1;
     #testbedNode = null;
@@ -39,24 +27,28 @@ class TestbedAgent {
     #inboxSocket = null;
     #ecosystems  = Object.create(null);
 
+    // #ecosystems  = {};
+
     constructor({
-                    testbed_id:   id = 'asdf',
-                    space:        space,
-                    amec:         amec,
-                    scheduler:    schedulerOptions,
-                    daps:         daps = null,
-                    encodeSecret: encodeSecret = undefined
+                    id:               id = '',
+                    space:            space,
+                    amec:             amec,
+                    schedulerOptions: schedulerOptions,
+                    daps:             daps
                 }) {
 
         util.assert(util.isString(id) && id.length > 0, 'expected id to be a non empty string');
         util.assert(space instanceof Space, 'expected space to be an instance of Space');
         util.assert(amec instanceof Amec, 'expected amec to be an instance of Amec');
         util.assert(util.isNotNull(schedulerOptions), 'expected scheduler to be not null');
+        // TODO DAPS implementation should support 'instanceof' feature
+        // util.assert(util.isNull(daps) || (daps instanceof DAPS), 'expected daps to be an instance of DAPS');
 
         this.#id        = id;
         this.#space     = space;
         this.#amec      = amec;
         this.#scheduler = new Scheduler(schedulerOptions);
+        this.#daps      = daps;
 
         this.#scheduler.on('error', (...args) => this.#eventEmitter.emit('scheduler_error', ...args));
         this.#scheduler.on('idle', (...args) => this.#eventEmitter.emit('scheduler_idle', ...args));
@@ -94,7 +86,7 @@ class TestbedAgent {
         await this.#domainNode.load();
 
         this.#pep = new PEP({
-            id: id + 'PEP'
+            id: this.#id + 'PEP'
         });
 
         this.#domain = new Domain({
@@ -103,9 +95,22 @@ class TestbedAgent {
             space:  this.#space
         });
 
+        this.#daps.domain = this.#domain;
+
+        await this.initializeNet();
+        await this.initializeIDS();
+
         this.#initState = 1;
         return this;
     } // TestbedAgent#initialize
+
+    get ecosystems() {
+        return this.#ecosystems;
+    }
+
+    get ec() {
+        return this.#ecosystems;
+    }
 
     async initializeNet() {
         if (this.#ecosystems.net) return this;
@@ -122,6 +127,7 @@ class TestbedAgent {
             // this.#eventEmitter.emit('error', error);
             debugger;
         });
+        if (this.#ecosystems.net) return this;
         this.#ecosystems.net = Object.freeze(net);
         util.lockProp(this.#ecosystems, 'net');
         return this;
@@ -130,8 +136,8 @@ class TestbedAgent {
     async initializeIDS() {
         if (this.#ecosystems.ids) return this;
         const
-            aliceNode = await space.getNode('https://alice.nicos-rd.com/').load(),
-            bobNode   = await space.getNode('https://bob.nicos-rd.com/').load(),
+            aliceNode = await this.#space.getNode('https://alice.nicos-rd.com/').load(),
+            bobNode   = await this.#space.getNode('https://bob.nicos-rd.com/').load(),
             ids       = require('../../ec/ids/src/tb.ec.ids.js')({
                 'uri':   `${this.#id}ec/ids/`,
                 'ALICE': {
@@ -185,7 +191,8 @@ class TestbedAgent {
             this.#eventEmitter.emit('error', error);
             //debugger;
         });
-        this.#ecosystems.net = Object.freeze(net);
+        if (this.#ecosystems.ids) return this;
+        this.#ecosystems.ids = Object.freeze(ids);
         util.lockProp(this.#ecosystems, 'ids');
         return this;
     } // TestbedAgent#initializeIDS
@@ -198,7 +205,16 @@ class TestbedAgent {
         return this.#inboxSocket;
     }
 
+    get testsuite_inbox_socket() {
+        return this.#inboxSocket;
+    }
+
     set inboxSocket(socket) {
+        util.assert(!this.#inboxSocket, 'inboxSocket already declared');
+        this.#inboxSocket = socket;
+    }
+
+    set testsuite_inbox_socket(socket) {
         util.assert(!this.#inboxSocket, 'inboxSocket already declared');
         this.#inboxSocket = socket;
     }
@@ -212,9 +228,18 @@ class TestbedAgent {
         return this.#scheduler;
     }
 
-    get amec() {
-        return this.#scheduler;
+    get DAPS() {
+        return this.#daps;
     }
+
+    get amec() {
+        return this.#amec;
+    }
+
+    async authenticate(headers, mechanism) {
+        const auth = await this.#amec.authenticate(headers, mechanism);
+        return auth;
+    } // TestbedAgent#authenticate
 
     get PEP() {
         return this.#pep;
@@ -241,8 +266,18 @@ class TestbedAgent {
         util.assert(util.isObject(ecosystem), 'expected ecosystem to be an object');
         const command = ecosystem[cmdId];
         util.assert(util.isFunction(command), 'expected command to be a function');
-        return await command(param);
+        const result = await command(param);
+        return result;
     } // TestbedAgent#executeTest
+
+    static get id() {
+        return 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
+    }
+
+    static async create(options) {
+        const agent = new TestbedAgent(options);
+        return await agent.initialize();
+    }
 
 } // TestbedAgent
 
