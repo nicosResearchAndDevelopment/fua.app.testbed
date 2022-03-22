@@ -1,12 +1,11 @@
 const
     path         = require('path'),
     EventEmitter = require('events'),
-    io_client    = require("socket.io-client"),
+    io_client    = require('socket.io-client'),
     //
-    util         = require('@nrd/fua.core.util'),
-    uuid         = require('@nrd/fua.core.uuid'),
+    util         = require('./util.testsuite.js'),
     //
-    _prefix_     = "ts"
+    _prefix_     = 'ts'
     //
 ;
 
@@ -20,7 +19,7 @@ const
 class ErrorTestsuiteIdIsMissing extends Error {
     constructor({prov: prov}) {
         super(`fua.agent.TestsuiteAgent : id is missing.`);
-        this.id   = `${"urn:fua:agent:TestsuiteAgent:"}error:${uuid.v1()}`;
+        this.id   = `${"urn:fua:agent:TestsuiteAgent:"}error:${util.uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestsuiteIdIsMissing;
         this.prov = prov;
         Object.freeze(this);
@@ -30,7 +29,7 @@ class ErrorTestsuiteIdIsMissing extends Error {
 class ErrorTestsuiteUnknownOnTopic extends Error {
     constructor({prov: prov, topic: topic}) {
         super(`fua.agent.TestsuiteAgent : unknow on topic <${topic}>.`);
-        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${uuid.v1()}`;
+        this.id   = `${"urn:fua:agent:TestbedAgent:"}error:${util.uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestsuiteUnknownOnTopic;
         this.prov = prov;
         Object.freeze(this);
@@ -40,7 +39,7 @@ class ErrorTestsuiteUnknownOnTopic extends Error {
 class ErrorTestsuiteCallbackMissingOnTopic extends Error {
     constructor({prov: prov, topic: topic}) {
         super(`fua.agent.TestbedAgent : on-callback  missing (topic <${topic}>).`);
-        this.id   = `${"urn:fua:agent:TestsuiteAgent:"}error:${uuid.v1()}`;
+        this.id   = `${"urn:fua:agent:TestsuiteAgent:"}error:${util.uuid.v1()}`;
         this.code = ERROR_CODE_ErrorTestsuiteCallbackMissingOnTopic;
         this.prov = prov;
         Object.freeze(this);
@@ -278,7 +277,7 @@ async function TestsuiteAgent({
         }, // enforce
         Token:     {
             value: ({
-                        id:     id = `${testsuite.id}token/${uuid.v1()}`,
+                        id:     id = `${testsuite.id}token/${util.uuid.v1()}`,
                         start:  start = util.timestamp(),
                         thread: thread = []
                     }) => {
@@ -298,7 +297,7 @@ async function TestsuiteAgent({
             } // Token()
             //value:         () => {
             //    return BPMN.Token({
-            //        id: `${id}token/${uuid.v1()}`
+            //        id: `${id}token/${util.uuid.v1()}`
             //        //,data: data
             //    });
             //}, enumerable: false

@@ -2,6 +2,7 @@ const
     path       = require('path'),
     _util      = require('@nrd/fua.core.util'),
     _hrt       = require('@nrd/fua.core.hrt'),
+    _uuid      = require('@nrd/fua.core.uuid'),
     util       = exports = module.exports = {
         ..._util,
         assert: _util.Assert('app.testsuite')
@@ -9,7 +10,8 @@ const
     /** @type {Object<string, InterfaceGenerator>} */
     generators = Object.create(null);
 
-util.hrt = _hrt;
+util.hrt  = _hrt;
+util.uuid = _uuid;
 
 util.pause = function (seconds) {
     return new Promise((resolve) => {
