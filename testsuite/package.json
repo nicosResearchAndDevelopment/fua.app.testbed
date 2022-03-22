@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/app.testsuite.js"
+    "start": "node src/launch.testsuite.js"
   },
   "repository": {
     "type": "git",

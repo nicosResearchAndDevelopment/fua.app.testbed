@@ -27,8 +27,6 @@ class TestbedAgent {
     #inboxSocket = null;
     #ecosystems  = Object.create(null);
 
-    // #ecosystems  = {};
-
     constructor({
                     id:               id = '',
                     space:            space,

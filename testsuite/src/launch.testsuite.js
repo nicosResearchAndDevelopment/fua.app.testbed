@@ -1,14 +1,14 @@
 const
-    path             = require('path'),
-    config           = require('./config/config.testsuite.js'),
-    util             = require('@nrd/fua.core.util'),
+    path                    = require('path'),
+    config                  = require('./config/config.testsuite.js'),
+    util                    = require('@nrd/fua.core.util'),
     //
     //Amec             = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
-    {TestsuiteAgent} = require('./agent.testsuite.js'),// REM: as agent
+    {TestsuiteAgent}        = require('./code/agent.Testsuite.js'),// REM: as agent
+    server_tls_certificates = require('../cert/tls-server/server.js'),
     //
-    testsuite_id     = "https://testsuite.nicos-rd.com/",
-
-    testbed          = {
+    testsuite_id            = "https://testsuite.nicos-rd.com/",
+    testbed                 = {
         schema: "https",
         host:   "testbed.nicos-rd.com",
         port:   8080,
@@ -16,16 +16,22 @@ const
             user:     "testsuite",
             password: "marzipan"
         }
-    }
+    },
+    TestsuiteApp            = require('./app.testsuite.js'),
+    TestsuiteLab            = require('./lab.testsuite.js')
 ; // const
 
-let
-    amec
-;
-(async ({'config': config}) => {
+(async function LaunchTestsuite() {
 
-    config.server.url = testsuite_id;
-    config.testbed    = testbed;
+    config.server.url     = testsuite_id;
+    config.server.options = {
+        key:                server_tls_certificates.key,
+        cert:               server_tls_certificates.cert,
+        ca:                 server_tls_certificates.ca,
+        requestCert:        false,
+        rejectUnauthorized: false
+    };
+    config.testbed        = testbed;
 
     const
         validate        = {
@@ -86,14 +92,18 @@ let
 
     testsuite_agent.testcases = testcases;
 
-    const
-        APP_testsuite = require('./app.testsuite.js')({
-            'space':  undefined,
-            'agent':  testsuite_agent,
-            'config': config
-        })
-    ; // const
+    await TestsuiteApp({
+        'space':  undefined,
+        'agent':  testsuite_agent,
+        'config': config
+    });
 
-})
-({'config': config}).catch(console.error);
+    await TestsuiteLab({
+        'agent': testsuite_agent
+    });
 
+})().catch((err) => {
+    util.logError(err);
+    debugger;
+    process.exit(1);
+}); // LaunchTestsuite

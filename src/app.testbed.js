@@ -62,7 +62,7 @@ module.exports = async function TestbedApp(
     //region LDN
     app.post('/inbox', express.json(), (request, response, next) => {
         // TODO
-        console.log(request.body);
+        util.logObject(request.body)
         next();
     });
     //endregion LDN
@@ -73,8 +73,8 @@ module.exports = async function TestbedApp(
         // TODO
         let error = null;
         try {
-            //debugger;
-            //console.log(request.body);
+            // util.logObject(request.body);
+            // debugger;
 
             const DAT = await agent.DAPS.generateDAT({
                 client_assertion:      request.body.client_assertion,
@@ -101,7 +101,7 @@ module.exports = async function TestbedApp(
         // TODO
         debugger;
         const DAT = await agent.DAPS.generateVC({});
-        console.log(request.body);
+        util.logObject(request.body);
         next();
     });
     //endregion DAPS
@@ -206,16 +206,15 @@ module.exports = async function TestbedApp(
     }); // io_testsuite.on('connection')
 
     amec.on('authentication-error', (error) => {
-        const errStr = '' + (error?.stack ?? error);
-        console.error(errStr);
+        util.logError(error);
         io.to('terminal').emit('printError', {
             'prov':  '[Testbed]',
-            'error': errStr
+            'error': '' + (error?.stack ?? error)
         });
     });
 
     server.on('error', (error) => {
-        console.error(error);
+        util.logError(error);
         io.to('terminal').emit('printError', {
             'prov':  '[Testbed]',
             'error': '' + (error?.stack ?? error)
@@ -223,16 +222,16 @@ module.exports = async function TestbedApp(
     });
 
     agent.on('event', (error, data) => {
-        console.log('app.testbed :: agent : event :: >>>');
+        util.logText('app.testbed :: agent : event :: >>>');
         if (error) {
-            console.error(error);
+            util.logError(error);
             io.to('terminal').emit('printError', {
                 'prov':  '[Testbed]',
                 'error': '' + (error?.stack ?? error)
             });
         }
         if (data) {
-            console.log(data);
+            util.logObject(data);
             const cloudEvent = new CloudEvent({
                 // '@context':      'https://github.com/cloudevents/spec/blob/v1.0/spec.md',
                 // specversion: '1.0',
@@ -256,13 +255,13 @@ module.exports = async function TestbedApp(
         // } // if ()
         // REM: not like above, better:
         // io.to('testsuite').emit('event', error, data);
-        console.log('app.testbed :: agent : event :: <<<');
+        util.logText('app.testbed :: agent : event :: <<<');
     }); // agent.on('event')
 
     agent.on('error', (error) => {
-        console.log('app.testbed :: agent : error :: >>>');
+        util.logText('app.testbed :: agent : error :: >>>');
         if (error) {
-            console.error(error);
+            util.logError(error);
             io.to('terminal').emit('printError', {
                 'prov':  '[Testbed]',
                 'error': '' + (error?.stack ?? error)
@@ -277,7 +276,7 @@ module.exports = async function TestbedApp(
         // io.to('testsuite').emit('error', {
         //     'error': error
         // });
-        console.log('app.testbed :: agent : error :: <<<');
+        util.logText('app.testbed :: agent : error :: <<<');
     }); // agent.on('error')
 
     app.get('/', (request, response) => {
@@ -285,7 +284,7 @@ module.exports = async function TestbedApp(
     });
 
     await listen(port);
-    console.log(`testbed app is listening at <${schema}://${host}:${port}/>`);
+    util.logText(`testbed app is listening at <${schema}://${host}:${port}/>`);
 
 }; // module.exports
 

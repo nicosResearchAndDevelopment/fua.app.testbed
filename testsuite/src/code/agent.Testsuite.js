@@ -6,11 +6,8 @@ const
     util         = require('@nrd/fua.core.util'),
     uuid         = require('@nrd/fua.core.uuid'),
     //
-    _prefix_     = "ts",
+    _prefix_     = "ts"
     //
-    {BPEPAgent}  = require(path.join(util.FUA_JS_LIB, 'BPEF/agent.BPEP/src/agent.BPEP')),
-    BPMN_factory = require(path.join(util.FUA_JS_LIB, 'BPEF/module.BPMN-2.0/src/module.BPMN'))
-
 ;
 
 //region ERROR

@@ -65,7 +65,7 @@ async function createSpace(config) {
     return new Space({store: dataStore});
 } // createSpace
 
-(async function Main() {
+(async function LaunchTestbed() {
 
     const
         testbed_app              = {
@@ -227,4 +227,4 @@ async function createSpace(config) {
     util.logError(err);
     debugger;
     process.exit(1);
-}); // Main
+}); // LaunchTestbed
