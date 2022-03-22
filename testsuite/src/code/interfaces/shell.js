@@ -1,17 +1,17 @@
 const
-    interfaceName            = 'shell',
-    {assert, streamToString} = require('../util.js'),
-    child_process            = require('child_process');
+    interfaceName = 'shell',
+    util          = require('../util.testsuite.js'),
+    child_process = require('child_process');
 
 exports.interface = interfaceName;
 exports.generator = function ({application, directory}) {
-    assert(typeof application === 'string', `InterfaceGenerator<${interfaceName}> : invalid application`);
-    if (directory) assert(typeof directory === 'string', `InterfaceGenerator<${interfaceName}> : invalid directory`);
+    util.assert(util.isString(application), `InterfaceGenerator<${interfaceName}> : invalid application`);
+    util.assert(util.isNull(directory) || util.isString(directory), `InterfaceGenerator<${interfaceName}> : invalid directory`);
 
     /** @type {TestInterface} */
     async function shell_interface(method = '', param = null) {
-        assert(typeof method === 'string', `TestInterface<${interfaceName}> : invalid method`);
-        assert(typeof param === 'object', `TestInterface<${interfaceName}> : invalid param`);
+        util.assert(util.isString(method), `TestInterface<${interfaceName}> : invalid method`);
+        util.assert(util.isNull(param) || util.isObject(param), `TestInterface<${interfaceName}> : invalid param`);
 
         const cmdChunks = [application];
         if (method) cmdChunks.push(method);
@@ -27,18 +27,19 @@ exports.generator = function ({application, directory}) {
                 windowsHide: true
             }),
             stdPromise = Promise.all([
-                streamToString(child.stdout),
-                streamToString(child.stderr)
+                util.streamToString(child.stdout),
+                util.streamToString(child.stderr)
             ]);
 
         return new Promise((resolve, reject) => {
             child.addListener('exit', async (errCode) => {
-                const [stdout, stderr] = await stdPromise;
-                if (errCode === 0) {
+                try {
+                    const [stdout, stderr] = await stdPromise;
+                    util.assert(errCode === 0, `Application exited with code ${errCode}. \n${stderr}`);
                     const result = JSON.parse(stdout);
+                    util.assert(util.isNull(result) || util.isObject(result), `TestInterface<${interfaceName}> : invalid result`);
                     resolve(result);
-                } else {
-                    const err = new Error(`Application exited with code ${errCode}. \n${stderr}`);
+                } catch (err) {
                     reject(err);
                 }
             });

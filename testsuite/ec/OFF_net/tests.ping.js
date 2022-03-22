@@ -1,11 +1,12 @@
 const
-    ping      = exports,
-    expect    = require('expect'),
-    testsuite = require('../../src/code/main.testsuite.js');
+    ping   = exports,
+    expect = require('expect'),
+    util   = require('../../src/code/util.testsuite.js'),
+    tb     = require('../../src/code/tb.interface.js');
 
 ping.basic = async function (param) {
     expect(typeof param).toBe('object');
-    const result = await testsuite.execute('net/ping', param);
+    const result = await tb.execute('net/ping', param);
     expect(typeof result).toBe('object');
     console.log(result);
     return result;

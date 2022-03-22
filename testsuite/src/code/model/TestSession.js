@@ -1,5 +1,5 @@
 const
-    util  = require('./util.js'),
+    util  = require('../util.testsuite.js'),
     model = require('./index.js');
 
 module.exports = class TestSession {

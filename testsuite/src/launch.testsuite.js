@@ -1,37 +1,15 @@
 const
-    path                    = require('path'),
-    config                  = require('./config/config.testsuite.js'),
-    util                    = require('@nrd/fua.core.util'),
+    config           = require('./config/config.testsuite.js'),
+    util             = require('./code/util.testsuite.js'),
     //
     //Amec             = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
-    {TestsuiteAgent}        = require('./code/agent.Testsuite.js'),// REM: as agent
-    server_tls_certificates = require('../cert/tls-server/server.js'),
+    {TestsuiteAgent} = require('./code/agent.Testsuite.js'),// REM: as agent
     //
-    testsuite_id            = "https://testsuite.nicos-rd.com/",
-    testbed                 = {
-        schema: "https",
-        host:   "testbed.nicos-rd.com",
-        port:   8080,
-        auth:   {
-            user:     "testsuite",
-            password: "marzipan"
-        }
-    },
-    TestsuiteApp            = require('./app.testsuite.js'),
-    TestsuiteLab            = require('./lab.testsuite.js')
+    TestsuiteApp     = require('./app.testsuite.js'),
+    TestsuiteLab     = require('./lab.testsuite.js')
 ; // const
 
 (async function LaunchTestsuite() {
-
-    config.server.url     = testsuite_id;
-    config.server.options = {
-        key:                server_tls_certificates.key,
-        cert:               server_tls_certificates.cert,
-        ca:                 server_tls_certificates.ca,
-        requestCert:        false,
-        rejectUnauthorized: false
-    };
-    config.testbed        = testbed;
 
     const
         validate        = {
@@ -62,7 +40,7 @@ const
             }
         },
         testsuite_agent = await TestsuiteAgent({
-            id: testsuite_id,
+            id: config.server.id,
             //validate: validate,
             testbed: config.testbed
         })
@@ -75,14 +53,14 @@ const
     ;
     let testcases      = {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({
-            root_uri:    testsuite_id,
+            root_uri:    config.server.id,
             agent:       {
                 test: testsuite_agent.test
             },
             console_log: tc_console_log
         }),
         ids: require(`./tc/ec/ids/tc.ec.ids.launch`)({
-            root_uri:    testsuite_id,
+            root_uri:    config.server.id,
             agent:       {
                 test: testsuite_agent.test
             },

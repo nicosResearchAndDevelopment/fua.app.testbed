@@ -1,4 +1,4 @@
-const util          = require('./util.js');
+const util = require('../util.testsuite.js');
 
 exports.TestSession = require('./TestSession.js');
 

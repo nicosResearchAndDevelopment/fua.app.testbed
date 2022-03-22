@@ -1,12 +1,12 @@
 const
     getDATfromDAPS = exports,
     expect         = require('expect'),
-    testsuite      = require('../../src/code/main.testsuite.js')
-;
+    util           = require('../../src/code/util.testsuite.js'),
+    tb             = require('../../src/code/tb.interface.js');
 
 getDATfromDAPS.basic = async function (param) {
     expect(typeof param).toBe('object');
-    const result = await testsuite.execute('ids/getDATfromDAPS', param);
+    const result = await tb.execute('ids/getDATfromDAPS', param);
 
     //region validation
     expect(typeof result).toBe('object');

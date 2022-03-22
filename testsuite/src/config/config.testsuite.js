@@ -1,17 +1,26 @@
 const
-    path = require('path');
+    path                    = require('path'),
+    server_tls_certificates = require('../../cert/tls-server/server.js');
 
 exports.server = {
-    port: 8081
+    id:      'https://testsuite.nicos-rd.com/',
+    url:     'https://testsuite.nicos-rd.com/',
+    port:    8081,
+    options: {
+        key:                server_tls_certificates.key,
+        cert:               server_tls_certificates.cert,
+        ca:                 server_tls_certificates.ca,
+        requestCert:        false,
+        rejectUnauthorized: false
+    }
 };
 
-//exports.generator = {
-//    interface:   'http',
-//    baseUrl:     'http://testbed.nicos-rd.com/'
-//};
-
-//exports.generator = {
-//    interface: 'module',
-//    location:  path.join(__dirname, '../../../src/code/fn-interface.testbed.js')
-//    //location: '../../../src/code/fn-interface.testbed.js'
-//};
+exports.testbed = {
+    schema: 'https',
+    host:   'testbed.nicos-rd.com',
+    port:   8080,
+    auth:   {
+        user:     'testsuite',
+        password: 'marzipan'
+    }
+};

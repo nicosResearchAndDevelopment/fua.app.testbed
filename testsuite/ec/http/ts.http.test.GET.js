@@ -1,11 +1,12 @@
 const
-    GET       = exports,
-    expect    = require('expect'),
-    testsuite = require('../../src/code/main.testsuite.js');
+    GET    = exports,
+    expect = require('expect'),
+    util   = require('../../src/code/util.testsuite.js'),
+    tb     = require('../../src/code/tb.interface.js');
 
 GET.basic = async function (param) {
     expect(typeof param).toBe('object');
-    const result = await testsuite.execute('http/GET', param);
+    const result = await tb.execute('http/GET', param);
     expect(typeof result).toBe('object');
     console.log(result);
     return result;
