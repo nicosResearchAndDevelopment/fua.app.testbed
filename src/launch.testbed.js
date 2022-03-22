@@ -1,19 +1,16 @@
 const
-    path                        = require('path'),
-    //
     config                      = require('./config/config.testbed.js'),
     util                        = require('./code/util.testbed.js'),
     //
     Amec                        = require('@nrd/fua.agent.amec'),
     BasicAuth                   = require('@nrd/fua.agent.amec/BasicAuth'),
     rdf                         = require('@nrd/fua.module.rdf'),
-    persistence                 = require('@nrd/fua.module.persistence'),
+    {DataStore, DataFactory}    = require('@nrd/fua.module.persistence'),
     {DAPS}                      = require('@nrd/fua.ids.agent.daps'),
     {Space}                     = require('@nrd/fua.module.space'),
     //
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    TestbedAgent_next           = require('./code/agent.Testbed.next.js'),
-    // {Testsuite}                 = require('./code/agent.Testsuite.js'),
+    TestbedAgent                = require('./code/agent.Testbed.js'),
     server_tls_certificates     = require('../cert/tls-server/server.js'),
     daps_connector_certificates = require('../cert/daps/connector/client.js'),
     TestbedApp                  = require('./app.testbed.js'),
@@ -43,15 +40,15 @@ async function createSpace(config) {
 
     // 2. require the persistence module, to be able to make the persistence configurable
     // (this is an exception, normally you would try to avoid requiring in any place other than the top of the script)
-    const DataStore = require(config.datastore.module);
-    util.assert(persistence.DataStore.isPrototypeOf(DataStore),
-        'createSpace : expected DataStore to be a subclass of persistence.DataStore', TypeError);
+    const SpecificDataStore = require(config.datastore.module);
+    util.assert(DataStore.isPrototypeOf(SpecificDataStore),
+        'createSpace : expected SpecificDataStore to be a subclass of DataStore', TypeError);
 
     // 3. create the necessary components for the space, like factory and datastore
     const
         context   = config.context || {},
-        factory   = new persistence.DataFactory(context),
-        dataStore = new DataStore(config.datastore.options, factory);
+        factory   = new DataFactory(context),
+        dataStore = new SpecificDataStore(config.datastore.options, factory);
 
     // 4. make sure the datastore is available (ping) by requesting its size
     const size = await dataStore.size();
@@ -191,7 +188,7 @@ async function createSpace(config) {
             tweak_DAT_custom_max_size: 10000 // TODO : config
         }),
         amec                     = new Amec(),
-        testbed_agent            = await TestbedAgent_next.create({
+        testbed_agent            = await TestbedAgent.create({
             id:               testbedNode.id,
             space:            space,
             amec:             amec,

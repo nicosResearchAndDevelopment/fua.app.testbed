@@ -160,10 +160,7 @@ exports.space = {
 };
 
 exports.server = {
-    id:     'https://testbed.nicos-rd.com/',
-    schema: 'https',
-    host:   'testbed.nicos-rd.com',
-    port:   8080
+    id: 'https://testbed.nicos-rd.com/'
 };
 
 exports.login = {
