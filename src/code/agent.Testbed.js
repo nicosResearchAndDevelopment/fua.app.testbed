@@ -11,6 +11,15 @@ const
 
 class TestbedAgent {
 
+    static get id() {
+        return 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
+    }
+
+    static async create(options) {
+        const agent = new TestbedAgent(options);
+        return await agent.initialize();
+    } // TestbedAgent.create
+
     #eventEmitter = new EventEmitter();
     #id           = '';
     #space        = null;
@@ -102,18 +111,11 @@ class TestbedAgent {
         return this;
     } // TestbedAgent#initialize
 
-    get ecosystems() {
-        return this.#ecosystems;
-    }
-
-    get ec() {
-        return this.#ecosystems;
-    }
-
     async initializeNet() {
         if (this.#ecosystems.net) return this;
         const {net} = require('../../ec/net/src/tb.ec.net.js');
         net.uri     = `${this.#id}ec/net/`;
+        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
         net.on('event', (error, data) => {
             if (error) util.logError(error);
             else util.logObject(data);
@@ -178,6 +180,7 @@ class TestbedAgent {
             });
         ids.uri       = `${this.#id}ec/ids/`;
         ids.ec        = this.#ecosystems;
+        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
         ids.on('event', (error, data) => {
             // if (error) util.logError(error);
             // else util.logObject(data);
@@ -199,11 +202,20 @@ class TestbedAgent {
         return this.#id;
     }
 
-    get inboxSocket() {
-        return this.#inboxSocket;
+    get ecosystems() {
+        return this.#ecosystems;
     }
 
-    get testsuite_inbox_socket() {
+    get ec() {
+        return this.ecosystems;
+    }
+
+    on(event, callback) {
+        this.#eventEmitter.on(event, callback);
+        return this;
+    } // TestbedAgent#on
+
+    get inboxSocket() {
         return this.#inboxSocket;
     }
 
@@ -212,14 +224,12 @@ class TestbedAgent {
         this.#inboxSocket = socket;
     }
 
-    set testsuite_inbox_socket(socket) {
-        util.assert(!this.#inboxSocket, 'inboxSocket already declared');
-        this.#inboxSocket = socket;
+    get testsuite_inbox_socket() {
+        return this.inboxSocket;
     }
 
-    on(event, callback) {
-        this.#eventEmitter.on(event, callback);
-        return this;
+    set testsuite_inbox_socket(value) {
+        this.inboxSocket = value;
     }
 
     get scheduler() {
@@ -267,15 +277,6 @@ class TestbedAgent {
         const result = await command(param);
         return result;
     } // TestbedAgent#executeTest
-
-    static get id() {
-        return 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
-    }
-
-    static async create(options) {
-        const agent = new TestbedAgent(options);
-        return await agent.initialize();
-    }
 
 } // TestbedAgent
 

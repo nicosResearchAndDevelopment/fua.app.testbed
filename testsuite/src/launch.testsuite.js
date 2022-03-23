@@ -1,57 +1,52 @@
 const
-    config           = require('./config/config.testsuite.js'),
-    util             = require('./code/util.testsuite.js'),
+    config         = require('./config/config.testsuite.js'),
+    util           = require('./code/util.testsuite.js'),
     //
     //Amec             = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
-    {TestsuiteAgent} = require('./code/agent.Testsuite.js'),// REM: as agent
+    TestsuiteAgent = require('./code/agent.Testsuite.js'),// REM: as agent
     //
-    TestsuiteApp     = require('./app.testsuite.js'),
-    TestsuiteLab     = require('./lab.testsuite.js')
+    TestsuiteApp   = require('./app.testsuite.js'),
+    TestsuiteLab   = require('./lab.testsuite.js')
 ; // const
 
 (async function LaunchTestsuite() {
 
     const
-        validate        = {
-            ec: {
-                net: {
-                    ping: async ({
-                                     id:         id,
-                                     testResult: testResult
-                                 }) => {
-                        const
-                            pass = "ip:Pass",
-                            fail = "ip:Fail"
-                        ; // const
-
-                        let result = {
-                            '@context': ["https://www.nicos-rd.com/fua/ip/"],
-                            id:         id,
-                            type:       ["ip:validationResult"]
-                        };
-                        if (testResult.isAlive) {
-                            result.type.push(pass);
-                        } else {
-                            result.type.push(fail);
-                        } // if ()
-                        return result;
-                    }
-                }
-            }
-        },
-        testsuite_agent = await TestsuiteAgent({
-            id: config.server.id,
-            //validate: validate,
+        // amec = new Amec(),
+        testsuite_agent = await TestsuiteAgent.create({
+            id:      config.server.id,
             testbed: config.testbed
-        })
-    ; // const
+            // validate: {
+            //     ec: {
+            //         net: {
+            //             ping: async ({
+            //                              id:         id,
+            //                              testResult: testResult
+            //                          }) => {
+            //                 const
+            //                     pass = "ip:Pass",
+            //                     fail = "ip:Fail"
+            //                 ; // const
+            //
+            //                 let result = {
+            //                     '@context': ["https://www.nicos-rd.com/fua/ip/"],
+            //                     id:         id,
+            //                     type:       ["ip:validationResult"]
+            //                 };
+            //                 if (testResult.isAlive) {
+            //                     result.type.push(pass);
+            //                 } else {
+            //                     result.type.push(fail);
+            //                 } // if ()
+            //                 return result;
+            //             }
+            //         }
+            //     }
+            // }
+        }),
+        tc_console_log  = true;
 
-    //amec = new Amec();
-
-    const
-        tc_console_log = true
-    ;
-    let testcases      = {
+    testsuite_agent.testcases = {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({
             root_uri:    config.server.id,
             agent:       {
@@ -67,8 +62,6 @@ const
             console_log: tc_console_log
         })
     };
-
-    testsuite_agent.testcases = testcases;
 
     await TestsuiteApp({
         'space':  undefined,
