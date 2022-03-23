@@ -1,20 +1,18 @@
 const
-    config                      = require('./config/config.testbed.js'),
-    util                        = require('./code/util.testbed.js'),
+    config                   = require('./config/config.testbed.js'),
+    util                     = require('./code/util.testbed.js'),
     //
-    Amec                        = require('@nrd/fua.agent.amec'),
-    BasicAuth                   = require('@nrd/fua.agent.amec/BasicAuth'),
-    rdf                         = require('@nrd/fua.module.rdf'),
-    {DataStore, DataFactory}    = require('@nrd/fua.module.persistence'),
-    {DAPS}                      = require('@nrd/fua.ids.agent.daps'),
-    {Space}                     = require('@nrd/fua.module.space'),
+    Amec                     = require('@nrd/fua.agent.amec'),
+    BasicAuth                = require('@nrd/fua.agent.amec/BasicAuth'),
+    rdf                      = require('@nrd/fua.module.rdf'),
+    {DataStore, DataFactory} = require('@nrd/fua.module.persistence'),
+    {DAPS}                   = require('@nrd/fua.ids.agent.daps'),
+    {Space}                  = require('@nrd/fua.module.space'),
     //
     // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    TestbedAgent                = require('./code/agent.Testbed.js'),
-    server_tls_certificates     = require('../cert/tls-server/server.js'),
-    daps_connector_certificates = require('../cert/daps/connector/client.js'),
-    TestbedApp                  = require('./app.testbed.js'),
-    TestbedLab                  = require('./lab.testbed.js')
+    TestbedAgent             = require('./code/agent.Testbed.js'),
+    TestbedApp               = require('./app.testbed.js'),
+    TestbedLab               = require('./lab.testbed.js')
 ; // const
 
 /**
@@ -177,12 +175,12 @@ async function createSpace(config) {
             //
             keys:                      {
                 default: {
-                    publicKey:  daps_connector_certificates.publicKey,
-                    privateKey: daps_connector_certificates.privateKey
+                    publicKey:  config.cert.daps_connector.publicKey,
+                    privateKey: config.cert.daps_connector.privateKey
                 }
             },
-            publicKey:                 daps_connector_certificates.publicKey,
-            privateKey:                daps_connector_certificates.privateKey,
+            publicKey:                 config.cert.daps_connector.publicKey,
+            privateKey:                config.cert.daps_connector.privateKey,
             jwt_payload_iss:           jwt_payload_iss,
             tweak_DAT_custom_enabled:  tweak_DAT_custom_enabled,
             tweak_DAT_custom_max_size: 10000 // TODO : config
@@ -207,9 +205,9 @@ async function createSpace(config) {
         'space':         space,
         'serverNode':    testbedNode,
         'serverOptions': {
-            key:                server_tls_certificates.key,
-            cert:               server_tls_certificates.cert,
-            ca:                 server_tls_certificates.ca,
+            key:                config.cert.server_tls.key,
+            cert:               config.cert.server_tls.cert,
+            ca:                 config.cert.server_tls.ca,
             requestCert:        false,
             rejectUnauthorized: false
         },

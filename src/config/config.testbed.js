@@ -1,7 +1,9 @@
 const
-    path   = require('path'),
-    fs     = require('fs'),
-    __root = path.join(__dirname, '../..')
+    path                        = require('path'),
+    fs                          = require('fs'),
+    __root                      = path.join(__dirname, '../..'),
+    server_tls_certificates     = require('../../cert/tls-server/server.js'),
+    daps_connector_certificates = require('../../cert/daps/connector/client.js')
 ;
 
 exports.context = {
@@ -204,4 +206,9 @@ exports.login = {
         browser:     true,
         geolocation: true
     }
+};
+
+exports.cert = {
+    server_tls:     server_tls_certificates,
+    daps_connector: daps_connector_certificates
 };

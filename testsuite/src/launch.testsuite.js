@@ -2,9 +2,8 @@ const
     config         = require('./config/config.testsuite.js'),
     util           = require('./code/util.testsuite.js'),
     //
-    //Amec             = require(path.join(util.FUA_JS_LIB, 'agent.amec/src/agent.amec.js')),
-    TestsuiteAgent = require('./code/agent.Testsuite.js'),// REM: as agent
-    //
+    // Amec           = require('@nrd/fua.agent.amec'),
+    TestsuiteAgent = require('./code/agent.Testsuite.js'),
     TestsuiteApp   = require('./app.testsuite.js'),
     TestsuiteLab   = require('./lab.testsuite.js')
 ; // const
