@@ -6,9 +6,7 @@ const
 
 class TestsuiteAgent {
 
-    static get id() {
-        return 'http://www.nicos-rd.com/fua/testbed#TestsuiteAgent';
-    }
+    static id = 'http://www.nicos-rd.com/fua/testbed#TestsuiteAgent';
 
     static async create(options) {
         const agent = new TestsuiteAgent(options);

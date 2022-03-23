@@ -11,9 +11,7 @@ const
 
 class TestbedAgent {
 
-    static get id() {
-        return 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
-    }
+    static id = 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
 
     static async create(options) {
         const agent = new TestbedAgent(options);
