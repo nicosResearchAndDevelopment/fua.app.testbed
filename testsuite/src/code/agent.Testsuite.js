@@ -2,7 +2,10 @@ const
     path             = require('path'),
     EventEmitter     = require('events'),
     socket_io_client = require('socket.io-client'),
-    util             = require('./util.testsuite.js');
+    util             = require('./util.testsuite.js'),
+    {Space}          = require('@nrd/fua.module.space'),
+    Amec             = require('@nrd/fua.agent.amec'),
+    {Domain}         = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js'));
 
 class TestsuiteAgent {
 
@@ -16,18 +19,25 @@ class TestsuiteAgent {
     #eventEmitter = new EventEmitter();
     #id           = '';
     #prefix       = '';
+    #space        = null;
+    #amec         = null;
     #tbSocketUrl  = '';
     #tbSocket     = null;
     #tbEmit       = null;
 
-    #initState = -1;
+    #initState     = -1;
+    #testsuiteNode = null;
+    #domainNode    = null;
+    #domain        = null;
 
     #testcases = null;
 
     constructor({
                     id:      id = '',
                     prefix:  prefix = 'ts',
-                    testbed: testbed = null
+                    testbed: testbed,
+                    space:   space,
+                    amec:    amec
                 }) {
 
         util.assert(util.isString(id) && id.length > 0, 'expected id to be a non empty string');
@@ -37,15 +47,19 @@ class TestsuiteAgent {
         util.assert(util.isString(testbed.host), 'expected testbed.host to be a string');
         util.assert(util.isString(testbed.port) || util.isInteger(testbed.port), 'expected testbed.port to be a string or an integer');
         util.assert(util.isNull(testbed.options) || util.isObject(testbed.options), 'expected testbed.options to be an object or null');
+        util.assert(util.isNull(space) || (space instanceof Space), 'expected space to be an instance of Space');
+        util.assert(util.isNull(amec) || (amec instanceof Amec), 'expected amec to be an instance of Amec');
 
         this.#id          = id;
         this.#prefix      = prefix;
+        this.#space       = space || null;
+        this.#amec        = amec || null;
         this.#tbSocketUrl = `${testbed.schema}://${testbed.host}:${testbed.port}/execute`;
         this.#tbSocket    = socket_io_client(this.#tbSocketUrl, testbed.options);
         this.#tbEmit      = util.promisify(this.#tbSocket.emit).bind(this.#tbSocket);
 
         this.#tbSocket.on('connect', () => {
-
+            this.#tbEmit('subscribe', {room: 'event'});
         });
 
         this.#tbSocket.on('error', (error) => {
@@ -78,7 +92,19 @@ class TestsuiteAgent {
         util.assert(this.#initState < 0, 'already initialized');
         this.#initState = 0;
 
-        // TODO
+        if (this.#space) {
+            this.#testsuiteNode = this.#space.getNode(this.#id);
+            await this.#testsuiteNode.load();
+
+            this.#domainNode = this.#testsuiteNode.getNode('ecm:domain');
+            await this.#domainNode.load();
+
+            this.#domain = new Domain({
+                config: this.#domainNode,
+                amec:   this.#amec,
+                space:  this.#space
+            });
+        }
 
         this.#initState = 1;
         return this;
@@ -96,6 +122,18 @@ class TestsuiteAgent {
         this.#eventEmitter.on(event, callback);
         return this;
     } // TestsuiteAgent#on
+
+    get amec() {
+        return this.#amec;
+    }
+
+    get domain() {
+        return this.#domain;
+    }
+
+    get space() {
+        return this.#space;
+    }
 
     get testcases() {
         return this.#testcases;
@@ -124,6 +162,7 @@ class TestsuiteAgent {
     }
 
     async test(token, data) {
+        util.assert(this.#initState > 0, 'not yet initialized');
         const
             testToken               = {id: token.id, start: token.start, thread: []},
             [testError, testResult] = await this.#tbEmit('test', testToken, data);
@@ -140,6 +179,7 @@ class TestsuiteAgent {
     } // TestsuiteAgent#test
 
     async enforce(token, data) {
+        util.assert(this.#initState > 0, 'not yet initialized');
         const tcFunction = this.#testcases[data.testCase];
         util.assert(tcFunction, 'testcase function not found');
         try {
@@ -157,6 +197,7 @@ class TestsuiteAgent {
               start:  start = util.dateTime(),
               thread: thread = []
           }) {
+        util.assert(this.#initState > 0, 'not yet initialized');
         return {
             id:     id,
             type:   [`${prefix}:Token`],

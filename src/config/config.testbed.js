@@ -106,14 +106,14 @@ exports.rdf = {
 exports.persistence = {
     module:  '@nrd/fua.module.persistence.filesystem',
     options: {
-        defaultFile: 'file://data.ttl',
+        defaultFile: 'file://tb.data.ttl',
         loadFiles:   [
             {
-                '@id':             'file://data.ttl',
+                '@id':             'file://tb.data.ttl',
                 'dct:identifier':  path.join(__root, 'data/tb.data.ttl'),
                 'dct:format':      'text/turtle',
                 'dct:title':       'data.ttl',
-                'dct:alternative': 'GBX Data'
+                'dct:alternative': 'Testbed Data'
             },
             // require('@nrd/fua.resource.ontology'),
             // require('@nrd/fua.resource.universe'),
@@ -159,10 +159,6 @@ exports.persistence = {
 exports.space = {
     context:   exports.rdf.context,
     datastore: exports.persistence
-};
-
-exports.server = {
-    id: 'https://testbed.nicos-rd.com/'
 };
 
 exports.login = {
@@ -211,4 +207,15 @@ exports.login = {
 exports.cert = {
     server_tls:     server_tls_certificates,
     daps_connector: daps_connector_certificates
+};
+
+exports.server = {
+    id:      'https://testbed.nicos-rd.com/',
+    options: {
+        key:                exports.cert.server_tls.key,
+        cert:               exports.cert.server_tls.cert,
+        ca:                 exports.cert.server_tls.ca,
+        requestCert:        false,
+        rejectUnauthorized: false
+    }
 };

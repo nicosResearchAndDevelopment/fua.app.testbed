@@ -3,14 +3,14 @@ const
     http                       = require('http'),
     https                      = require('https'),
     express                    = require('express'),
+    ExpressSession             = require('express-session'),
     {CloudEvent, HTTP: ceHTTP} = require('cloudevents'),
     socket_io                  = require('socket.io'),
     rdf                        = require('@nrd/fua.module.rdf'),
-    util                       = require('@nrd/fua.core.util'),
-    ExpressSession             = require('express-session'),
     Middleware_LDP             = require('@nrd/fua.middleware.ldp'),
     Middleware_WEB             = require('@nrd/fua.middleware.web'),
-    Middleware_WEB_login       = require('@nrd/fua.middleware.web/login')
+    Middleware_WEB_login       = require('@nrd/fua.middleware.web/login'),
+    util                       = require('./code/util.testbed.js')
 ; // const
 
 module.exports = async function TestbedApp(
@@ -60,7 +60,7 @@ module.exports = async function TestbedApp(
     }));
 
     //region LDN
-    app.post('/inbox', express.json(), (request, response, next) => {
+    app.post('/inbox', (request, response, next) => {
         // TODO
         util.logObject(request.body)
         next();
@@ -127,8 +127,7 @@ module.exports = async function TestbedApp(
     //} // for ()
 
     io.use((socket, next) => {
-        //debugger;
-        return sessions(socket.request, socket.request.res, next)
+        sessions(socket.request, socket.request.res, next);
     });
 
     io.on('connection', (socket) => {
@@ -153,24 +152,28 @@ module.exports = async function TestbedApp(
         });
     }); // io.on('connection')
 
-    io_testsuite.use(async (socket, next) => {
-        //debugger;
-
-        let result = await agent.authenticate({
-            Authorization: 'Basic ' + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password}`).toString('base64')
-            // REM : ERROR : Authorization: 'Basic ' + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password + 'nix'}`).toString('base64')
-        }, 'BasicAuth');
-
-        if (result) {
-            next();
-        } else {
-            next(new Error(`TODO: not authenticated.`));
-        } // if ()
+    io_testsuite.use((socket, next) => {
+        sessions(socket.request, socket.request.res, next);
     });
+
+    // io_testsuite.use(async (socket, next) => {
+    //     //debugger;
+    //
+    //     let result = await agent.authenticate({
+    //         Authorization: 'Basic ' + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password}`).toString('base64')
+    //         // REM : ERROR : Authorization: 'Basic ' + Buffer.from(`${socket.handshake.auth.user}:${socket.handshake.auth.password + 'nix'}`).toString('base64')
+    //     }, 'BasicAuth');
+    //
+    //     if (result) {
+    //         next();
+    //     } else {
+    //         next(new Error(`TODO: not authenticated.`));
+    //     } // if ()
+    // });
 
     io_testsuite.on('connection', (socket) => {
 
-        agent.testsuite_inbox_socket = socket;
+        // agent.testsuite_inbox_socket = socket;
         // testsuite_socket             = socket;
 
         socket.on('test', async (token, test, callback) => {
@@ -203,6 +206,20 @@ module.exports = async function TestbedApp(
 
         }); // testsuite_socket.on('test')
 
+        socket.on('subscribe', ({room}) => {
+            util.logText(`Socket<${socket.id}> tries to subscribe to { room: "${room}" }`);
+            // TODO the id must be part of the room and referenced by any tickets/tokens/etc.
+            // in order to emit any events back to the relevant subscriber
+
+            // const id = socket.session?.id || socket.id;
+            switch (room) {
+                case 'event':
+                    // socket.join('event-' + id);
+                    socket.join('event');
+                    break;
+            }
+        });
+
     }); // io_testsuite.on('connection')
 
     amec.on('authentication-error', (error) => {
@@ -221,8 +238,10 @@ module.exports = async function TestbedApp(
         });
     });
 
+    // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
     agent.on('event', (error, data) => {
         util.logText('app.testbed :: agent : event :: >>>');
+
         if (error) {
             util.logError(error);
             io.to('terminal').emit('printError', {
@@ -230,6 +249,7 @@ module.exports = async function TestbedApp(
                 'error': '' + (error?.stack ?? error)
             });
         }
+
         if (data) {
             util.logObject(data);
             const cloudEvent = new CloudEvent({
@@ -248,6 +268,7 @@ module.exports = async function TestbedApp(
                 'data': cloudEvent
             });
         }
+
         // if (testsuite_socket) {
         //     //debugger;
         //     // TODO : streamline
@@ -255,11 +276,14 @@ module.exports = async function TestbedApp(
         // } // if ()
         // REM: not like above, better:
         // io.to('testsuite').emit('event', error, data);
+        io_testsuite.to('event').emit('event', error, data);
+
         util.logText('app.testbed :: agent : event :: <<<');
     }); // agent.on('event')
 
     agent.on('error', (error) => {
         util.logText('app.testbed :: agent : error :: >>>');
+
         if (error) {
             util.logError(error);
             io.to('terminal').emit('printError', {
@@ -267,6 +291,7 @@ module.exports = async function TestbedApp(
                 'error': '' + (error?.stack ?? error)
             });
         }
+
         // if (testsuite_socket) {
         //     //debugger;
         //     // TODO : streamline
@@ -276,6 +301,9 @@ module.exports = async function TestbedApp(
         // io.to('testsuite').emit('error', {
         //     'error': error
         // });
+        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
+        io_testsuite.to('event').emit('event', error);
+
         util.logText('app.testbed :: agent : error :: <<<');
     }); // agent.on('error')
 

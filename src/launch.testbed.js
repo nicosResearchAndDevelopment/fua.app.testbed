@@ -4,7 +4,7 @@ const
     //
     Amec                     = require('@nrd/fua.agent.amec'),
     BasicAuth                = require('@nrd/fua.agent.amec/BasicAuth'),
-    rdf                      = require('@nrd/fua.module.rdf'),
+    // rdf                      = require('@nrd/fua.module.rdf'),
     {DataStore, DataFactory} = require('@nrd/fua.module.persistence'),
     {DAPS}                   = require('@nrd/fua.ids.agent.daps'),
     {Space}                  = require('@nrd/fua.module.space'),
@@ -86,64 +86,64 @@ async function createSpace(config) {
             // TODO : hier könnte man vielleicht auch duration 'PT1.42S' gehen?!?
             'idle_emit_threshold': {'@type': 'xsd:decimal', '@value': /** seconds */ 60.0},
             'hasTRS':              'http://dbpedia.org/resource/Unix_time'
-        }, // testbed_scheduler
-        testbed_system           = {
-            '@id':       'http://testbed.nicos-rd.com/system/',
-            '@type':     'http://www.nicos-rd.com/fua/agent/System#Device',
-            'owner':     {
-                '@id':   testbed_app.systemOwner,
-                '@type': 'foaf:Agent'
-            },
-            'time':      {
-                '@type':  'fua.agent.Time',
-                'hasTRS': 'http://dbpedia.org/resource/Unix_time'
-            },
-            'lifecycle': {
-                '@type':             'time:Instant',
-                'time:hasBeginning': {
-                    '@type':                   'time:Instant',
-                    'time:inXSDDateTimeStamp': '2019-12-14T12:35:25.047Z'
-                }
-            }
-        }, // testbed_system
-        testbed_domain           = {
-            '@id':         'http://testbed.nicos-rd.com/domain/',
-            'owner':       {
-                '@id':   testbed_app.domainOwner,
-                '@type': 'foaf:Agent'
-            },
-            'users':       { // REM: as ldp:BasicContainer
-                '@id': 'http://testbed.nicos-rd.com/domain/users/'
-            },
-            'groups':      { // REM: as ldp:BasicContainer
-                '@id': 'http://testbed.nicos-rd.com/domain/groups/'
-            },
-            'roles':       { // REM: as ldp:BasicContainer
-                '@id': 'http://testbed.nicos-rd.com/domain/roles/'
-            },
-            'memberships': { // REM: as ldp:BasicContainer
-                '@id': 'http://testbed.nicos-rd.com/domain/memberships/'
-            },
-            'credentials': { // REM: as ldp:BasicContainer
-                '@id': 'http://testbed.nicos-rd.com/domain/credentials/'
-            }
-        }, // testbed_domain
-        testbed_agent_testsuite  = { // REM: as agent
-            '@id': 'http://testbed.nicos-rd.com/testsuite/',
-            // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
-            'domain': 'set by testbed (so we will take "testbed.domain")'
-        }, // testbed_testsuite
-        testbed_agent_node       = { // REM: ...is coming from generated graph.
-            '@id':       'http://testbed.nicos-rd.com/agent/',
-            'owner':     {
-                '@id': testbed_app.owner
-            },
-            'holder':    testbed_app,
-            'scheduler': testbed_scheduler,
-            'system':    testbed_system,
-            'domain':    testbed_domain,
-            'testsuite': testbed_agent_testsuite
-        }, // agent_node
+        },
+        // testbed_system           = {
+        //     '@id':       'http://testbed.nicos-rd.com/system/',
+        //     '@type':     'http://www.nicos-rd.com/fua/agent/System#Device',
+        //     'owner':     {
+        //         '@id':   testbed_app.systemOwner,
+        //         '@type': 'foaf:Agent'
+        //     },
+        //     'time':      {
+        //         '@type':  'fua.agent.Time',
+        //         'hasTRS': 'http://dbpedia.org/resource/Unix_time'
+        //     },
+        //     'lifecycle': {
+        //         '@type':             'time:Instant',
+        //         'time:hasBeginning': {
+        //             '@type':                   'time:Instant',
+        //             'time:inXSDDateTimeStamp': '2019-12-14T12:35:25.047Z'
+        //         }
+        //     }
+        // }, // testbed_system
+        // testbed_domain           = {
+        //     '@id':         'http://testbed.nicos-rd.com/domain/',
+        //     'owner':       {
+        //         '@id':   testbed_app.domainOwner,
+        //         '@type': 'foaf:Agent'
+        //     },
+        //     'users':       { // REM: as ldp:BasicContainer
+        //         '@id': 'http://testbed.nicos-rd.com/domain/users/'
+        //     },
+        //     'groups':      { // REM: as ldp:BasicContainer
+        //         '@id': 'http://testbed.nicos-rd.com/domain/groups/'
+        //     },
+        //     'roles':       { // REM: as ldp:BasicContainer
+        //         '@id': 'http://testbed.nicos-rd.com/domain/roles/'
+        //     },
+        //     'memberships': { // REM: as ldp:BasicContainer
+        //         '@id': 'http://testbed.nicos-rd.com/domain/memberships/'
+        //     },
+        //     'credentials': { // REM: as ldp:BasicContainer
+        //         '@id': 'http://testbed.nicos-rd.com/domain/credentials/'
+        //     }
+        // }, // testbed_domain
+        // testbed_agent_testsuite  = { // REM: as agent
+        //     '@id': 'http://testbed.nicos-rd.com/testsuite/',
+        //     // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
+        //     'domain': 'set by testbed (so we will take "testbed.domain")'
+        // }, // testbed_testsuite
+        // testbed_agent_node       = { // REM: ...is coming from generated graph.
+        //     '@id':       'http://testbed.nicos-rd.com/agent/',
+        //     'owner':     {
+        //         '@id': testbed_app.owner
+        //     },
+        //     'holder':    testbed_app,
+        //     'scheduler': testbed_scheduler,
+        //     'system':    testbed_system,
+        //     'domain':    testbed_domain,
+        //     'testsuite': testbed_agent_testsuite
+        // },
         testbed_agent_util       = {
             'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
                 // TODO : context is array?
@@ -161,18 +161,17 @@ async function createSpace(config) {
                 return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
             }
         },
-        testbed_agent_context    = [],
+        // testbed_agent_context    = [],
         space                    = await createSpace(config.space),
         testbedNode              = await space.getNode(config.server.id).load(),
         daps_id                  = testbedNode.id, // TODO : config
         jwt_payload_iss          = 'https://testbed.nicos-rd.com:8080',
         tweak_DAT_custom_enabled = true,
-        nrdDapsNode              = await space.getNode(daps_id).load(),
+        // nrdDapsNode              = await space.getNode(daps_id).load(),
         daps                     = new DAPS({
-            id:      `${daps_id}agent/`,
-            rootUri: 'https://testbed.nicos-rd.com/domain/user#',
-            domain:  null,                                            // REM : set by testbed-agent
-            //
+            id:                        `${daps_id}agent/`,
+            rootUri:                   'https://testbed.nicos-rd.com/domain/user#',
+            domain:                    null, // REM : set by testbed-agent
             keys:                      {
                 default: {
                     publicKey:  config.cert.daps_connector.publicKey,
@@ -202,17 +201,11 @@ async function createSpace(config) {
     testbed_app.agent = testbed_agent;
 
     await TestbedApp({
+        'config':        config,
+        'agent':         testbed_agent,
         'space':         space,
         'serverNode':    testbedNode,
-        'serverOptions': {
-            key:                config.cert.server_tls.key,
-            cert:               config.cert.server_tls.cert,
-            ca:                 config.cert.server_tls.ca,
-            requestCert:        false,
-            rejectUnauthorized: false
-        },
-        'agent':         testbed_agent,
-        'config':        config,
+        'serverOptions': config.server.options,
         'amec':          amec
     });
 
