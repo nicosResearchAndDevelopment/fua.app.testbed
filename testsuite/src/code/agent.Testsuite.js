@@ -60,6 +60,7 @@ class TestsuiteAgent {
 
         this.#tbSocket.on('connect', () => {
             this.#tbEmit('subscribe', {room: 'event'});
+            this.#eventEmitter.emit('testbed_socket_connect');
         });
 
         this.#tbSocket.on('error', (error) => {
@@ -123,6 +124,16 @@ class TestsuiteAgent {
         return this;
     } // TestsuiteAgent#on
 
+    once(event, callback) {
+        this.#eventEmitter.once(event, callback);
+        return this;
+    } // TestsuiteAgent#once
+
+    off(event, callback) {
+        this.#eventEmitter.off(event, callback);
+        return this;
+    } // TestsuiteAgent#off
+
     get amec() {
         return this.#amec;
     }
@@ -133,6 +144,10 @@ class TestsuiteAgent {
 
     get space() {
         return this.#space;
+    }
+
+    get testbed_connected() {
+        return this.#tbSocket && this.#tbSocket.connected;
     }
 
     get testcases() {
@@ -200,7 +215,7 @@ class TestsuiteAgent {
         util.assert(this.#initState > 0, 'not yet initialized');
         return {
             id:     id,
-            type:   [`${prefix}:Token`],
+            type:   [`${this.#prefix}:Token`],
             start:  start,
             thread: util.toArray(thread)
         };

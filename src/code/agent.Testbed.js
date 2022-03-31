@@ -213,6 +213,16 @@ class TestbedAgent {
         return this;
     } // TestbedAgent#on
 
+    once(event, callback) {
+        this.#eventEmitter.once(event, callback);
+        return this;
+    } // TestbedAgent#once
+
+    off(event, callback) {
+        this.#eventEmitter.off(event, callback);
+        return this;
+    } // TestbedAgent#off
+
     get inboxSocket() {
         return this.#inboxSocket;
     }

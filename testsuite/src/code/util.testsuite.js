@@ -81,5 +81,5 @@ util.streamToString = function (stream) {
 //     location:  path.join(__dirname, '../../../src/code/fn-interface.testbed.js')
 // });
 
-// module.exports = util;
-module.exports = Object.freeze(util);
+Object.freeze(util);
+module.exports = util;

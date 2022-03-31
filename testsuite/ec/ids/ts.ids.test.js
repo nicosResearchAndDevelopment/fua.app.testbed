@@ -1,4 +1,5 @@
 const
+    path                            = require("path"),
     fs                              = require("fs"),
     {describe, test, before, after} = require('mocha'),
     //
@@ -10,7 +11,7 @@ const
     tc_root_uri                     = `${testsuite_id}ec/ids/tc/`,
     //
     cert                            = require('../../cert/tls-server/server.js'),
-    {TestsuiteAgent}                = require('../../src/agent.testsuite.js')// REM: as agent
+    TestsuiteAgent                  = require('../../src/code/agent.testsuite.js')// REM: as agent
     //Portscan                        = require('../../src/agent.testsuite.js')
 ;
 
@@ -21,7 +22,8 @@ const
 
 const
     tc_console_log = true,
-    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    // auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    auditlog       = path.join(__dirname, '../../../auditlog'),
     applicant_root = `${auditlog}/tb_ids_bob`,
     session_root   = `${applicant_root}/ids`,
     applicant      = require(`${applicant_root}/config.json`)
@@ -114,7 +116,7 @@ describe('IDS', function () {
         session = Session({root: session_root});
         //session = null; // REM : mute output
 
-        agent = await TestsuiteAgent({
+        agent = await TestsuiteAgent.create({
             id:      testsuite_id,
             testbed: testbed_io
         });
@@ -125,11 +127,11 @@ describe('IDS', function () {
             agent:       agent,
             console_log: tc_console_log
         });
-        await new Promise((resolve, reject) => {
-            agent.on('testbed_socket_connect', async () => {
-                resolve();
-            });
-        });
+
+        if (!agent.testbed_connected) await new Promise((resolve, reject) => agent
+            .once('testbed_socket_connect', resolve)
+            .once('error', reject)
+        );
 
     }); // before()
 
@@ -242,4 +244,3 @@ describe('IDS', function () {
     }); // describe(SUT_provides_self_description)
 
 }); // describe('ids')
-

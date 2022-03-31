@@ -1,4 +1,5 @@
 const
+    path                            = require("path"),
     fs                              = require("fs"),
     {describe, test, before, after} = require('mocha'),
     //
@@ -9,7 +10,7 @@ const
     tc_root_urn                     = `urn:ts:ec:net:tc:`,
     tc_root_uri                     = `${testsuite_id}ec/net/tc/`,
     //
-    {TestsuiteAgent}                = require('../../src/agent.testsuite.js')// REM: as agent
+    TestsuiteAgent                  = require('../../src/code/agent.testsuite.js')// REM: as agent
     //Portscan                        = require('../../src/agent.testsuite.js')
 ;
 
@@ -32,7 +33,8 @@ const
     //    host:     "127.0.0.1",
     //    port:     8080
     //}
-    auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    // auditlog       = `C:/fua/DEVL/js/app/nrd-testbed/auditlog`,
+    auditlog       = path.join(__dirname, '../../../auditlog'),
     applicant_root = `${auditlog}/tb_ids_bob`,
     session_root   = `${applicant_root}/net`,
     applicant      = require(`${applicant_root}/config.json`)
@@ -88,12 +90,17 @@ describe('net', function () {
         let config = {
             port:    8081,
             testbed: {
-                schema: "http",
-                host:   "127.0.0.1",
-                port:   8080,
-                auth:   {
+                // https://testbed.nicos-rd.com:8080/
+                schema:  "https",
+                host:    "testbed.nicos-rd.com",
+                port:    8080,
+                auth:    {
                     user:     "testsuite",
                     password: "marzipan" // TODO : password : HASH
+                },
+                options: {
+                    requestCert:        false,
+                    rejectUnauthorized: false
                 }
             }
         };
@@ -101,7 +108,7 @@ describe('net', function () {
         session = Session({root: session_root});
         //session = null; // REM : mute output
 
-        agent = await TestsuiteAgent({
+        agent = await TestsuiteAgent.create({
             id:      testsuite_id,
             testbed: config.testbed
         });
@@ -113,11 +120,11 @@ describe('net', function () {
             agent:       agent,
             console_log: tc_console_log
         });
-        await new Promise((resolve, reject) => {
-            agent.on('testbed_socket_connect', async () => {
-                resolve();
-            });
-        });
+
+        if (!agent.testbed_connected) await new Promise((resolve, reject) => agent
+            .once('testbed_socket_connect', resolve)
+            .once('error', reject)
+        );
 
     }); // before()
 
