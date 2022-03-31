@@ -5,7 +5,7 @@ const
     util             = require('./util.testsuite.js'),
     {Space}          = require('@nrd/fua.module.space'),
     Amec             = require('@nrd/fua.agent.amec'),
-    {Domain}         = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js'));
+    {Domain}         = require('@nrd/fua.agent.domain/beta');
 
 class TestsuiteAgent {
 

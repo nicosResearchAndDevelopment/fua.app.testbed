@@ -4,8 +4,8 @@ const
     util         = require('./util.testbed.js'),
     {Space}      = require('@nrd/fua.module.space'),
     Amec         = require('@nrd/fua.agent.amec'),
-    {Scheduler}  = require(path.join(util.FUA_JS_LIB, 'agent.Scheduler/src/agent.Scheduler.js')),
-    {Domain}     = require(path.join(util.FUA_JS_LIB, 'agent.Domain/src/agent.Domain.beta.js')),
+    {Scheduler}  = require('@nrd/fua.agent.scheduler'),
+    {Domain}     = require('@nrd/fua.agent.domain/beta'),
     {PEP}        = require('@nrd/fua.decide.pep'),
     {DAPS}       = require('@nrd/fua.ids.agent.daps');
 
