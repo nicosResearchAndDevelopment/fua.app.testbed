@@ -108,14 +108,14 @@ async function createSpace(config) {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({
             root_uri:    config.server.id,
             agent:       {
-                test: testsuite_agent.test
+                test: testsuite_agent.test.bind(testsuite_agent)
             },
             console_log: tc_console_log
         }),
         ids: require(`./tc/ec/ids/tc.ec.ids.launch`)({
             root_uri:    config.server.id,
             agent:       {
-                test: testsuite_agent.test
+                test: testsuite_agent.test.bind(testsuite_agent)
             },
             console_log: tc_console_log
         })

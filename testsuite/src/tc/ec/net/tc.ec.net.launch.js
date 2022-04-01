@@ -43,7 +43,7 @@ module.exports = ({
             })
         ;
 
-        return async (token, data, session) => {
+        const returnFn = async (token, data, session) => {
             let result = await _fn_(token, data);
             if (session) {
                 let node = {
@@ -65,6 +65,14 @@ module.exports = ({
                 throw(result.error);
             return result;
         };
+
+        Object.defineProperties(returnFn, {
+            'name': {value: _fn_.name},
+            'id':   {value: _fn_.id},
+            'urn':  {value: _fn_.urn}
+        });
+
+        return returnFn;
     } // function wrapper()
 
     // REM : ONLY functions are iterable!!!
@@ -79,7 +87,7 @@ module.exports = ({
                 criterion:   criterion,
                 fn:          require(`./tc/tc.ec.net.ping.js`),
                 console_log: console_log
-            }), enumerable: false
+            }), enumerable: true
         }, // ping
         portscan:  {
             value:          wrapper({
@@ -89,7 +97,7 @@ module.exports = ({
                 criterion:   criterion,
                 fn:          require(`./tc/tc.ec.net.portscan.js`),
                 console_log: console_log
-            }), enumerable: false
+            }), enumerable: true
         } // portscan
     }); // Object.defineProperties(carry)
 

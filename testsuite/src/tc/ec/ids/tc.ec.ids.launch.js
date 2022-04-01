@@ -42,7 +42,7 @@ module.exports = ({
             })
         ;
 
-        return async (token, data, session) => {
+        const returnFn = async (token, data, session) => {
             try {
                 let result = await _fn_(token, data);
                 if (session) {
@@ -68,10 +68,18 @@ module.exports = ({
                 throw (jex);
             } // try
         };
+
+        Object.defineProperties(returnFn, {
+            'name': {value: _fn_.name},
+            'id':   {value: _fn_.id},
+            'urn':  {value: _fn_.urn}
+        });
+
+        return returnFn;
     } // function wrapper()
 
     Object.defineProperties(carry, {
-        id:     {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
+        id:                            {value: tc_root_uri, enumerable: /** REM : !!!!!!!!!!!!!!! */ false},
         SUT_provides_self_description: {
             value:          wrapper({
                 tc_root_uri: tc_root_uri,
@@ -80,7 +88,7 @@ module.exports = ({
                 criterion:   criterion,
                 fn:          require(`./tc/tc.ec.ids.SUT_provides_self_description.js`),
                 console_log: console_log
-            }), enumerable: false
+            }), enumerable: true
         }, // SUT_provides_self_description
         //
         rc_refreshDAT: {
@@ -91,7 +99,7 @@ module.exports = ({
                 criterion:   criterion,
                 fn:          require(`./rc/rc.ec.ids.rc_refreshDAT.js`),
                 console_log: console_log
-            }), enumerable: false
+            }), enumerable: true
         } // rc_refreshDAT
     }); // Object.defineProperties(carry)
 
