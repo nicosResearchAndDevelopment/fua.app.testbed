@@ -12,4 +12,19 @@ util.pause = function (seconds) {
     });
 };
 
+util.contextHasPrefix = function ({context, prefix}) {
+    for (let prefixObj of util.toArray(context)) {
+        if (prefixObj[prefix]) return true;
+    }
+    return false;
+};
+
+util.randomLeaveId = function () {
+    return `${Date.now()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
+};
+
+util.idAsBlankNode = function (namespace = '') {
+    return `_:${namespace}${util.randomLeaveId()}`;
+};
+
 module.exports = Object.freeze(util);
