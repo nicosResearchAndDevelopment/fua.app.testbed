@@ -6,7 +6,7 @@ const
     {Space}                  = require('@nrd/fua.module.space'),
     Amec                     = require('@nrd/fua.agent.amec'),
     BasicAuth                = require('@nrd/fua.agent.amec/BasicAuth'),
-    TestsuiteAgent           = require('./code/agent.Testsuite.js'),
+    TestsuiteAgent           = require('./code/agent.testsuite.js'),
     TestsuiteApp             = require('./app.testsuite.js'),
     TestsuiteLab             = require('./lab.testsuite.js')
 ; // const

@@ -2,7 +2,7 @@ const
     config       = require('./config/config.testbed.js'),
     util         = require('./code/util.testbed.js'),
     BasicAuth    = require('@nrd/fua.agent.amec/BasicAuth'),
-    TestbedAgent = require('./code/agent.Testbed.js'),
+    TestbedAgent = require('./code/agent.testbed.js'),
     TestbedApp   = require('./app.testbed.js'),
     TestbedLab   = require('./lab.testbed.js')
 ; // const
