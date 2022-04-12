@@ -1,177 +1,32 @@
 const
-    config                   = require('./config/config.testbed.js'),
-    util                     = require('./code/util.testbed.js'),
-    //
-    Amec                     = require('@nrd/fua.agent.amec'),
-    BasicAuth                = require('@nrd/fua.agent.amec/BasicAuth'),
-    // rdf                      = require('@nrd/fua.module.rdf'),
-    {DataStore, DataFactory} = require('@nrd/fua.module.persistence'),
-    {DAPS}                   = require('@nrd/fua.ids.agent.daps'),
-    {Space}                  = require('@nrd/fua.module.space'),
-    //
-    // REM: agent (agent-testbed) will be put under all services (like http, gRPC, graphQL)
-    TestbedAgent             = require('./code/agent.Testbed.js'),
-    TestbedApp               = require('./app.testbed.js'),
-    TestbedLab               = require('./lab.testbed.js')
+    config       = require('./config/config.testbed.js'),
+    util         = require('./code/util.testbed.js'),
+    BasicAuth    = require('@nrd/fua.agent.amec/BasicAuth'),
+    TestbedAgent = require('./code/agent.Testbed.js'),
+    TestbedApp   = require('./app.testbed.js'),
+    TestbedLab   = require('./lab.testbed.js')
 ; // const
-
-/**
- * @param {object} config
- * @param {object} [config.context]
- * @param {object} config.datastore
- * @param {string} config.datastore.module
- * @param {object} [config.datastore.options]
- * @returns {Space}
- */
-async function createSpace(config) {
-    // 1. check input arguments
-    util.assert(util.isObject(config),
-        'createSpace : expected config to be an object', TypeError);
-    util.assert(util.isNull(config.context) || util.isObject(config.context),
-        'createSpace : expected config.context to be an object', TypeError);
-    util.assert(util.isObject(config.datastore),
-        'createSpace : expected config.datastore to be an object', TypeError);
-    util.assert(util.isString(config.datastore.module),
-        'createSpace : expected config.datastore.module to be a string', TypeError);
-    util.assert(util.isNull(config.datastore.options) || util.isObject(config.datastore.options),
-        'createSpace : expected config.datastore.options to be an object', TypeError);
-
-    // 2. require the persistence module, to be able to make the persistence configurable
-    // (this is an exception, normally you would try to avoid requiring in any place other than the top of the script)
-    const SpecificDataStore = require(config.datastore.module);
-    util.assert(DataStore.isPrototypeOf(SpecificDataStore),
-        'createSpace : expected SpecificDataStore to be a subclass of DataStore', TypeError);
-
-    // 3. create the necessary components for the space, like factory and datastore
-    const
-        context   = config.context || {},
-        factory   = new DataFactory(context),
-        dataStore = new SpecificDataStore(config.datastore.options, factory);
-
-    // 4. make sure the datastore is available (ping) by requesting its size
-    const size = await dataStore.size();
-    util.assert(size, 'createSpace : expected space to not be empty', TypeError);
-
-    // let that = rdf.generateGraph(dataStore.dataset, {
-    //    compact: false,
-    //    strings:   false,
-    //    meshed:  true,
-    //    blanks:  true
-    // });
-
-    // 5. create a space out of the collected components and return it
-    return new Space({store: dataStore});
-} // createSpace
 
 (async function LaunchTestbed() {
 
-    const
-        testbed_app              = {
-            '@context':    [],
-            '@id':         'http://testbed.nicos-rd.com/app/',
-            '@type':       'http_//www.nicos-rd.com/fua/testbed#TestbedApp',
-            'owner':       'http://www.nicos-rd.com',
-            'domainOwner': 'http://www.nicos-rd.com/DOMAIN/owner/',
-            'systemOwner': 'http://www.nicos-rd.com/SYSTEM/owner/',
-            'agent':       undefined, // REM : will be set later...
-            'service':     null
-        }, // testbed_app
-        testbed_scheduler        = {
-            '@id':   'http://testbed.nicos-rd.com/scheduler/',
-            '@type': 'http://www.nicos-rd.com/fua/agent/scheduler#Scheduler',
-            'owner': {
-                '@id':   testbed_app.systemOwner,
-                '@type': 'foaf:Agent'
-            },
-            // TODO : hier könnte man vielleicht auch duration 'PT1.42S' gehen?!?
-            'idle_emit_threshold': {'@type': 'xsd:decimal', '@value': /** seconds */ 60.0},
-            'hasTRS':              'http://dbpedia.org/resource/Unix_time'
+    const testbedAgent = await TestbedAgent.create({
+        schema:   'https',
+        hostname: 'testbed.nicos-rd.com',
+        port:     8080,
+        context:  config.space.context,
+        store:    config.space.datastore,
+        // space:     config.space,
+        amec:      true,
+        server:    config.server.options,
+        app:       true,
+        io:        true,
+        domain:    true,
+        sessions:  {
+            resave:            false,
+            saveUninitialized: false,
+            secret:            config.server.id
         },
-        // testbed_system           = {
-        //     '@id':       'http://testbed.nicos-rd.com/system/',
-        //     '@type':     'http://www.nicos-rd.com/fua/agent/System#Device',
-        //     'owner':     {
-        //         '@id':   testbed_app.systemOwner,
-        //         '@type': 'foaf:Agent'
-        //     },
-        //     'time':      {
-        //         '@type':  'fua.agent.Time',
-        //         'hasTRS': 'http://dbpedia.org/resource/Unix_time'
-        //     },
-        //     'lifecycle': {
-        //         '@type':             'time:Instant',
-        //         'time:hasBeginning': {
-        //             '@type':                   'time:Instant',
-        //             'time:inXSDDateTimeStamp': '2019-12-14T12:35:25.047Z'
-        //         }
-        //     }
-        // }, // testbed_system
-        // testbed_domain           = {
-        //     '@id':         'http://testbed.nicos-rd.com/domain/',
-        //     'owner':       {
-        //         '@id':   testbed_app.domainOwner,
-        //         '@type': 'foaf:Agent'
-        //     },
-        //     'users':       { // REM: as ldp:BasicContainer
-        //         '@id': 'http://testbed.nicos-rd.com/domain/users/'
-        //     },
-        //     'groups':      { // REM: as ldp:BasicContainer
-        //         '@id': 'http://testbed.nicos-rd.com/domain/groups/'
-        //     },
-        //     'roles':       { // REM: as ldp:BasicContainer
-        //         '@id': 'http://testbed.nicos-rd.com/domain/roles/'
-        //     },
-        //     'memberships': { // REM: as ldp:BasicContainer
-        //         '@id': 'http://testbed.nicos-rd.com/domain/memberships/'
-        //     },
-        //     'credentials': { // REM: as ldp:BasicContainer
-        //         '@id': 'http://testbed.nicos-rd.com/domain/credentials/'
-        //     }
-        // }, // testbed_domain
-        // testbed_agent_testsuite  = { // REM: as agent
-        //     '@id': 'http://testbed.nicos-rd.com/testsuite/',
-        //     // REM: when testsuite will be stand alone in the future, it will serve its very own domain...
-        //     'domain': 'set by testbed (so we will take "testbed.domain")'
-        // }, // testbed_testsuite
-        // testbed_agent_node       = { // REM: ...is coming from generated graph.
-        //     '@id':       'http://testbed.nicos-rd.com/agent/',
-        //     'owner':     {
-        //         '@id': testbed_app.owner
-        //     },
-        //     'holder':    testbed_app,
-        //     'scheduler': testbed_scheduler,
-        //     'system':    testbed_system,
-        //     'domain':    testbed_domain,
-        //     'testsuite': testbed_agent_testsuite
-        // },
-        testbed_agent_util       = {
-            'contextHasPrefix': function ({'context': context, 'prefix': prefix}) {
-                // TODO : context is array?
-                let result = false;
-                for (let i = 0; ((!result) && (i < context.length)); i++) {
-                    result = ((context[i][prefix]) ? true : false)
-                } // for (i)
-                return result;
-            },
-            'idAsBlankNode':    function (namespace = "") {
-                //return `_:${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
-                return `_:${namespace}${testbed_agent_util['randomLeaveId']()}`;
-            },
-            'randomLeaveId':    function () {
-                return `${(new Date).valueOf()}_${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`;
-            }
-        },
-        // testbed_agent_context    = [],
-        space                    = await createSpace(config.space),
-        testbedNode              = await space.getNode(config.server.id).load(),
-        daps_id                  = testbedNode.id, // TODO : config
-        jwt_payload_iss          = 'https://testbed.nicos-rd.com:8080',
-        tweak_DAT_custom_enabled = true,
-        // nrdDapsNode              = await space.getNode(daps_id).load(),
-        daps                     = new DAPS({
-            id:                        `${daps_id}agent/`,
-            rootUri:                   'https://testbed.nicos-rd.com/domain/user#',
-            domain:                    null, // REM : set by testbed-agent
+        daps:      {
             keys:                      {
                 default: {
                     publicKey:  config.cert.daps_connector.publicKey,
@@ -180,38 +35,34 @@ async function createSpace(config) {
             },
             publicKey:                 config.cert.daps_connector.publicKey,
             privateKey:                config.cert.daps_connector.privateKey,
-            jwt_payload_iss:           jwt_payload_iss,
-            tweak_DAT_custom_enabled:  tweak_DAT_custom_enabled,
-            tweak_DAT_custom_max_size: 10000 // TODO : config
-        }),
-        amec                     = new Amec(),
-        testbed_agent            = await TestbedAgent.create({
-            id:               testbedNode.id,
-            space:            space,
-            amec:             amec,
-            daps:             daps,
-            schedulerOptions: testbed_scheduler
-        })
-    ; // const
+            tweak_DAT_custom_enabled:  true,
+            tweak_DAT_custom_max_size: 10000
+        },
+        scheduler: {
+            '@id':   'http://testbed.nicos-rd.com/scheduler/',
+            '@type': 'http://www.nicos-rd.com/fua/agent/scheduler#Scheduler',
+            'owner': {
+                '@id':   'http://www.nicos-rd.com/SYSTEM/owner/',
+                '@type': 'foaf:Agent'
+            },
+            // TODO : hier könnte man vielleicht auch duration 'PT1.42S' gehen?!?
+            'idle_emit_threshold': {'@type': 'xsd:decimal', '@value': /** seconds */ 60.0},
+            'hasTRS':              'http://dbpedia.org/resource/Unix_time'
+        }
+    });
 
-    amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
-        domain: testbed_agent.domain
+    testbedAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
+        domain: testbedAgent.domain
     }));
 
-    testbed_app.agent = testbed_agent;
-
     await TestbedApp({
-        'config':        config,
-        'agent':         testbed_agent,
-        'space':         space,
-        'serverNode':    testbedNode,
-        'serverOptions': config.server.options,
-        'amec':          amec
+        'config': config,
+        'agent':  testbedAgent
     });
 
     await TestbedLab({
-        'space': space,
-        'agent': testbed_agent
+        'config': config,
+        'agent':  testbedAgent
     });
 
 })().catch((err) => {

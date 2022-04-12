@@ -1,128 +1,92 @@
 const
-    path         = require('path'),
-    EventEmitter = require('events'),
-    util         = require('./util.testbed.js'),
-    {Space}      = require('@nrd/fua.module.space'),
-    Amec         = require('@nrd/fua.agent.amec'),
-    {Scheduler}  = require('@nrd/fua.agent.scheduler'),
-    {Domain}     = require('@nrd/fua.agent.domain/beta'),
-    {PEP}        = require('@nrd/fua.decide.pep'),
-    {DAPS}       = require('@nrd/fua.ids.agent.daps');
+    path        = require('path'),
+    util        = require('./util.testbed.js'),
+    ServerAgent = require('@nrd/fua.agent.server'),
+    {Scheduler} = require('@nrd/fua.agent.scheduler'),
+    {PEP}       = require('@nrd/fua.decide.pep'),
+    {DAPS}      = require('@nrd/fua.ids.agent.daps');
 
-class TestbedAgent {
+class TestbedAgent extends ServerAgent {
 
     static id = 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
 
-    static async create(options) {
-        const agent = new TestbedAgent(options);
-        return await agent.initialize();
-    } // TestbedAgent.create
-
-    #eventEmitter = new EventEmitter();
-    #id           = '';
-    #space        = null;
-    #amec         = null;
-    #scheduler    = null;
-    #daps         = null;
-
-    #initState   = -1;
-    #testbedNode = null;
-    #domainNode  = null;
-    #pep         = null;
-    #domain      = null;
+    #scheduler = null;
+    #pep       = null;
+    #daps      = null;
 
     #inboxSocket = null;
     #ecosystems  = Object.create(null);
 
-    constructor({
-                    id:               id = '',
-                    space:            space,
-                    amec:             amec,
-                    schedulerOptions: schedulerOptions,
-                    daps:             daps
-                }) {
+    async initialize(options = {}) {
+        util.assert(options.app, 'expected app to be enabled');
+        util.assert(options.server, 'expected server to be enabled');
+        util.assert(options.io, 'expected io to be enabled');
+        util.assert(options.sessions, 'expected sessions to be enabled');
+        util.assert(options.domain, 'expected domain to be enabled');
+        util.assert(options.amec, 'expected amec to be enabled');
 
-        util.assert(util.isString(id) && id.length > 0, 'expected id to be a non empty string');
-        util.assert(space instanceof Space, 'expected space to be an instance of Space');
-        util.assert(amec instanceof Amec, 'expected amec to be an instance of Amec');
-        util.assert(util.isNotNull(schedulerOptions), 'expected scheduler to be not null');
-        // TODO DAPS implementation should support 'instanceof' feature
-        // util.assert(util.isNull(daps) || (daps instanceof DAPS), 'expected daps to be an instance of DAPS');
+        await super.initialize(options);
 
-        this.#id        = id;
-        this.#space     = space;
-        this.#amec      = amec;
-        this.#scheduler = new Scheduler(schedulerOptions);
-        this.#daps      = daps;
+        if (options.scheduler) {
+            if (options.scheduler instanceof Scheduler) {
+                this.#scheduler = options.scheduler;
+            } else {
+                const schedulerOptions = util.isObject(options.scheduler) && options.scheduler || {};
+                this.#scheduler        = new Scheduler(schedulerOptions);
+            }
+            this.#scheduler.on('error', (...args) => this.emit('scheduler_error', ...args));
+            this.#scheduler.on('idle', (...args) => this.emit('scheduler_idle', ...args));
+            this.#scheduler.on('addTask', (...args) => this.emit('scheduler_addTask', ...args));
+            this.#scheduler.on('removeTask', (...args) => this.emit('scheduler_removeTask', ...args));
+            this.#scheduler.on('beforeTaskExecution', (...args) => this.emit('scheduler_beforeTaskExecution', ...args));
+            this.#scheduler.on('afterTaskExecution', (...args) => this.emit('scheduler_afterTaskExecution', ...args));
+            this.#scheduler.on('taskExecutionError', (...args) => this.emit('scheduler_taskExecutionError', ...args));
+            this.#scheduler.on('isProper', (...args) => this.emit('scheduler_isProper', ...args));
+        }
 
-        this.#scheduler.on('error', (...args) => this.#eventEmitter.emit('scheduler_error', ...args));
-        this.#scheduler.on('idle', (...args) => this.#eventEmitter.emit('scheduler_idle', ...args));
-        this.#scheduler.on('addTask', (...args) => this.#eventEmitter.emit('scheduler_addTask', ...args));
-        this.#scheduler.on('removeTask', (...args) => this.#eventEmitter.emit('scheduler_removeTask', ...args));
-        this.#scheduler.on('beforeTaskExecution', (...args) => this.#eventEmitter.emit('scheduler_beforeTaskExecution', ...args));
-        this.#scheduler.on('afterTaskExecution', (...args) => this.#eventEmitter.emit('scheduler_afterTaskExecution', ...args));
-        this.#scheduler.on('taskExecutionError', (...args) => this.#eventEmitter.emit('scheduler_taskExecutionError', ...args));
-        this.#scheduler.on('isProper', (...args) => this.#eventEmitter.emit('scheduler_isProper', ...args));
+        if (options.pep) {
+            if (options.pep instanceof PEP) {
+                this.#pep = options.pep;
+            } else {
+                const pepOptions = util.isObject(options.pep) && options.pep || {};
+                if (!pepOptions.id) pepOptions.id = this.uri + 'pep/';
+                this.#pep = new PEP(pepOptions);
+            }
+        }
 
-        this
-            .on('scheduler_idle', (data) => {
-                util.logObject(data);
-                //debugger;
-            })
-            .on('scheduler_error', (error) => {
-                util.logError(data);
-                //debugger;
-            });
-
-    } // TestbedAgent#constructor
-
-    get initialized() {
-        return this.#initState > 0;
-    }
-
-    async initialize() {
-        util.assert(this.#initState < 0, 'already initialized');
-        this.#initState = 0;
-
-        this.#testbedNode = this.#space.getNode(this.#id);
-        await this.#testbedNode.load();
-
-        this.#domainNode = this.#testbedNode.getNode('ecm:domain');
-        await this.#domainNode.load();
-
-        this.#pep = new PEP({
-            id: this.#id + 'PEP'
-        });
-
-        this.#domain = new Domain({
-            config: this.#domainNode,
-            amec:   this.#amec,
-            space:  this.#space
-        });
-
-        this.#daps.domain = this.#domain;
+        if (options.daps) {
+            if (options.daps instanceof DAPS) {
+                this.#daps = options.daps;
+            } else {
+                const dapsOptions = util.isObject(options.daps) && options.daps || {};
+                if (!dapsOptions.id) dapsOptions.id = this.uri + 'daps/';
+                if (!dapsOptions.rootUri) dapsOptions.rootUri = this.uri + 'domain/user#';
+                if (!dapsOptions.jwt_payload_iss) dapsOptions.jwt_payload_iss = this.url;
+                if (!dapsOptions.domain) dapsOptions.domain = this.domain;
+                this.#daps = new DAPS(dapsOptions);
+            }
+        }
 
         await this.initializeNet();
         await this.initializeIDS();
 
-        this.#initState = 1;
         return this;
     } // TestbedAgent#initialize
 
     async initializeNet() {
         if (this.#ecosystems.net) return this;
         const {net} = require('../../ec/net/src/tb.ec.net.js');
-        net.uri     = `${this.#id}ec/net/`;
+        net.uri     = `${this.uri}ec/net/`;
         // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
         net.on('event', (error, data) => {
             if (error) util.logError(error);
             else util.logObject(data);
-            // this.#eventEmitter.emit('event', error, data);
+            // this.emit('event', error, data);
             debugger;
         });
         net.on('error', (error) => {
             util.logError(error);
-            // this.#eventEmitter.emit('error', error);
+            // this.emit('error', error);
             debugger;
         });
         if (this.#ecosystems.net) return this;
@@ -134,10 +98,10 @@ class TestbedAgent {
     async initializeIDS() {
         if (this.#ecosystems.ids) return this;
         const
-            aliceNode = await this.#space.getNode('https://alice.nicos-rd.com/').load(),
-            bobNode   = await this.#space.getNode('https://bob.nicos-rd.com/').load(),
+            aliceNode = await this.space.getNode('https://alice.nicos-rd.com/').load(),
+            bobNode   = await this.space.getNode('https://bob.nicos-rd.com/').load(),
             ids       = require('../../ec/ids/src/tb.ec.ids.js')({
-                'uri':   `${this.#id}ec/ids/`,
+                'uri':   `${this.uri}ec/ids/`,
                 'ALICE': {
                     'id':     aliceNode.id,
                     'schema': aliceNode.getLiteral('fua:schema').value,
@@ -176,18 +140,18 @@ class TestbedAgent {
                     'cert_client': path.join(__dirname, '../../ec/ids/src/rc/bob/cert/index.js')
                 }
             });
-        ids.uri       = `${this.#id}ec/ids/`;
+        ids.uri       = `${this.uri}ec/ids/`;
         ids.ec        = this.#ecosystems;
         // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
         ids.on('event', (error, data) => {
             // if (error) util.logError(error);
             // else util.logObject(data);
-            this.#eventEmitter.emit('event', error, data);
+            this.emit('event', error, data);
             //debugger;
         });
         ids.on('error', (error) => {
             // util.logError(error);
-            this.#eventEmitter.emit('error', error);
+            this.emit('error', error);
             //debugger;
         });
         if (this.#ecosystems.ids) return this;
@@ -197,7 +161,7 @@ class TestbedAgent {
     } // TestbedAgent#initializeIDS
 
     get id() {
-        return this.#id;
+        return this.uri;
     }
 
     get ecosystems() {
@@ -207,21 +171,6 @@ class TestbedAgent {
     get ec() {
         return this.ecosystems;
     }
-
-    on(event, callback) {
-        this.#eventEmitter.on(event, callback);
-        return this;
-    } // TestbedAgent#on
-
-    once(event, callback) {
-        this.#eventEmitter.once(event, callback);
-        return this;
-    } // TestbedAgent#once
-
-    off(event, callback) {
-        this.#eventEmitter.off(event, callback);
-        return this;
-    } // TestbedAgent#off
 
     get inboxSocket() {
         return this.#inboxSocket;
@@ -244,40 +193,27 @@ class TestbedAgent {
         return this.#scheduler;
     }
 
-    get DAPS() {
-        return this.#daps;
-    }
-
-    get amec() {
-        return this.#amec;
-    }
-
-    async authenticate(headers, mechanism) {
-        const auth = await this.#amec.authenticate(headers, mechanism);
-        return auth;
-    } // TestbedAgent#authenticate
-
     get PEP() {
         return this.#pep;
     }
 
-    get domain() {
-        return this.#domain;
+    get DAPS() {
+        return this.#daps;
     }
 
-    get space() {
-        return this.#space;
-    }
+    async authenticate(headers, mechanism) {
+        return await this.amec.authenticate(headers, mechanism);
+    } // TestbedAgent#authenticate
 
     inbox(message) {
-        util.assert(this.#initState > 0, 'not yet initialized');
+        util.assert(this.io, 'not yet initialized');
         // FIXME nothing is emitted
         if (this.#inboxSocket) this.#inboxSocket.emit();
         return this;
     } // TestbedAgent#inbox
 
     async executeTest({ec: ecId, command: cmdId, param}) {
-        util.assert(this.#initState > 0, 'not yet initialized');
+        util.assert(this.io, 'not yet initialized');
         const ecosystem = this.#ecosystems[ecId];
         util.assert(util.isObject(ecosystem), 'expected ecosystem to be an object');
         const command = ecosystem[cmdId];
