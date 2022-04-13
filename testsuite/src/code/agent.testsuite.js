@@ -1,73 +1,51 @@
 const
     path             = require('path'),
-    EventEmitter     = require('events'),
-    socket_io_client = require('socket.io-client'),
     util             = require('./util.testsuite.js'),
-    {Space}          = require('@nrd/fua.module.space'),
-    Amec             = require('@nrd/fua.agent.amec'),
-    {Domain}         = require('@nrd/fua.agent.domain/beta');
+    ServerAgent      = require('@nrd/fua.agent.server'),
+    socket_io_client = require('socket.io-client');
 
-class TestsuiteAgent {
+class TestsuiteAgent extends ServerAgent {
 
     static id = 'http://www.nicos-rd.com/fua/testbed#TestsuiteAgent';
 
-    static async create(options) {
-        const agent = new TestsuiteAgent(options);
-        return await agent.initialize();
-    } // TestsuiteAgent.create
+    #prefix          = '';
+    #tbSocketUrl     = '';
+    #tbSocketOptions = null;
+    #tbSocket        = null;
+    #tbEmit          = null;
+    #testcases       = null;
 
-    #eventEmitter = new EventEmitter();
-    #id           = '';
-    #prefix       = '';
-    #space        = null;
-    #amec         = null;
-    #tbSocketUrl  = '';
-    #tbSocket     = null;
-    #tbEmit       = null;
+    constructor(options = {}) {
+        util.assert(util.isString(options.prefix) && options.prefix.length > 0, 'expected prefix to be a non empty string');
+        util.assert(util.isObject(options.testbed), 'expected testbed to be an object');
+        util.assert(util.isString(options.testbed.schema), 'expected testbed.schema to be a string');
+        util.assert(util.isString(options.testbed.host), 'expected testbed.host to be a string');
+        util.assert(util.isString(options.testbed.port) || util.isInteger(options.testbed.port), 'expected testbed.port to be a string or an integer');
+        util.assert(util.isNull(options.testbed.options) || util.isObject(options.testbed.options), 'expected testbed.options to be an object or null');
 
-    #initState     = -1;
-    #testsuiteNode = null;
-    #domainNode    = null;
-    #domain        = null;
+        super(options);
 
-    #testcases = null;
+        this.#prefix          = options.prefix;
+        this.#tbSocketUrl     = `${options.testbed.schema}://${options.testbed.host}:${options.testbed.port}/execute`;
+        this.#tbSocketOptions = options.testbed.options || {};
+    } // TestsuiteAgent#constructor
 
-    constructor({
-                    id:      id = '',
-                    prefix:  prefix = 'ts',
-                    testbed: testbed,
-                    space:   space,
-                    amec:    amec
-                }) {
+    async initialize(options = {}) {
+        await super.initialize(options);
 
-        util.assert(util.isString(id) && id.length > 0, 'expected id to be a non empty string');
-        util.assert(util.isString(prefix) && prefix.length > 0, 'expected prefix to be a non empty string');
-        util.assert(util.isObject(testbed), 'expected testbed to be an object');
-        util.assert(util.isString(testbed.schema), 'expected testbed.schema to be a string');
-        util.assert(util.isString(testbed.host), 'expected testbed.host to be a string');
-        util.assert(util.isString(testbed.port) || util.isInteger(testbed.port), 'expected testbed.port to be a string or an integer');
-        util.assert(util.isNull(testbed.options) || util.isObject(testbed.options), 'expected testbed.options to be an object or null');
-        util.assert(util.isNull(space) || (space instanceof Space), 'expected space to be an instance of Space');
-        util.assert(util.isNull(amec) || (amec instanceof Amec), 'expected amec to be an instance of Amec');
-
-        this.#id          = id;
-        this.#prefix      = prefix;
-        this.#space       = space || null;
-        this.#amec        = amec || null;
-        this.#tbSocketUrl = `${testbed.schema}://${testbed.host}:${testbed.port}/execute`;
-        this.#tbSocket    = socket_io_client(this.#tbSocketUrl, testbed.options);
-        this.#tbEmit      = util.promisify(this.#tbSocket.emit).bind(this.#tbSocket);
+        this.#tbSocket = socket_io_client(this.#tbSocketUrl, this.#tbSocketOptions);
+        this.#tbEmit   = util.promisify(this.#tbSocket.emit).bind(this.#tbSocket);
 
         this.#tbSocket.on('connect', () => {
             this.#tbEmit('subscribe', {room: 'event'});
-            this.#eventEmitter.emit('testbed_socket_connect');
+            this.emit('testbed_socket_connect');
         });
 
         this.#tbSocket.on('error', (error) => {
             if (util.isString(error)) error = new Error(error);
             else if (!(error instanceof Error) && util.isString(error?.message)) error = new Error(error.message);
             util.logError(error);
-            this.#eventEmitter.emit('error', error);
+            this.emit('error', error);
         });
 
         // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
@@ -76,74 +54,35 @@ class TestsuiteAgent {
                 if (util.isString(error)) error = new Error(error);
                 else if (util.isString(error?.message)) error = new Error(error.message);
                 util.logError(error);
-                this.#eventEmitter.emit('error', error);
+                this.emit('error', error);
             } else {
                 util.logObject(data);
-                this.#eventEmitter.emit('data', data);
+                this.emit('data', data);
             }
         });
 
-    } // TestsuiteAgent#constructor
-
-    get initialized() {
-        return this.#initState > 0;
-    }
-
-    async initialize() {
-        util.assert(this.#initState < 0, 'already initialized');
-        this.#initState = 0;
-
-        if (this.#space) {
-            this.#testsuiteNode = this.#space.getNode(this.#id);
-            await this.#testsuiteNode.load();
-
-            this.#domainNode = this.#testsuiteNode.getNode('ecm:domain');
-            await this.#domainNode.load();
-
-            this.#domain = new Domain({
-                config: this.#domainNode,
-                amec:   this.#amec,
-                space:  this.#space
+        // TODO evaluate if it is actually better to not wait for the connect event
+        await new Promise((resolve, reject) => {
+            let onError, onConnect;
+            this.#tbSocket.once('connect', onConnect = () => {
+                this.#tbSocket.off(onError);
+                resolve();
             });
-        }
+            this.#tbSocket.once('error', onError = (err) => {
+                this.#tbSocket.off(onConnect);
+                reject(err);
+            });
+        });
 
-        this.#initState = 1;
         return this;
     } // TestsuiteAgent#initialize
 
     get id() {
-        return this.#id;
+        return this.uri;
     }
 
     get prefix() {
         return this.#prefix;
-    }
-
-    on(event, callback) {
-        this.#eventEmitter.on(event, callback);
-        return this;
-    } // TestsuiteAgent#on
-
-    once(event, callback) {
-        this.#eventEmitter.once(event, callback);
-        return this;
-    } // TestsuiteAgent#once
-
-    off(event, callback) {
-        this.#eventEmitter.off(event, callback);
-        return this;
-    } // TestsuiteAgent#off
-
-    get amec() {
-        return this.#amec;
-    }
-
-    get domain() {
-        return this.#domain;
-    }
-
-    get space() {
-        return this.#space;
     }
 
     get testbed_connected() {
@@ -177,7 +116,7 @@ class TestsuiteAgent {
     }
 
     async test(token, data) {
-        util.assert(this.#initState > 0, 'not yet initialized');
+        util.assert(this.#tbSocket, 'expected testbed socket to be defined');
         const
             testToken               = {id: token.id, start: token.start, thread: []},
             [testError, testResult] = await this.#tbEmit('test', testToken, data);
@@ -194,7 +133,8 @@ class TestsuiteAgent {
     } // TestsuiteAgent#test
 
     async enforce(token, data) {
-        util.assert(this.#initState > 0, 'not yet initialized');
+        util.assert(this.#tbSocket, 'expected testbed socket to be defined');
+        util.assert(this.#testcases, 'expected testcases to be defined');
         const tcFunction = this.#testcases[data.testCase];
         util.assert(tcFunction, 'testcase function not found');
         try {
@@ -208,11 +148,10 @@ class TestsuiteAgent {
     } // TestsuiteAgent#enforce
 
     Token({
-              id:     id = `${this.#id}token/${util.uuid.v1()}`,
+              id:     id = `${this.uri}token/${util.uuid.v1()}`,
               start:  start = util.dateTime(),
               thread: thread = []
           }) {
-        util.assert(this.#initState > 0, 'not yet initialized');
         return {
             id:     id,
             type:   [`${this.#prefix}:Token`],
