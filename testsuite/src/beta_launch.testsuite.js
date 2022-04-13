@@ -10,14 +10,46 @@ const
 (async function LaunchTestsuite() {
 
     const testsuiteAgent = await TestsuiteAgent.create({
-
-        // TODO
-
+        schema:   (config.server.url.match(/^\w+(?=:\/\/)/) || ['http'])[0],
+        hostname: (config.server.url.match(/^\w+:\/\/([^/#:]+)(?=[/#:]|$)/) || [null, 'localhost'])[1],
+        port:     config.server.port,
+        context:  config.space.context,
+        store:    config.space.datastore,
+        // space:     config.space,
+        amec:     true,
+        server:   config.server.options,
+        app:      true,
+        io:       true,
+        domain:   true,
+        sessions: {
+            resave:            false,
+            saveUninitialized: false,
+            secret:            config.server.id
+        },
+        prefix:   'ts',
+        testbed:  config.testbed
     });
 
     testsuiteAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testsuiteAgent.domain
     }));
+
+    testsuiteAgent.testcases = {
+        net: require(`./tc/ec/net/tc.ec.net.launch`)({
+            root_uri:    config.server.id,
+            agent:       {
+                test: testsuiteAgent.test.bind(testsuiteAgent)
+            },
+            console_log: false
+        }),
+        ids: require(`./tc/ec/ids/tc.ec.ids.launch`)({
+            root_uri:    config.server.id,
+            agent:       {
+                test: testsuiteAgent.test.bind(testsuiteAgent)
+            },
+            console_log: false
+        })
+    };
 
     await TestsuiteApp({
         'config': config,
