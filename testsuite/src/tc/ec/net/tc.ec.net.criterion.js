@@ -25,7 +25,7 @@ module.exports = ({
                          testCase:    testCase,
                          description: description,
                          status:      status,
-                         timestamp:   timestamp = util.timestamp()
+                         timestamp:   timestamp = util.utcDateTime()
 
                      }) {
         let result = {

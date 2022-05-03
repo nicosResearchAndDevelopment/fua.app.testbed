@@ -29,7 +29,7 @@ class RcConnector extends BaseConnector {
                 'prov':   this.id,
                 'method': "idle",
                 'step':   "timeout_reached",
-                'start':  util.timestamp()
+                'start':  util.utcDateTime()
             }
         ;
         event.end = event.start;
@@ -141,7 +141,7 @@ class RcConnector extends BaseConnector {
                 'prov':   this.id,
                 'method': "rc_refreshDAT",
                 'step':   "called",
-                'start':  util.timestamp()
+                'start':  util.utcDateTime()
             }
         ;
         try {
@@ -165,7 +165,7 @@ class RcConnector extends BaseConnector {
 
             // TODO :
             //result.operationalResult = JSON.parse(body);
-            result.end = util.timestamp();
+            result.end = util.utcDateTime();
 
             event.end = result.end;
             this.emit('event', null, event);
@@ -174,7 +174,7 @@ class RcConnector extends BaseConnector {
             return result;
         } catch (jex) {
             event.error = jex;
-            event.end   = util.timestamp();
+            event.end   = util.utcDateTime();
             this.emit('event', event, undefined);
             throw(jex);
         } // try
@@ -191,7 +191,7 @@ class RcConnector extends BaseConnector {
                 'prov':   this.id,
                 'method': "rc_requestApplicantsSelfDescription",
                 'step':   "called",
-                'start':  util.timestamp()
+                'start':  util.utcDateTime()
             }
         ;
         try {
@@ -218,7 +218,7 @@ class RcConnector extends BaseConnector {
 
             // TODO :
             result.operationalResult = JSON.parse(body);
-            result.end               = util.timestamp();
+            result.end               = util.utcDateTime();
 
             event.end = result.end;
             this.emit('event', null, event);
@@ -227,7 +227,7 @@ class RcConnector extends BaseConnector {
             return result;
         } catch (jex) {
             event.error = jex;
-            event.end   = util.timestamp();
+            event.end   = util.utcDateTime();
             this.emit('event', event, undefined);
             throw(jex);
         } // try
@@ -244,7 +244,7 @@ class RcConnector extends BaseConnector {
                     'id':                randomLeave(this.id),
                     'thread':            param.thread,
                     'prov':              `${this.id}rc_waitForApplicantsSelfDescriptionRequest`,
-                    'start':             util.timestamp(),
+                    'start':             util.utcDateTime(),
                     'operationalResult': undefined
                 },
                 semaphore
@@ -260,7 +260,7 @@ class RcConnector extends BaseConnector {
 
                 clearTimeout(semaphore);
                 result.operationalResult = data;
-                result.end               = util.timestamp();
+                result.end               = util.utcDateTime();
 
                 this.#idle_semaphore = this.#idle(this.#idle_timeout);
                 callback(null, result);

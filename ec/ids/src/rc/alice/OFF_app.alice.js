@@ -75,7 +75,7 @@ module.exports = ({
 
             app.get('/', (request, response) => {
                 //response.redirect('/browse');
-                response.send(`${util.timestamp()} : ALICE : root:  test`);
+                response.send(`${util.utcDateTime()} : ALICE : root:  test`);
             });
 
             //await new Promise((resolve) =>

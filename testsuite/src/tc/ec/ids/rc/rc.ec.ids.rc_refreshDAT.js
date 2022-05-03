@@ -29,7 +29,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : test result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorTestResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -40,7 +40,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : operational result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorOperationalResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -53,7 +53,7 @@ module.exports = ({
         let error = null;
         try {
 
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : called`);
 
             data.ec      = ec;
             data.command = "rc_refreshDAT";
@@ -62,7 +62,7 @@ module.exports = ({
             await agent.test(token, data);
 
             //region validation
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : validation`);
 
             //error = new ErrorTestResultIsMissing(); // REM : error-testing
 
@@ -75,7 +75,7 @@ module.exports = ({
             if (!error) {
                 data.validationResult = {
                     id:        `${uri}/validation/result/${uuid.v1()}`,
-                    timestamp: util.timestamp(),
+                    timestamp: util.utcDateTime(),
                     status:     ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL)
                 };
             } // if ()
@@ -88,7 +88,7 @@ module.exports = ({
         if (error)
             console.error(error);
 
-        token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+        token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : return`);
         return {token: token, data: data, error: error};
 
     }, {

@@ -93,7 +93,7 @@ module.exports = async function TestsuiteLab(
             agent.Token({
                 id:     undefined,
                 start:  undefined,
-                thread: `${util.timestamp()} : TESTSUITE : app : process : start`
+                thread: `${util.utcDateTime()} : TESTSUITE : app : process : start`
             }),
             data
         );

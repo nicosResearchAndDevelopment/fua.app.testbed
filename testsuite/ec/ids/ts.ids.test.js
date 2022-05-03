@@ -160,7 +160,7 @@ describe('IDS', function () {
     //        agent.Token({
     //            id:     undefined,
     //            start:  undefined,
-    //            thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+    //            thread: `${util.utcDateTime()} : TS-MOCHA : test : ping :  start`
     //        }),
     //        /** data */ {
     //            operator: operator,
@@ -197,7 +197,7 @@ describe('IDS', function () {
             agent.Token({
                 id:     undefined,
                 start:  undefined,
-                thread: `${util.timestamp()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
+                thread: `${util.utcDateTime()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
             }),
             data,
             session)
@@ -231,7 +231,7 @@ describe('IDS', function () {
             agent.Token({
                 id:     undefined,
                 start:  undefined,
-                thread: `${util.timestamp()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
+                thread: `${util.utcDateTime()} : TS-MOCHA : test : requestApplicantsSelfDescription :  start`
             }),
             data,
             session)

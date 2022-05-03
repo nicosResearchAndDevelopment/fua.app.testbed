@@ -123,7 +123,7 @@ module.exports = ({
                     console.log(JSON.stringify(test_result, "", "\t"));
 
                     test_result = await agent.enforce(
-                        agent.Token({id: undefined, start: undefined, thread: `${util.timestamp()} : TESTSUITE : app : process : start`}),
+                        agent.Token({id: undefined, start: undefined, thread: `${util.utcDateTime()} : TESTSUITE : app : process : start`}),
                         data
                     );
                     console.log(JSON.stringify(test_result, "", "\t"));

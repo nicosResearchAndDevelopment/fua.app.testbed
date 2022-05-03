@@ -98,7 +98,7 @@ module.exports = async function TestbedApp(
     io_testsuite.on('connection', (socket) => {
 
         socket.on('test', async (token, test, callback) => {
-            token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
+            token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
 
             let
                 ec       = test['ec'],
@@ -113,7 +113,7 @@ module.exports = async function TestbedApp(
                     'command': command,
                     'param':   param
                 });
-                token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
+                token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
                 callback(null, token, result);
             } catch (jex) {
                 // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

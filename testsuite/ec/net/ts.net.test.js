@@ -140,7 +140,7 @@ describe('net', function () {
                 agent.Token({
                     id:     undefined,
                     start:  undefined,
-                    thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+                    thread: `${util.utcDateTime()} : TS-MOCHA : test : ping :  start`
                 }),
                 /** data */ {
                     operator: operator,
@@ -167,7 +167,7 @@ describe('net', function () {
             //    agent.Token({
             //        id:     undefined,
             //        start:  undefined,
-            //        thread: `${util.timestamp()} : TS-MOCHA : test : ping :  start`
+            //        thread: `${util.utcDateTime()} : TS-MOCHA : test : ping :  start`
             //    }),
             //    /** data */ {
             //        param: {
@@ -184,7 +184,7 @@ describe('net', function () {
             () => tc.portscan(agent.Token({
                     id:     undefined,
                     start:  undefined,
-                    thread: `${util.timestamp()} : TS-MOCHA : test : portscan : start`
+                    thread: `${util.utcDateTime()} : TS-MOCHA : test : portscan : start`
                 }),
                 /** data */ {
                     operator: operator,

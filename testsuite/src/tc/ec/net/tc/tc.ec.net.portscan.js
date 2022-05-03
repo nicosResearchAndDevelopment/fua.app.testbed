@@ -34,7 +34,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : test result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorTestResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -45,7 +45,7 @@ module.exports = ({
         constructor(bad) {
             super(`${urn} : bad port <${bad}>`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorBadPort;
             this.prov      = uri;
             Object.freeze(this);
@@ -56,7 +56,7 @@ module.exports = ({
         constructor(not_found) {
             super(`${urn} : ports needed, NOT found <${not_found}>`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorPortsNeededNotFound;
             this.prov      = uri;
             Object.freeze(this);
@@ -71,7 +71,7 @@ module.exports = ({
                     error  = null
                 ;
                 try {
-                    token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
+                    token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : called`);
 
                     data.ec      = ec;
                     data.command = name;
@@ -81,7 +81,7 @@ module.exports = ({
 
                     //region validation
 
-                    token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
+                    token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : validation`);
 
                     if (!data.testResult)
                         error = new ErrorTestResultIsMissing();
@@ -89,7 +89,7 @@ module.exports = ({
                     if (!error) {
                         data.validationResult = {
                             id:        `${uri}portscan/validation/result/${uuid.v1()}`,
-                            timestamp: util.timestamp(),
+                            timestamp: util.utcDateTime(),
                             //testCase:              urn,
                             //testCriterion:         undefined,
                             //testCaseSpecification: undefined,
@@ -102,7 +102,7 @@ module.exports = ({
                             ports_NOT_found   = []
                         ;
                         if (!error && data.param.ports.needed) {
-                            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : validation : ports : needed`);
+                            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : validation : ports : needed`);
                             ports_found     = [];
                             ports_NOT_found = [];
                             for (const [protocol, ports] of Object.entries(data.param.ports.needed)) {
@@ -142,7 +142,7 @@ module.exports = ({
                         } // if (data.param.ports.needed)
 
                         if (!error && data.param.ports.bad) {
-                            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : validation : ports : NOT_bad`);
+                            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : validation : ports : NOT_bad`);
                             ports_found = [];
                             for (const [protocol, ports] of Object.entries(data.param.ports.bad)) {
                                 ports.forEach((p) => {
@@ -184,7 +184,7 @@ module.exports = ({
                             testCase:    testCase,
                             description: "SUT answers on portscan",
                             status:      status,
-                            timestamp:   util.timestamp()
+                            timestamp:   util.utcDateTime()
                         });
                     } // if ()
 
@@ -202,7 +202,7 @@ module.exports = ({
                     console.log(`token: ${JSON.stringify(token, "", "\t")}`);
                 } // if ()
 
-                token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+                token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : return`);
                 return {token: token, data: data, error: error};
 
             },

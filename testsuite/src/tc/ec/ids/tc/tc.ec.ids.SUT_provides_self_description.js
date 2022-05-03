@@ -32,7 +32,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : test result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorTestResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -43,7 +43,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : operational result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorOperationalResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -58,7 +58,7 @@ module.exports = ({
         ;
         try {
 
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : called`);
 
             data.ec      = ec;
             data.command = "requestApplicantsSelfDescription";
@@ -67,7 +67,7 @@ module.exports = ({
             let result = await agent.test(token, data);
 
             //region validation
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : validation`);
 
             //error = new ErrorTestResultIsMissing(); // REM : error-testing
 
@@ -80,7 +80,7 @@ module.exports = ({
             if (!error) {
                 data.validationResult = {
                     id:        `${uri}/validation/result/${uuid.v1()}`,
-                    timestamp: util.timestamp(),
+                    timestamp: util.utcDateTime(),
                     value:     ((result.data.testResult.operationalResult['@type'] === "ids:SelfDescription") ? PASS : FAIL),
                     criterion: {}
                 };
@@ -93,7 +93,7 @@ module.exports = ({
                     testCase:    testCase,
                     description: "SUT provides correct Self Description",
                     status:      status,
-                    timestamp:   util.timestamp()
+                    timestamp:   util.utcDateTime()
                 });
                 //endregion INF_01
 
@@ -105,7 +105,7 @@ module.exports = ({
                     testCase:    testCase,
                     description: "SUT provides correct DAT",
                     status:      status,
-                    timestamp:   util.timestamp()
+                    timestamp:   util.utcDateTime()
                 });
                 //endregion INF_05
 
@@ -124,7 +124,7 @@ module.exports = ({
             console.log(`token: ${JSON.stringify(token, "", "\t")}`);
         } // if ()
 
-        token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+        token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : return`);
         return {token: token, data: data, error: error};
 
     }, {

@@ -64,7 +64,7 @@ async function TestsuiteAgent({
     }
 
     async function endExit(token, data) {
-        token.end = util.timestamp();
+        token.end = util.utcDateTime();
         console.log(token);
         console.log(data);
         //debugger;
@@ -98,7 +98,7 @@ async function TestsuiteAgent({
 
                 data.testResult = testResult[1];
 
-                //token.end = util.timestamp();
+                //token.end = util.utcDateTime();
                 return {token: token, data: data};
             } catch (jex) {
                 throw(jex);
@@ -147,7 +147,7 @@ async function TestsuiteAgent({
                                         id:   `${pool_root}ec/ids/tc/INF_01/activity/getSelfDescription/validate/`,
                                         exec: async (token, data) => {
                                             data.validationResult = {
-                                                timestamp: util.timestamp()
+                                                timestamp: util.utcDateTime()
                                             };
                                             if (data.testResult.isAlive) {
                                                 data.validationResult.valid  = true;
@@ -282,7 +282,7 @@ async function TestsuiteAgent({
         Token:     {
             value: ({
                         id:     id = `${testsuite.id}token/${uuid.v1()}`,
-                        start:  start = util.timestamp(),
+                        start:  start = util.utcDateTime(),
                         thread: thread = []
                     }) => {
                 if (typeof thread === "string")

@@ -99,7 +99,7 @@ module.exports = ({
                 });
 
                 app.get(agent.DAPS.jwks_path, express.json(), async (request, response, next) => {
-                    //response.send({timestamp: `${util.timestamp()}`});
+                    //response.send({timestamp: `${util.utcDateTime()}`});
                     response.send(agent.DAPS.publicKeyStore);
                     next();
                 });
@@ -173,7 +173,7 @@ module.exports = ({
                     agent.testsuite_inbox_socket = socket;
 
                     socket.on("test", async (token, test, callback) => {
-                        token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
+                        token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
 
                         let
                             ec       = test['ec'],
@@ -188,7 +188,7 @@ module.exports = ({
                                 'command': command,
                                 'param':   param
                             });
-                            token.thread.push(`${util.timestamp()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
+                            token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
                             callback(null, token, result);
                         } catch (jex) {
                             // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

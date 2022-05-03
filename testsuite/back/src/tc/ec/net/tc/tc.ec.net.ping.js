@@ -32,7 +32,7 @@ module.exports = ({
         constructor() {
             super(`${urn} : test result is missing`);
             this.id        = `${uri}error/${uuid.v1()}`;
-            this.timestamp = util.timestamp();
+            this.timestamp = util.utcDateTime();
             this.code      = ERROR_CODE_ErrorTestResultIsMissing;
             this.prov      = uri;
             Object.freeze(this);
@@ -45,7 +45,7 @@ module.exports = ({
         let error = null;
         try {
 
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : called`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : called`);
 
             data.ec      = ec;
             data.command = name;
@@ -54,7 +54,7 @@ module.exports = ({
             await agent.test(token, data);
 
             //region validation
-            token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : validation`);
+            token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : validation`);
             //error = new ErrorTestResultIsMissing(); // REM : error-testing
             if (!data.testResult)
                 error = new ErrorTestResultIsMissing();
@@ -62,7 +62,7 @@ module.exports = ({
             if (!error) {
                 data.validationResult = {
                     id:        `${uri}validation/result/${uuid.v1()}`,
-                    timestamp: util.timestamp(),
+                    timestamp: util.utcDateTime(),
                     //value:     ((data.testResult.isAlive === true) ? PASS : FAIL),
                     criterion: {
                         IS_ALIVE: criterion.IS_ALIVE({
@@ -71,7 +71,7 @@ module.exports = ({
                             testCase:    testCase,
                             description: "SUT pinged",
                             status:      ((data.testResult.isAlive === true) ? PASS : FAIL),
-                            timestamp:   util.timestamp()
+                            timestamp:   util.utcDateTime()
                         })
                     }
                 };
@@ -90,7 +90,7 @@ module.exports = ({
             console.log(`token: ${JSON.stringify(token, "", "\t")}`);
         } // if ()
 
-        token.thread.push(`${util.timestamp()} : TESTSUITE : ${urn} : before : return`);
+        token.thread.push(`${util.utcDateTime()} : TESTSUITE : ${urn} : before : return`);
         return {token: token, data: data, error: error};
 
     }, {

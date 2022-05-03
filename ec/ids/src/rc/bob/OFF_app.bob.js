@@ -73,7 +73,7 @@ module.exports = ({
             app.get('/', async (request, response) => {
                 //response.redirect('/browse');
 
-                response.send(`${util.timestamp()} : BOB : root:  test`);
+                response.send(`${util.utcDateTime()} : BOB : root:  test`);
             });
 
             app.get('/about', async (request, response) => {

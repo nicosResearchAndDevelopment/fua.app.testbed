@@ -16,7 +16,7 @@ function _parser_(message, search) {
 async function fn_portscan(param) {
     const
         result = {
-            timestamp:         util.timestamp(),
+            timestamp:         util.utcDateTime(),
             operationalResult: {}
         },
         output = await cmd_nmap({'n': 1}, param.host),

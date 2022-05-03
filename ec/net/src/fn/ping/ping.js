@@ -16,7 +16,7 @@ function _parser_(message, search) {
 async function fn_ping(param) {
     const
         result  = {
-            timestamp: util.timestamp(),
+            timestamp: util.utcDateTime(),
             isAlive:   false
         },
         output  = await cmd_ping({'n': 1}, param.host),
