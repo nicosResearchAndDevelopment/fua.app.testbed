@@ -7,17 +7,17 @@
 @prefix org:                                    <http://www.w3.org/ns/org#> .
 @prefix ids:                                    <https://w3id.org/idsa/core/> .
 
-@prefix fua:                                    <https://www.nicos-rd.com.org/fua#> .
+@prefix fua:                                    <https://www.nicos-rd.com/fua#> .
 
 @prefix idsa:                                   <https://www.internationaldataspaces.org/the-association/> .
 @prefix nicos-ag:                               <https://www.nicos-ag.com/> .
 @prefix nrd:                                    <https://www.nicos-rd.com/> .
 
-@prefix ecm:                                    <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix ecm:                                    <https://www.nicos-rd.com/fua/ecosystem#> .
 @prefix idsecm:                                 <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
 @prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
-@prefix tbm:                                    <https://www.nicos-rd.com.org/fua/testbed#> .
+@prefix tbm:                                    <https://www.nicos-rd.com/fua/testbed#> .
 
 @base <https://testbed.nicos-rd.com/> .
 @prefix ec-ids:                                 <ec/ids/> .

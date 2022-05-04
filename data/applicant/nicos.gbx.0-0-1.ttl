@@ -11,11 +11,11 @@
 
 @prefix nrd:             <https://www.nicos-rd.com/> .
 
-#@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+#@prefix ecm:            <https://www.nicos-rd.com/fua/ecosystem#> .
 @prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
-@prefix domain:                                 <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix domain:                                 <https://www.nicos-rd.com/fua/domain#> .
 
-@prefix tbm:             <https://www.nicos-rd.com.org/fua/testbed#> .
+@prefix tbm:             <https://www.nicos-rd.com/fua/testbed#> .
 
 # REM : 90
 

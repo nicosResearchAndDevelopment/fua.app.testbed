@@ -11,10 +11,10 @@
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
 
-@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix ecm:            <https://www.nicos-rd.com/fua/ecosystem#> .
 #@prefix idsecm:         <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
 
-@prefix tbm:            <https://www.nicos-rd.com.org/fua/testbed#> .
+@prefix tbm:            <https://www.nicos-rd.com/fua/testbed#> .
 
 @base <https://testbed.nicos-rd.com/> .
 @prefix ec:             <net/> .

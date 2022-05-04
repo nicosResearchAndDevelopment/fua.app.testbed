@@ -7,11 +7,11 @@
 @prefix odrl:           <http://www.w3.org/ns/odrl/2/> .
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
 
-@prefix fua:            <https://www.nicos-rd.com.org/fua#> .
-@prefix dom:            <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix fua:            <https://www.nicos-rd.com/fua#> .
+@prefix dom:            <https://www.nicos-rd.com/fua/domain#> .
 @prefix nicos-ag:       <https://www.nicos-ag.com/> .
 @prefix nrd:            <https://www.nicos-rd.com/> .
-@prefix ecm:            <https://www.nicos-rd.com.org/fua/ecosystem#> .
+@prefix ecm:            <https://www.nicos-rd.com/fua/ecosystem#> .
 
 @base <https://testbed.nicos-rd.com/> .
 

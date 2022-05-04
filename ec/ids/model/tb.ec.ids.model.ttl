@@ -8,9 +8,9 @@
 @prefix rdfs:                     <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:                      <http://www.w3.org/2001/XMLSchema#> .
 
-@prefix domain:                   <https://www.nicos-rd.com.org/fua/domain#> .
+@prefix domain:                   <https://www.nicos-rd.com/fua/domain#> .
 
-@prefix tbm:                      <https://www.nicos-rd.com.org/fua/testbed#> .
+@prefix tbm:                      <https://www.nicos-rd.com/fua/testbed#> .
 
 #@base <tb:users/> .
 @base <https://testbed.nicos-rd.com/domain/user#> .
