@@ -93,7 +93,9 @@ module.exports = async function TestsuiteApp(
     //endregion >> Testsuite
 
     app.get('/', (request, response) => response.redirect('/browse'));
+
     await agent.listen();
     util.logText(`testsuite app is listening at <${agent.url}>`);
+    agent.once('closed', () => util.logText('testsuite app has closed'));
 
 }; // module.exports = TestsuiteApp
