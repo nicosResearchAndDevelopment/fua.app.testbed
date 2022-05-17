@@ -88,6 +88,7 @@ describe('net', function () {
     before(async function () {
 
         let config = {
+            ...require('../../src/config/config.testsuite.js'),
             port:    8081,
             testbed: {
                 // https://testbed.nicos-rd.com:8080/
@@ -110,6 +111,11 @@ describe('net', function () {
 
         agent = await TestsuiteAgent.create({
             id:      testsuite_id,
+            schema:   'https',
+            hostname: 'testsuite.nicos-rd.com',
+            port:     8081,
+            prefix:  'ts',
+            store:   config.space.datastore,
             testbed: config.testbed
         });
 
