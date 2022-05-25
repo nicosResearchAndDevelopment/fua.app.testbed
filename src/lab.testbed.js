@@ -7,14 +7,14 @@ module.exports = async function TestbedLab(
     }
 ) {
 
-    agent
-        .on('scheduler_idle', (data) => {
-            util.logObject(data);
-            //debugger;
-        })
-        .on('scheduler_error', (error) => {
-            util.logError(error);
-            //debugger;
+    agent.scheduler
+        .on('idle', (schedule) => {
+            // util.logObject({
+            //     topic:     'idle',
+            //     timestamp: new Date(schedule.lastTime * 1000).toISOString(),
+            //     threshold: Math.round(schedule.nextTime - schedule.lastTime) + 's'
+            // });
+            util.logText('IDLE: ' + util.time(Math.round(schedule.lastTime)));
         });
 
     agent.amec

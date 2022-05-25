@@ -39,15 +39,7 @@ const
             tweak_DAT_custom_max_size: 10000
         },
         scheduler: {
-            '@id':   'http://testbed.nicos-rd.com/scheduler/',
-            '@type': 'http://www.nicos-rd.com/fua/agent/scheduler#Scheduler',
-            'owner': {
-                '@id':   'http://www.nicos-rd.com/SYSTEM/owner/',
-                '@type': 'foaf:Agent'
-            },
-            // TODO : hier könnte man vielleicht auch duration 'PT1.42S' gehen?!?
-            'idle_emit_threshold': {'@type': 'xsd:decimal', '@value': /** seconds */ 60.0},
-            'hasTRS':              'http://dbpedia.org/resource/Unix_time'
+            'idle': '*/30 * * * * *'
         }
     });
 

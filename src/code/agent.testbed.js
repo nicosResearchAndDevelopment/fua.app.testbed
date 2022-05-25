@@ -2,7 +2,7 @@ const
     path        = require('path'),
     util        = require('./util.testbed.js'),
     ServerAgent = require('@nrd/fua.agent.server'),
-    {Scheduler} = require('@nrd/fua.agent.scheduler'),
+    Scheduler   = require('@nrd/fua.agent.scheduler'),
     {PEP}       = require('@nrd/fua.decide.pep'),
     {DAPS}      = require('@nrd/fua.ids.agent.daps');
 
