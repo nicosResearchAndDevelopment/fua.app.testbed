@@ -21,7 +21,11 @@ module.exports = async function TestsuiteApp(
         io     = agent.io;
 
     //region >> WebApp
-    app.use('/browse', Middleware_WEB());
+    app.use('/browse', Middleware_WEB({
+        lib: true,
+        ext: true,
+        res: {pattern: '/nicos-rd/*'}
+    }));
     app.use('/browse', express.static(path.join(__dirname, 'code/browse')));
 
     app.use('/data', Middleware_LDP({

@@ -1,3 +1,4 @@
+import GUI from '/browse/lib/gui.mjs';
 import Layout from '/browse/lib/gui.layout.mjs';
 import Terminal from '/browse/lib/gui.terminal.mjs';
 import Tree from '/browse/lib/gui.tree.mjs';
@@ -44,6 +45,13 @@ export const viewer = new Inspector(layout.createCell(1, 2, 1, 1));
 
 export const terminal = new Terminal(layout.createCell(2, 1, 1, 2));
 
+GUI.style({
+    'body, html': {
+        'font-family': 'monospace, sans-serif',
+        'font-size':   '16px'
+    }
+});
+
 layout.defineLayout(
     /* rows: */[10, 150, 40],
     /* columns: */[20, 50, 30]
@@ -52,6 +60,17 @@ layout.defineLayout(
 menu
     .addLink('Home', '/browse')
     .addLink('Logout', '/login/logout');
+
+const
+    logoContainer = document.createElement('div'),
+    logoImage     = document.createElement('img');
+
+logoContainer.style = 'width: 100%; height: 100%; padding: 5px;';
+logoImage.src       = 'res/nicos-rd/signet.png';
+logoImage.style     = 'max-width: 100%; max-height: 100%;';
+
+logoContainer.append(logoImage);
+menu.container.prepend(logoContainer);
 
 export const faListStyles = {
     ['.' + FA.class]: {
