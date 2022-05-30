@@ -1,5 +1,4 @@
 const
-    path        = require('path'),
     util        = require('./util.testbed.js'),
     ServerAgent = require('@nrd/fua.agent.server'),
     Scheduler   = require('@nrd/fua.agent.scheduler'),
@@ -67,98 +66,8 @@ class TestbedAgent extends ServerAgent {
             }
         }
 
-        await this.initializeNet();
-        await this.initializeIDS();
-
         return this;
     } // TestbedAgent#initialize
-
-    async initializeNet() {
-        if (this.#ecosystems.net) return this;
-        const {net} = require('../../ec/net/src/tb.ec.net.js');
-        net.uri     = `${this.uri}ec/net/`;
-        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
-        net.on('event', (error, data) => {
-            if (error) util.logError(error);
-            else util.logObject(data);
-            // this.emit('event', error, data);
-            debugger;
-        });
-        net.on('error', (error) => {
-            util.logError(error);
-            // this.emit('error', error);
-            debugger;
-        });
-        if (this.#ecosystems.net) return this;
-        this.#ecosystems.net = Object.freeze(net);
-        util.lockProp(this.#ecosystems, 'net');
-        return this;
-    } // TestbedAgent#initializeNet
-
-    async initializeIDS() {
-        if (this.#ecosystems.ids) return this;
-        const
-            aliceNode = await this.space.getNode('https://alice.nicos-rd.com/').load(),
-            bobNode   = await this.space.getNode('https://bob.nicos-rd.com/').load(),
-            ids       = require('../../ec/ids/src/tb.ec.ids.js')({
-                'uri':   `${this.uri}ec/ids/`,
-                'ALICE': {
-                    'id':     aliceNode.id,
-                    'schema': aliceNode.getLiteral('fua:schema').value,
-                    'host':   aliceNode.getLiteral('fua:host').value,
-                    'port':   parseInt(aliceNode.getLiteral('fua:port').value),
-                    'SKIAKI': aliceNode.getLiteral('dapsm:skiaki').value,
-                    //
-                    'user':         {
-                        'tb_ec_ids': {'name': 'tb_ec_ids', 'password': 'marzipan'}
-                    },
-                    'idle_timeout': parseInt(aliceNode.getLiteral('idsecm:idle_timeout').value),
-                    'DAPS':         {
-                        'default': aliceNode.getNode('idsecm:daps_default').id
-                    },
-                    // 'cert_client':  'C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/alice/cert/index.js'
-                    'cert_client': path.join(__dirname, '../../ec/ids/src/rc/alice/cert/index.js')
-                }, // ALICE
-                'BOB':   {
-                    'id':     bobNode.id,
-                    'schema': bobNode.getLiteral('fua:schema').value,
-                    'host':   bobNode.getLiteral('fua:host').value,
-                    'port':   parseInt(bobNode.getLiteral('fua:port').value),
-                    'SKIAKI': bobNode.getLiteral('dapsm:skiaki').value,
-                    //
-                    'user': {
-                        'tb_ec_ids': {'name': 'tb_ec_ids', 'password': 'marzipan'}
-                    },
-                    //
-                    'idle_timeout': parseInt(bobNode.getLiteral('idsecm:idle_timeout').value),
-                    //'idle_timeout': 1,
-                    //
-                    'DAPS': {
-                        'default': bobNode.getNode('idsecm:daps_default').id
-                    },
-                    // 'cert_client': 'C:/fua/DEVL/js/app/nrd-testbed/ec/ids/src/rc/bob/cert/index.js'
-                    'cert_client': path.join(__dirname, '../../ec/ids/src/rc/bob/cert/index.js')
-                }
-            });
-        ids.uri       = `${this.uri}ec/ids/`;
-        ids.ec        = this.#ecosystems;
-        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
-        ids.on('event', (error, data) => {
-            // if (error) util.logError(error);
-            // else util.logObject(data);
-            this.emit('event', error, data);
-            //debugger;
-        });
-        ids.on('error', (error) => {
-            // util.logError(error);
-            this.emit('error', error);
-            //debugger;
-        });
-        if (this.#ecosystems.ids) return this;
-        this.#ecosystems.ids = Object.freeze(ids);
-        util.lockProp(this.#ecosystems, 'ids');
-        return this;
-    } // TestbedAgent#initializeIDS
 
     get id() {
         return this.uri;

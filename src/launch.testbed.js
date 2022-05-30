@@ -1,10 +1,12 @@
 const
-    config       = require('./config/config.testbed.js'),
-    util         = require('./code/util.testbed.js'),
-    BasicAuth    = require('@nrd/fua.agent.amec/BasicAuth'),
-    TestbedAgent = require('./code/agent.testbed.js'),
-    TestbedApp   = require('./app.testbed.js'),
-    TestbedLab   = require('./lab.testbed.js')
+    config        = require('./config/config.testbed.js'),
+    util          = require('./code/util.testbed.js'),
+    BasicAuth     = require('@nrd/fua.agent.amec/BasicAuth'),
+    TestbedAgent  = require('./code/agent.testbed.js'),
+    TestbedApp    = require('./app.testbed.js'),
+    TestbedLab    = require('./lab.testbed.js'),
+    initializeNet = require('../ec/net/src/initialize.net.js'),
+    initializeIDS = require('../ec/ids/src/initialize.ids.js')
 ; // const
 
 (async function LaunchTestbed() {
@@ -42,6 +44,11 @@ const
             'idle': '*/30 * * * * *'
         }
     });
+
+    await Promise.all([
+        initializeNet({'agent': testbedAgent}),
+        initializeIDS({'agent': testbedAgent})
+    ]);
 
     testbedAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testbedAgent.domain
