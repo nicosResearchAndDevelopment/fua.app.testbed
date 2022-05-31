@@ -11,6 +11,8 @@ const
 
 (async function LaunchTestbed() {
 
+    /* 1. Construct a server agent for your setup: */
+
     const testbedAgent = await TestbedAgent.create({
         schema:   'https',
         hostname: 'testbed.nicos-rd.com',
@@ -45,19 +47,27 @@ const
         }
     });
 
-    await Promise.all([
-        initializeNet({'agent': testbedAgent}),
-        initializeIDS({'agent': testbedAgent})
-    ]);
+    /* 2. Use additional methods to configure the setup: */
 
     testbedAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testbedAgent.domain
     }));
 
+    /* 3. Wait for all ecosystems to initialize: */
+
+    await Promise.all([
+        initializeNet({'agent': testbedAgent}),
+        initializeIDS({'agent': testbedAgent})
+    ]);
+
+    /* 4. Launch the main app: */
+
     await TestbedApp({
         'config': config,
         'agent':  testbedAgent
     });
+
+    /* 5. Launch the testing lab: */
 
     await TestbedLab({
         'config': config,
@@ -65,7 +75,11 @@ const
     });
 
 })().catch((err) => {
+
+    /* ERR. Log any error during launch and exit the application: */
+
     util.logError(err);
     debugger;
     process.exit(1);
+
 }); // LaunchTestbed

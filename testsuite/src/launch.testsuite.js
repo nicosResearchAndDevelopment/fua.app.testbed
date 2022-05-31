@@ -9,6 +9,8 @@ const
 
 (async function LaunchTestsuite() {
 
+    /* 1. Construct a server agent for your setup: */
+
     const testsuiteAgent = await TestsuiteAgent.create({
         schema:   (config.server.url.match(/^\w+(?=:\/\/)/) || ['http'])[0],
         hostname: (config.server.url.match(/^\w+:\/\/([^/#:]+)(?=[/#:]|$)/) || [null, 'localhost'])[1],
@@ -30,9 +32,13 @@ const
         testbed:  config.testbed
     });
 
+    /* 2. Use additional methods to configure the setup: */
+
     testsuiteAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testsuiteAgent.domain
     }));
+
+    /* 3. Wait for all ecosystems to initialize: */
 
     testsuiteAgent.testcases = {
         net: require(`./tc/ec/net/tc.ec.net.launch`)({
@@ -51,10 +57,14 @@ const
         })
     };
 
+    /* 4. Launch the main app: */
+
     await TestsuiteApp({
         'config': config,
         'agent':  testsuiteAgent
     });
+
+    /* 5. Launch the testing lab: */
 
     await TestsuiteLab({
         'config': config,
@@ -62,7 +72,11 @@ const
     });
 
 })().catch((err) => {
+
+    /* ERR. Log any error during launch and exit the application: */
+
     util.logError(err);
     debugger;
     process.exit(1);
+
 }); // LaunchTestsuite
