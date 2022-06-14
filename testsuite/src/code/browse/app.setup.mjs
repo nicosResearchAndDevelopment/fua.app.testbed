@@ -1,14 +1,13 @@
-import GUI from '/browse/lib/gui.mjs';
-import Layout from '/browse/lib/gui.layout.mjs';
-import Terminal from '/browse/lib/gui.terminal.mjs';
-import Tree from '/browse/lib/gui.tree.mjs';
-import Inspector from '/browse/lib/gui.inspector.mjs';
-import Popup from '/browse/lib/gui.popup.mjs';
-import ContextMenu from '/browse/lib/gui.contextmenu.mjs';
-import FilePicker from '/browse/lib/gui.filepicker.mjs';
-import Menu from '/browse/lib/gui.menu.mjs';
-
-import FA from '/browse/ext/fontawesome-4.7.0.mjs';
+import GUI from './lib/gui.mjs';
+import Layout from './lib/gui.layout.mjs';
+import Terminal from './lib/gui.terminal.mjs';
+import Tree from './lib/gui.tree.mjs';
+import Inspector from './lib/gui.inspector.mjs';
+import Popup from './lib/gui.popup.mjs';
+import ContextMenu from './lib/gui.contextmenu.mjs';
+import FilePicker from './lib/gui.filepicker.mjs';
+import Menu from './lib/gui.menu.mjs';
+import FA from './ext/fontawesome-4.7.0.mjs';
 
 export const prompt = '[App]';
 
