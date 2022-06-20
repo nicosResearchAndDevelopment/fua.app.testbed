@@ -1,10 +1,7 @@
 # `nrd-testbed` Documentation
 
-
-
 ## Installation Guides
 
-[here](./install/)
+[here](./install/README.md)
 
 ---
-

@@ -6,7 +6,8 @@ const
     TestbedApp    = require('./app.testbed.js'),
     TestbedLab    = require('./lab.testbed.js'),
     initializeNet = require('../ec/net/src/initialize.net.js'),
-    initializeIDS = require('../ec/ids/src/initialize.ids.js')
+    initializeIDS = require('../ec/ids/src/initialize.ids.js'),
+    initializeLDP = require('../ec/ldp/src/initialize.ldp.js')
 ; // const
 
 (async function LaunchTestbed() {
@@ -57,8 +58,11 @@ const
 
     await Promise.all([
         initializeNet({'agent': testbedAgent}),
-        initializeIDS({'agent': testbedAgent})
+        initializeIDS({'agent': testbedAgent}),
+        initializeLDP({'agent': testbedAgent})
     ]);
+
+    util.logText('ecosystems initialized (' + Object.keys(testbedAgent.ecosystems).join(', ') + ')');
 
     /* 4. Launch the main app: */
 

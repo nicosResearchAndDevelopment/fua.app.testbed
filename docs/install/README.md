@@ -8,7 +8,6 @@
 
 ### ids
 
-[ids](./ec/ids/)
+[ids](./ec/ids/README.md)
 
 ---
-

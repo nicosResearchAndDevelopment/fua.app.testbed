@@ -1,5 +1,6 @@
 const
     path             = require("path"),
+    fs               = require("fs"),
     EventEmitter     = require('events'),
     fetch            = require("node-fetch"),
     {exec}           = require("child_process"),
@@ -9,18 +10,19 @@ const
     //
     io_client        = require("socket.io-client"),
     _default_uri_    = "urn:tb:ec:ids:"
-;const fs            = require("fs");
+;
+
 let
-    _uri_            = _default_uri_,
-    ec               = undefined,
-    socket           = undefined,
-    emit             = undefined,
-    connected        = false,
+    _uri_      = _default_uri_,
+    ec         = undefined,
+    socket     = undefined,
+    emit       = undefined,
+    connected  = false,
     //ec           = {}
-    ec_ids           = new EventEmitter(),
-    rc               = new Map(),
-    ALICE_PROC       = null,
-    BOB_PROC         = null
+    ec_ids     = new EventEmitter(),
+    rc         = new Map(),
+    ALICE_PROC = null,
+    BOB_PROC   = null
 ; // let
 
 //region fn
