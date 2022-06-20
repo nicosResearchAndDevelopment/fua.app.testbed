@@ -21,6 +21,7 @@ class TestbedAgent extends ServerAgent {
         util.assert(options.server, 'expected server to be enabled');
         util.assert(options.io, 'expected io to be enabled');
         util.assert(options.sessions, 'expected sessions to be enabled');
+        util.assert(options.event, 'expected event to be enabled');
         util.assert(options.domain, 'expected domain to be enabled');
         util.assert(options.amec, 'expected amec to be enabled');
 

@@ -25,6 +25,7 @@ const
         server:    config.server.options,
         app:       true,
         io:        true,
+        event:     true,
         domain:    true,
         sessions:  {
             resave:            false,
