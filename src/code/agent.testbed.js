@@ -1,7 +1,6 @@
 const
     util        = require('./util.testbed.js'),
     ServerAgent = require('@nrd/fua.agent.server'),
-    Scheduler   = require('@nrd/fua.agent.scheduler'),
     {PEP}       = require('@nrd/fua.decide.pep'),
     {DAPS}      = require('@nrd/fua.ids.agent.daps');
 
@@ -9,9 +8,8 @@ class TestbedAgent extends ServerAgent {
 
     static id = 'http://www.nicos-rd.com/fua/testbed#TestbedAgent/';
 
-    #scheduler = null;
-    #pep       = null;
-    #daps      = null;
+    #pep  = null;
+    #daps = null;
 
     #inboxSocket = null;
     #ecosystems  = Object.create(null);
@@ -26,23 +24,6 @@ class TestbedAgent extends ServerAgent {
         util.assert(options.amec, 'expected amec to be enabled');
 
         await super.initialize(options);
-
-        if (options.scheduler) {
-            if (options.scheduler instanceof Scheduler) {
-                this.#scheduler = options.scheduler;
-            } else {
-                const schedulerOptions = util.isObject(options.scheduler) && options.scheduler || {};
-                this.#scheduler        = new Scheduler(schedulerOptions);
-            }
-            this.#scheduler.on('error', (...args) => this.emit('scheduler_error', ...args));
-            this.#scheduler.on('idle', (...args) => this.emit('scheduler_idle', ...args));
-            this.#scheduler.on('addTask', (...args) => this.emit('scheduler_addTask', ...args));
-            this.#scheduler.on('removeTask', (...args) => this.emit('scheduler_removeTask', ...args));
-            this.#scheduler.on('beforeTaskExecution', (...args) => this.emit('scheduler_beforeTaskExecution', ...args));
-            this.#scheduler.on('afterTaskExecution', (...args) => this.emit('scheduler_afterTaskExecution', ...args));
-            this.#scheduler.on('taskExecutionError', (...args) => this.emit('scheduler_taskExecutionError', ...args));
-            this.#scheduler.on('isProper', (...args) => this.emit('scheduler_isProper', ...args));
-        }
 
         if (options.pep) {
             if (options.pep instanceof PEP) {
@@ -97,10 +78,6 @@ class TestbedAgent extends ServerAgent {
 
     set testsuite_inbox_socket(value) {
         this.inboxSocket = value;
-    }
-
-    get scheduler() {
-        return this.#scheduler;
     }
 
     get PEP() {
