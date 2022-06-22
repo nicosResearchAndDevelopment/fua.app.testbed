@@ -3,7 +3,7 @@ const
     util    = require('../../../../src/code/util.testbed.js'),
     express = require('express');
 
-module.exports = async function RemoteConnectorApp(
+module.exports = async function RCApp(
     {
         'config': config,
         'agent':  agent
@@ -36,7 +36,7 @@ module.exports = async function RemoteConnectorApp(
 
     app.get('/about', async (request, response, next) => {
         try {
-            const about = await agent.connector.selfDescription();
+            const about = await agent.selfDescription(request.ip);
             response.type('json').send(JSON.stringify(about));
         } catch (err) {
             util.logError(err);
@@ -44,51 +44,52 @@ module.exports = async function RemoteConnectorApp(
         }
     });
 
-    agent.on('tb.rc.event', (event) => {
-        // TODO improve for needed purpose
-        io.to('events').emit('tb.rc.event', event);
+    agent.on('event', (event) => {
+        io.emit('event', event);
     }); // agent.on('event')
 
     io.on('connection', (socket) => {
 
-        socket.join('events');
-
-        socket.on('rc_refreshDAT', async (param, callback) => {
+        socket.on('refreshDAT', async (param, callback) => {
             try {
                 const result = await agent.refreshDAT(param);
                 callback(null, result);
             } catch (err) {
                 callback(err);
             }
-        }); // socket.on('rc_refreshDAT')
+        }); // socket.on('refreshDAT')
 
-        socket.on('rc_requestApplicantsSelfDescription', async (param, callback) => {
+        socket.on('requestApplicantsSelfDescription', async (param, callback) => {
             try {
                 const result = await agent.requestApplicantsSelfDescription(param);
                 callback(null, result);
             } catch (err) {
                 callback(err);
             }
-        }); // socket.on('rc_requestApplicantsSelfDescription')
+        }); // socket.on('requestApplicantsSelfDescription')
 
-        socket.on('rc_waitForApplicantsSelfDescriptionRequest', async (param, callback) => {
+        socket.on('waitForApplicantsSelfDescriptionRequest', async (param, callback) => {
             try {
                 const result = await agent.waitForApplicantsSelfDescriptionRequest(param);
                 callback(null, result);
             } catch (err) {
                 callback(err);
             }
-        }); // socket.on('rc_waitForApplicantsSelfDescriptionRequest')
+        }); // socket.on('waitForApplicantsSelfDescriptionRequest')
 
-        socket.on('rc_getSelfDescriptionFromRC', async (param, callback) => {
+        socket.on('getSelfDescriptionFromRC', async (param, callback) => {
             try {
-                const result = await agent.connector.selfDescription();
+                const result = await agent.selfDescription('tb');
                 callback(null, result);
             } catch (err) {
                 callback(err);
             }
-        }); // socket.on('rc_getSelfDescriptionFromRC')
+        }); // socket.on('getSelfDescriptionFromRC')
 
     }); // io.on('connection')
 
-}; // module.exports = RemoteConnectorApp
+    await agent.listen();
+    util.logText(`rc app is listening at <${agent.url}>`);
+    agent.once('closed', () => util.logText('rc app has closed'));
+
+}; // module.exports = RCApp
