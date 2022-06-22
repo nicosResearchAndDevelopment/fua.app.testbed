@@ -47,7 +47,8 @@ const
             },
             amec:       true,
             app:        true,
-            io:         true
+            io:         true,
+            event:      true
         });
 
     rcAgent.amec.registerMechanism(DatAuth.prefLabel, DatAuth({connector: rcAgent.connector}));
