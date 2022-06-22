@@ -1,5 +1,4 @@
 const
-    path    = require('path'),
     util    = require('../../../../src/code/util.testbed.js'),
     express = require('express');
 
