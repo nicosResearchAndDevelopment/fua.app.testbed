@@ -1,6 +1,4 @@
 const
-    path             = require('path'),
-    fs               = require('fs'),
     EventEmitter     = require('events'),
     io_client        = require('socket.io-client'),
     {RunningProcess} = require('@nrd/fua.module.subprocess'),
@@ -98,26 +96,41 @@ module.exports = async function initializeIDS(
     } // if (bobNode.type)
 
     ec_ids.emitter.on('event', (event) => {
-        agent.events.emit(event);
+        agent.event.emit(event);
     });
     ec_ids.emitter.on('error', (err) => {
         util.logError(err);
         debugger;
     });
 
-    ec_ids.refreshDAT = async function (param) {
+    ec_ids.getSocket = function (param) {
+        const socket = ec_ids.sockets.get(param.rc);
+        util.assert(socket, 'expected to find a socket for ' + param.rc);
+        return socket;
+    }; // ec_ids.getSocket
+
+    ec_ids.callMethod = async function (method, param) {
+        util.assert(util.isString(method), 'expected method to be a string');
+        util.assert(util.isObject(param), 'expected param to be an object');
         try {
-            const socket = ec_ids.sockets.get(param.rc);
-            util.assert(socket, 'expected to find a socket for ' + param.rc);
-            const result = await util.promisify(socket.emit.bind(socket), 'refreshDAT', param);
-            return result;
+            const socket = ec_ids.getSocket(param);
+            return await util.promisify(socket.emit.bind(socket), method, param);
         } catch (err) {
             ec_ids.emitter.emit('error', err);
             throw err;
         }
-    }; // ec_ids.refreshDAT
+    }; // ec_ids.callMethod
 
-    // TODO other methods
+    ec_ids.wrapMethod = function (method) {
+        return async function (param) {
+            return ec_ids.callMethod(method, param);
+        };
+    }; // ec_ids.wrapMethod
+
+    ec_ids.refreshDAT                              = ec_ids.wrapMethod('refreshDAT');
+    ec_ids.requestApplicantsSelfDescription        = ec_ids.wrapMethod('requestApplicantsSelfDescription');
+    ec_ids.waitForApplicantsSelfDescriptionRequest = ec_ids.wrapMethod('waitForApplicantsSelfDescriptionRequest');
+    ec_ids.getSelfDescriptionFromRC                = ec_ids.wrapMethod('getSelfDescriptionFromRC');
 
     agent.ecosystems[EC_NAME] = Object.freeze(ec_ids);
     util.lockProp(agent.ecosystems, EC_NAME);
