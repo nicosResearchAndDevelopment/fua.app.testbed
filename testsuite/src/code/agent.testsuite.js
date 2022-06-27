@@ -44,21 +44,13 @@ class TestsuiteAgent extends ServerAgent {
         this.#tbSocket.on('error', (error) => {
             if (util.isString(error)) error = new Error(error);
             else if (!(error instanceof Error) && util.isString(error?.message)) error = new Error(error.message);
-            util.logError(error);
+            // util.logError(error);
             this.emit('error', error);
         });
 
-        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
-        this.#tbSocket.on('event', (error, data) => {
-            if (error) {
-                if (util.isString(error)) error = new Error(error);
-                else if (util.isString(error?.message)) error = new Error(error.message);
-                util.logError(error);
-                this.emit('error', error);
-            } else {
-                util.logObject(data);
-                this.emit('data', data);
-            }
+        this.#tbSocket.on('event', (event) => {
+            // util.logObject(event);
+            this.emit('event', event);
         });
 
         // TODO evaluate if it is actually better to not wait for the connect event

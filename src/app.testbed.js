@@ -148,50 +148,24 @@ module.exports = async function TestbedApp(
     }); // io_testsuite.on('connection')
 
     // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
-    agent.on('event', (error, data) => {
-        if (error) {
-            util.logError(error);
-            io.to('terminal').emit('printError', {
-                'prov':  '[Testbed]',
-                'error': '' + (error?.stack ?? error)
-            });
-        }
+    agent.on('event', (event) => {
+        util.logObject(event);
+        io.to('terminal').emit('printData', {
+            'prov': '[Testbed]',
+            'data': event
+        });
 
-        if (data) {
-            util.logObject(data);
-            const cloudEvent = new CloudEvent({
-                // '@context':      'https://github.com/cloudevents/spec/blob/v1.0/spec.md',
-                // specversion: '1.0',
-                type:   [data.type, data.method, data.step].filter(val => val).join('.'),
-                id:     data.id,
-                source: data.prov || agent.uri,
-                time:   data.end || data.start
-                // datacontenttype: 'application/json',
-                // data:            data
-            });
-            io.to('terminal').emit('printData', {
-                // 'prov': '[Testbed]',
-                'prov': '[CloudEvent]',
-                'data': cloudEvent
-            });
-        }
-
-        // io.to('testsuite').emit('event', error, data);
-        io_testsuite.to('event').emit('event', error, data);
+        io_testsuite.to('event').emit('event', event);
     }); // agent.on('event')
 
     agent.on('error', (error) => {
-        if (error) {
-            util.logError(error);
-            io.to('terminal').emit('printError', {
-                'prov':  '[Testbed]',
-                'error': '' + (error?.stack ?? error)
-            });
-        }
+        util.logError(error);
+        io.to('terminal').emit('printError', {
+            'prov':  '[Testbed]',
+            'error': '' + (error?.stack ?? error)
+        });
 
-        // io.to('testsuite').emit('error', {'error': error});
-        // TODO the (error, result) pattern should only be used in acknowledge callbacks, not in events
-        io_testsuite.to('event').emit('event', error);
+        io_testsuite.to('event').emit('error', error);
     }); // agent.on('error')
     //endregion >> Testsuite
 

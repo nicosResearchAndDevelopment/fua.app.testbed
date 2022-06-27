@@ -6,7 +6,7 @@ const
     TestbedApp    = require('./app.testbed.js'),
     TestbedLab    = require('./lab.testbed.js'),
     initializeNet = require('../ec/net/src/initialize.net.js'),
-    initializeIDS = require('../ec/ids/src/initialize.ids.js'),
+    initializeIDS = require('../ec/ids/src/initialize.ids_next.js'),
     initializeLDP = require('../ec/ldp/src/initialize.ldp.js')
 ; // const
 
@@ -50,6 +50,8 @@ const
     });
 
     /* 2. Use additional methods to configure the setup: */
+
+    testbedAgent.event.on('*', (event) => testbedAgent.emit('event', event));
 
     testbedAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testbedAgent.domain

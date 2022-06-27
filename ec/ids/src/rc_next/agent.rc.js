@@ -61,12 +61,15 @@ class RCAgent extends ServerAgent {
     } // RCAgent#touchIdle
 
     emitEvent(type = 'default', data = null) {
-        this.event.emit({
-            type:            type,
-            source:          this.url,
+        const event = {
+            type:   type,
+            source: this.url
+        };
+        if (data) Object.assign(event, {
             datacontenttype: 'application/json',
             data:            data
         });
+        this.event.emit(event);
         return this;
     } // RCAgent#emitEvent
 

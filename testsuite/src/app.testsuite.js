@@ -66,33 +66,20 @@ module.exports = async function TestsuiteApp(
     //endregion >> LDN
 
     //region >> Testsuite
-    agent.on('data', (data) => {
-        util.logObject(data);
-        const cloudEvent = new CloudEvent({
-            // '@context':      'https://github.com/cloudevents/spec/blob/v1.0/spec.md',
-            // specversion: '1.0',
-            type:   [data.type, data.method, data.step].filter(val => val).join('.'),
-            id:     data.id,
-            source: data.prov || serverNode.id,
-            time:   data.end || data.start
-            // datacontenttype: 'application/json',
-            // data:            data
-        });
+    agent.on('event', (event) => {
+        util.logObject(event);
         io.to('terminal').emit('printData', {
-            // 'prov': '[Testsuite]',
-            'prov': '[CloudEvent]',
-            'data': cloudEvent
+            'prov': '[Testsuite]',
+            'data': event
         });
     }); // agent.on('event')
 
     agent.on('error', (error) => {
-        if (error) {
-            util.logError(error);
-            io.to('terminal').emit('printError', {
-                'prov':  '[Testsuite]',
-                'error': '' + (error?.stack ?? error)
-            });
-        }
+        util.logError(error);
+        io.to('terminal').emit('printError', {
+            'prov':  '[Testsuite]',
+            'error': '' + (error?.stack ?? error)
+        });
     }); // agent.on('error')
     //endregion >> Testsuite
 
