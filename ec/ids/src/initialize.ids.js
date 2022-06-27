@@ -41,7 +41,7 @@ module.exports = async function initializeIDS(
                 }
             },
             aliceBase64Config = Buffer.from(JSON.stringify(aliceConfig)).toString('base64'),
-            aliceProc         = NODE(`./rc_next/launch.rc.alice.js`, {config: `"${aliceBase64Config}"`}),
+            aliceProc         = NODE(`./rc/launch.rc.alice.js`, {config: `"${aliceBase64Config}"`}),
             aliceUrl          = `${aliceConfig.schema}://${aliceConfig.host}:${aliceConfig.port}/`,
             aliceSocket       = io_client(aliceUrl, {
                 reconnect:          true,
@@ -75,7 +75,7 @@ module.exports = async function initializeIDS(
                 }
             },
             bobBase64Config = Buffer.from(JSON.stringify(bobConfig)).toString('base64'),
-            bobProc         = NODE(`./rc_next/launch.rc.bob.js`, {config: `"${bobBase64Config}"`}),
+            bobProc         = NODE(`./rc/launch.rc.bob.js`, {config: `"${bobBase64Config}"`}),
             bobUrl          = `${bobConfig.schema}://${bobConfig.host}:${bobConfig.port}/`,
             bobSocket       = io_client(bobUrl, {
                 reconnect:          true,

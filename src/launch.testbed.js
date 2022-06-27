@@ -6,7 +6,7 @@ const
     TestbedApp    = require('./app.testbed.js'),
     TestbedLab    = require('./lab.testbed.js'),
     initializeNet = require('../ec/net/src/initialize.net.js'),
-    initializeIDS = require('../ec/ids/src/initialize.ids_next.js'),
+    initializeIDS = require('../ec/ids/src/initialize.ids.js'),
     initializeLDP = require('../ec/ldp/src/initialize.ldp.js')
 ; // const
 
