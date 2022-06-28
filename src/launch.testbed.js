@@ -14,6 +14,8 @@ const
 
     /* 1. Construct a server agent for your setup: */
 
+    util.logText('creating testbed agent');
+
     const testbedAgent = await TestbedAgent.create({
         schema:   'https',
         hostname: 'testbed.nicos-rd.com',
@@ -59,6 +61,8 @@ const
 
     /* 3. Wait for all ecosystems to initialize: */
 
+    util.logText('initializing ecosystems');
+
     await Promise.all([
         initializeNet({'agent': testbedAgent}),
         initializeIDS({'agent': testbedAgent}),
@@ -68,6 +72,8 @@ const
     util.logText('ecosystems initialized (' + Object.keys(testbedAgent.ecosystems).join(', ') + ')');
 
     /* 4. Launch the main app: */
+
+    util.logText('starting application');
 
     await TestbedApp({
         'config': config,
@@ -80,6 +86,8 @@ const
         'config': config,
         'agent':  testbedAgent
     });
+
+    util.logText('launch complete');
 
 })().catch((err) => {
 
