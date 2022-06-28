@@ -3,26 +3,148 @@ const
     io_client        = require('socket.io-client'),
     {RunningProcess} = require('@nrd/fua.module.subprocess'),
     util             = require('../../../src/code/util.testbed.js'),
-    TestbedAgent     = require('../../../src/code/agent.testbed.js'),
     NODE             = RunningProcess('node', {verbose: true, cwd: __dirname});
+
+class RemoteComponent {
+
+    #id           = '';
+    #url          = '';
+    #launchFile   = '';
+    #base64Config = '';
+
+    #emitter    = new EventEmitter();
+    #process    = null;
+    #socket     = null;
+    #socketEmit = null;
+
+    constructor(launchFile, launchConfig) {
+        util.assert(util.isString(launchFile), 'expected launchFile to be a string');
+        util.assert(util.isObject(launchConfig), 'expected launchConfig to be an object');
+        // TODO validate launchConfig
+
+        this.#url = `${launchConfig.schema}://${launchConfig.host}:${launchConfig.port}/`;
+        // REM use this.#url or use launchConfig.id for this.#id?
+        this.#id  = this.#url;
+
+        this.#launchFile   = launchFile;
+        this.#base64Config = Buffer.from(JSON.stringify(launchConfig)).toString('base64');
+    } // RemoteComponent#constructor
+
+    get id() {
+        return this.#id;
+    } // RemoteComponent#id
+
+    async start() {
+        util.assert(!this.#process, 'already started');
+
+        this.#process = NODE(this.#launchFile, {config: `"${this.#base64Config}"`});
+
+        await new Promise((resolve, reject) => {
+            let onSpawn, onError;
+            this.#process.once('spawn', onSpawn = () => {
+                this.#process.off(onError);
+                resolve();
+            });
+            this.#process.once('error', onError = (err) => {
+                this.#process.off(onSpawn);
+                reject(err);
+            });
+        });
+    } // RemoteComponent#initialize
+
+    async connect(socketConfig = {}) {
+        util.assert(this.#process, 'not started yet');
+        util.assert(!this.#socket, 'already connected');
+
+        this.#socket     = io_client(this.#url, socketConfig);
+        this.#socketEmit = util.promify(this.#socket.emit).bind(this.#socket);
+
+        this.#socket.on('event', (event) => this.#emitter.emit('event', event));
+        this.#socket.on('error', (err) => this.#emitter.emit('error', err));
+
+        await new Promise((resolve, reject) => {
+            let onConnect, onError;
+            this.#socket.once('connect', onConnect = () => {
+                this.#socket.off(onError);
+                resolve();
+            });
+            this.#socket.once('error', onError = (err) => {
+                this.#socket.off(onConnect);
+                reject(err);
+            });
+        });
+    } // RemoteComponent#initialize
+
+    on(eventName, listener) {
+        this.#emitter.on(eventName, listener);
+        return this;
+    } // RemoteComponent#on
+
+    once(eventName, listener) {
+        this.#emitter.once(eventName, listener);
+        return this;
+    } // RemoteComponent#once
+
+    off(eventName, listener) {
+        this.#emitter.off(eventName, listener);
+        return this;
+    } // RemoteComponent#off
+
+    async callMethod(method, param) {
+        util.assert(util.isString(method), 'expected method to be a string');
+        util.assert(util.isObject(param), 'expected param to be an object');
+        try {
+            const result = await this.#socketEmit(method, param);
+            this.#emitter.emit('result', result);
+            return result;
+        } catch (err) {
+            this.#emitter.emit('error', err);
+            throw err;
+        }
+    } // RemoteComponent#callMethod
+
+} // RemoteComponent
 
 class EcosystemIDS {
 
-    static ecName = 'ids';
+    #emitter          = new EventEmitter();
+    #remoteComponents = new Map();
 
-    #agent     = null;
-    #emitter   = new EventEmitter();
-    #processes = Object.create(null);
-    #sockets   = Object.create(null);
+    async createRemoteComponent(launchFile, launchConfig) {
+        const remoteComponent = new RemoteComponent(launchFile, launchConfig);
+        util.assert(!this.#remoteComponents.has(remoteComponent.id), `the RC ${remoteComponent.id} has already been created`);
+        try {
+            this.#remoteComponents.set(remoteComponent.id, remoteComponent);
 
-    constructor(agent) {
-        util.assert(agent instanceof TestbedAgent, 'expected agent to be a TestbedAgent');
-        this.#agent = agent;
-    } // EcosystemIDS#constructor
+            await remoteComponent.start();
+            await remoteComponent.connect({
+                reconnect:          true,
+                rejectUnauthorized: false,
+                // TODO meaningful socket config
+                auth: {
+                    user:     'tb_ec_ids',
+                    password: 'marzipan'
+                }
+            });
 
-    get uri() {
-        return this.#agent.uri + 'ec/ids/';
-    } // EcosystemIDS#uri
+            remoteComponent
+                .on('event', (event) => this.#emitter.emit('event', event))
+                .on('result', (result) => this.#emitter.emit('result', result))
+                .on('error', (err) => this.#emitter.emit('error', err));
+        } catch (err) {
+            this.#remoteComponents.delete(remoteComponent.id);
+            throw err;
+        }
+    } // EcosystemIDS#startRemoteComponent
+
+    async callRemoteMethod(remoteId, method, param) {
+        util.assert(util.isString(remoteId), 'expected remoteId to be a string');
+        util.assert(util.isString(method), 'expected method to be a string');
+        util.assert(util.isObject(param), 'expected param to be an object');
+        const remoteComponent = this.#remoteComponents.get(remoteId);
+        util.assert(remoteComponent, 'expected to find a remote for ' + remoteId);
+        return await remoteComponent.callMethod(method, param);
+    } // EcosystemIDS#callRemoteMethod
 
     on(eventName, listener) {
         this.#emitter.on(eventName, listener);
@@ -39,80 +161,20 @@ class EcosystemIDS {
         return this;
     } // EcosystemIDS#off
 
-    async startRC(rcLauncher, rcConfig) {
-        util.assert(util.isString(rcLauncher), 'expected rcLauncher to be a string');
-        util.assert(util.isObject(rcConfig), 'expected rcConfig to be an object');
-        // TODO validate config
-
-        const
-            base64Config = Buffer.from(JSON.stringify(rcConfig)).toString('base64'),
-            rcUrl        = `${rcConfig.schema}://${rcConfig.host}:${rcConfig.port}/`;
-
-        // REM use the rcUrl or use the rcConfig.id?
-        util.assert(!this.#processes[rcUrl], `the url ${rcUrl} has already a running process`);
-
-        const
-            rcProcess = NODE(rcLauncher, {config: `"${base64Config}"`}),
-            rcSocket  = io_client(rcUrl, {
-                reconnect:          true,
-                rejectUnauthorized: false,
-                // TODO meaningful socket config
-                auth: {
-                    user:     'tb_ec_ids',
-                    password: 'marzipan'
-                }
-            });
-
-        rcSocket.on('event', (event) => this.#emitter.emit('event', event));
-        rcSocket.on('error', (err) => this.#emitter.emit('error', err));
-
-        this.#processes[rcUrl] = rcProcess;
-        this.#sockets[rcUrl]   = rcSocket;
-
-        await new Promise((resolve, reject) => {
-            let onConnect, onError;
-            onConnect = () => {
-                rcSocket.off(onError);
-                resolve();
-            };
-            onError   = (err) => {
-                rcSocket.off(onConnect);
-                reject(err);
-            };
-            rcSocket.once('connect', onConnect);
-            rcSocket.once('error', onError);
-        });
-    } // EcosystemIDS#callMethod
-
-    async callRC(rcId, method, param) {
-        util.assert(util.isString(rcId), 'expected rcId to be a string');
-        util.assert(util.isString(method), 'expected method to be a string');
-        util.assert(util.isObject(param), 'expected param to be an object');
-        try {
-            const socket = this.#sockets[rcId];
-            util.assert(socket, 'expected to find a socket for ' + param.rc);
-            const result = await util.promisify(socket.emit.bind(socket), method, param);
-            return result;
-        } catch (err) {
-            this.#emitter.emit('error', err);
-            throw err;
-        }
-    } // EcosystemIDS#callRC
-
-    async refreshDAT({rc: rcId, ...param}) {
-        return await this.callRC(rcId, 'refreshDAT', param);
+    async refreshDAT({rc: remoteId, ...param}) {
+        return await this.callRemoteMethod(remoteId, 'refreshDAT', param);
     } // EcosystemIDS#refreshDAT
 
-    async requestApplicantsSelfDescription({rc: rcId, ...param}) {
-        return await this.callRC(rcId, 'requestApplicantsSelfDescription', param);
+    async requestApplicantsSelfDescription({rc: remoteId, ...param}) {
+        return await this.callRemoteMethod(remoteId, 'requestApplicantsSelfDescription', param);
     } // EcosystemIDS#requestApplicantsSelfDescription
 
-    async waitForApplicantsSelfDescriptionRequest({rc: rcId, ...param}) {
-        return await this.callRC(rcId, 'waitForApplicantsSelfDescriptionRequest', param);
+    async waitForApplicantsSelfDescriptionRequest({rc: remoteId, ...param}) {
+        return await this.callRemoteMethod(remoteId, 'waitForApplicantsSelfDescriptionRequest', param);
     } // EcosystemIDS#waitForApplicantsSelfDescriptionRequest
 
-    async getSelfDescriptionFromRC({rc: rcId, ...param}) {
-        return await this.callRC(rcId, 'getSelfDescriptionFromRC', param);
+    async getSelfDescriptionFromRC({rc: remoteId, ...param}) {
+        return await this.callRemoteMethod(remoteId, 'getSelfDescriptionFromRC', param);
     } // EcosystemIDS#getSelfDescriptionFromRC
 
 } // EcosystemIDS
