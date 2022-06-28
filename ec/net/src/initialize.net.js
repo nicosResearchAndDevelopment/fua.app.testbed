@@ -1,7 +1,7 @@
 const
     util         = require('../../../src/code/util.testbed.js'),
     TestbedAgent = require('../../../src/code/agent.testbed.js'),
-    EcosystemNet = require('./next_tb.ec.net.js'),
+    EcosystemNet = require('./tb.ec.net.js'),
     EC_NAME      = 'net';
 
 module.exports = async function initializeNet(
