@@ -1,10 +1,38 @@
 const
-    EventEmitter     = require('events'),
-    io_client        = require('socket.io-client'),
-    {RunningProcess} = require('@nrd/fua.module.subprocess'),
-    util             = require('../../../src/code/util.testbed.js'),
-    TestbedAgent     = require('../../../src/code/agent.testbed.js'),
-    EC_NAME          = 'ids';
+    util         = require('../../../src/code/util.testbed.js'),
+    TestbedAgent = require('../../../src/code/agent.testbed.js'),
+    EcosystemIDS = require('./tb.ec.ids.js'),
+    EC_NAME      = 'ids';
+
+function _createRemoteConfig(rcNode) {
+    return {
+        id:           rcNode.id,
+        schema:       rcNode.getLiteral('fua:schema').value,
+        host:         rcNode.getLiteral('fua:host').value,
+        port:         parseInt(rcNode.getLiteral('fua:port').value),
+        SKIAKI:       rcNode.getLiteral('dapsm:skiaki').value,
+        idle_timeout: parseInt(rcNode.getLiteral('idsecm:idle_timeout').value),
+        DAPS:         {
+            default: rcNode.getNode('idsecm:daps_default').id
+        }
+    };
+} // _createRemoteConfig
+
+async function _initializeAlice(agent, ec_ids) {
+    const aliceNode = await agent.space.getNode('https://alice.nicos-rd.com/').load();
+    if (aliceNode.type) await ec_ids.createRemoteComponent(
+        './rc/launch.rc.alice.js',
+        _createRemoteConfig(aliceNode)
+    );
+} // _initializeAlice
+
+async function _initializeBob(agent, ec_ids) {
+    const bobNode = await agent.space.getNode('https://bob.nicos-rd.com/').load();
+    if (bobNode.type) await ec_ids.createRemoteComponent(
+        './rc/launch.rc.bob.js',
+        _createRemoteConfig(bobNode)
+    );
+} // _initializeBob
 
 module.exports = async function initializeIDS(
     {
@@ -14,126 +42,22 @@ module.exports = async function initializeIDS(
     util.assert(agent instanceof TestbedAgent, 'expected agent to be a TestbedAgent');
     util.assert(!agent.ecosystems[EC_NAME], 'expected ecosystem ' + EC_NAME + ' not to be initialized already');
 
-    agent.ecosystems[EC_NAME] = 'initializing';
+    const ec_ids = agent.ecosystems[EC_NAME] = new EcosystemIDS();
+    util.lockProp(agent.ecosystems, EC_NAME);
 
-    const
-        aliceNode = await agent.space.getNode('https://alice.nicos-rd.com/').load(),
-        bobNode   = await agent.space.getNode('https://bob.nicos-rd.com/').load(),
-        NODE      = RunningProcess('node', {verbose: true, cwd: __dirname}),
-        ec_ids    = {
-            uri:       `${agent.uri}ec/ids/`,
-            emitter:   new EventEmitter(),
-            processes: new Map(),
-            sockets:   new Map()
-        };
+    await Promise.all([
+        _initializeAlice(agent, ec_ids),
+        _initializeBob(agent, ec_ids)
+    ]);
 
-    if (aliceNode.type) {
-        const
-            aliceConfig       = {
-                id:           aliceNode.id,
-                schema:       aliceNode.getLiteral('fua:schema').value,
-                host:         aliceNode.getLiteral('fua:host').value,
-                port:         parseInt(aliceNode.getLiteral('fua:port').value),
-                SKIAKI:       aliceNode.getLiteral('dapsm:skiaki').value,
-                idle_timeout: parseInt(aliceNode.getLiteral('idsecm:idle_timeout').value),
-                DAPS:         {
-                    default: aliceNode.getNode('idsecm:daps_default').id
-                }
-            },
-            aliceBase64Config = Buffer.from(JSON.stringify(aliceConfig)).toString('base64'),
-            aliceProc         = NODE(`./rc/launch.rc.alice.js`, {config: `"${aliceBase64Config}"`}),
-            aliceUrl          = `${aliceConfig.schema}://${aliceConfig.host}:${aliceConfig.port}/`,
-            aliceSocket       = io_client(aliceUrl, {
-                reconnect:          true,
-                rejectUnauthorized: false,
-                auth:               {
-                    user:     'tb_ec_ids',
-                    password: 'marzipan'
-                }
-            });
-
-        aliceSocket.on('connect', () => {
-            aliceSocket.on('event', (event) => ec_ids.emitter.emit('event', event));
-            aliceSocket.on('error', (error) => ec_ids.emitter.emit('error', error));
-        });
-
-        ec_ids.processes.set(aliceUrl, aliceProc);
-        ec_ids.sockets.set(aliceUrl, aliceSocket);
-    } // if (aliceNode.type)
-
-    if (bobNode.type) {
-        const
-            bobConfig       = {
-                id:           bobNode.id,
-                schema:       bobNode.getLiteral('fua:schema').value,
-                host:         bobNode.getLiteral('fua:host').value,
-                port:         parseInt(bobNode.getLiteral('fua:port').value),
-                SKIAKI:       bobNode.getLiteral('dapsm:skiaki').value,
-                idle_timeout: parseInt(bobNode.getLiteral('idsecm:idle_timeout').value),
-                DAPS:         {
-                    default: bobNode.getNode('idsecm:daps_default').id
-                }
-            },
-            bobBase64Config = Buffer.from(JSON.stringify(bobConfig)).toString('base64'),
-            bobProc         = NODE(`./rc/launch.rc.bob.js`, {config: `"${bobBase64Config}"`}),
-            bobUrl          = `${bobConfig.schema}://${bobConfig.host}:${bobConfig.port}/`,
-            bobSocket       = io_client(bobUrl, {
-                reconnect:          true,
-                rejectUnauthorized: false,
-                auth:               {
-                    user:     'tb_ec_ids',
-                    password: 'marzipan'
-                }
-            });
-
-        bobSocket.on('connect', () => {
-            bobSocket.on('event', (event) => ec_ids.emitter.emit('event', event));
-            bobSocket.on('error', (error) => ec_ids.emitter.emit('error', error));
-        });
-
-        ec_ids.processes.set(bobUrl, bobProc);
-        ec_ids.sockets.set(bobUrl, bobSocket);
-    } // if (bobNode.type)
-
-    ec_ids.emitter.on('event', (event) => {
+    ec_ids.on('event', (event) => {
         agent.event.emit(event);
     });
-    ec_ids.emitter.on('error', (err) => {
+
+    ec_ids.on('error', (err) => {
         util.logError(err);
         debugger;
     });
-
-    ec_ids.getSocket = function (param) {
-        const socket = ec_ids.sockets.get(param.rc);
-        util.assert(socket, 'expected to find a socket for ' + param.rc);
-        return socket;
-    }; // ec_ids.getSocket
-
-    ec_ids.callMethod = async function (method, param) {
-        util.assert(util.isString(method), 'expected method to be a string');
-        util.assert(util.isObject(param), 'expected param to be an object');
-        try {
-            const socket = ec_ids.getSocket(param);
-            return await util.promisify(socket.emit.bind(socket), method, param);
-        } catch (err) {
-            ec_ids.emitter.emit('error', err);
-            throw err;
-        }
-    }; // ec_ids.callMethod
-
-    ec_ids.wrapMethod = function (method) {
-        return async function (param) {
-            return ec_ids.callMethod(method, param);
-        };
-    }; // ec_ids.wrapMethod
-
-    ec_ids.refreshDAT                              = ec_ids.wrapMethod('refreshDAT');
-    ec_ids.requestApplicantsSelfDescription        = ec_ids.wrapMethod('requestApplicantsSelfDescription');
-    ec_ids.waitForApplicantsSelfDescriptionRequest = ec_ids.wrapMethod('waitForApplicantsSelfDescriptionRequest');
-    ec_ids.getSelfDescriptionFromRC                = ec_ids.wrapMethod('getSelfDescriptionFromRC');
-
-    agent.ecosystems[EC_NAME] = Object.freeze(ec_ids);
-    util.lockProp(agent.ecosystems, EC_NAME);
 
     return ec_ids;
 }; // module.exports = async function initializeIDS
