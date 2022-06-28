@@ -116,3 +116,5 @@ class EcosystemIDS {
     } // EcosystemIDS#getSelfDescriptionFromRC
 
 } // EcosystemIDS
+
+module.exports = EcosystemIDS;
