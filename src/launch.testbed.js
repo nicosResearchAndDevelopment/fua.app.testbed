@@ -87,7 +87,7 @@ const
         'agent':  testbedAgent
     });
 
-    util.logText('launch complete');
+    util.logSuccess('launch complete');
 
 })().catch((err) => {
 
