@@ -42,11 +42,11 @@ class RemoteComponent {
         await new Promise((resolve, reject) => {
             let onSpawn, onError;
             this.#process.once('spawn', onSpawn = () => {
-                this.#process.off(onError);
+                this.#process.off('spawn', onError);
                 resolve();
             });
             this.#process.once('error', onError = (err) => {
-                this.#process.off(onSpawn);
+                this.#process.off('error', onSpawn);
                 reject(err);
             });
         });
@@ -57,7 +57,7 @@ class RemoteComponent {
         util.assert(!this.#socket, 'already connected');
 
         this.#socket     = io_client(this.#url, socketConfig);
-        this.#socketEmit = util.promify(this.#socket.emit).bind(this.#socket);
+        this.#socketEmit = util.promisify(this.#socket.emit).bind(this.#socket);
 
         this.#socket.on('event', (event) => this.#emitter.emit('event', event));
         this.#socket.on('error', (err) => this.#emitter.emit('error', err));
@@ -65,11 +65,11 @@ class RemoteComponent {
         await new Promise((resolve, reject) => {
             let onConnect, onError;
             this.#socket.once('connect', onConnect = () => {
-                this.#socket.off(onError);
+                this.#socket.off('connect', onError);
                 resolve();
             });
             this.#socket.once('error', onError = (err) => {
-                this.#socket.off(onConnect);
+                this.#socket.off('error', onConnect);
                 reject(err);
             });
         });
