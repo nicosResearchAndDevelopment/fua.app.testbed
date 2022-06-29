@@ -7,6 +7,9 @@ module.exports = async function TestsuiteLab(
     }
 ) {
 
+    // REM disable lab shield
+    if (true) return;
+
     agent.amec
         .on('authentication-error', (error) => {
             util.logError(error);

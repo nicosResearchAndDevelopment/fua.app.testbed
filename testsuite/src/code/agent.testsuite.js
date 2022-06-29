@@ -152,6 +152,39 @@ class TestsuiteAgent extends ServerAgent {
         };
     } // TestsuiteAgent#Token
 
+    async getQuestionnaire() {
+        const questionnaire = this.space.getNode('ids3c-co:IDS_CheckListApproach_Questionnaire');
+        if (!questionnaire.isLoaded('@type')) await questionnaire.load();
+        const result = questionnaire.dataset();
+
+        for (let criteriaGroup of questionnaire.getNodes('ids3cm:criteriaGroup')) {
+            if (!criteriaGroup.isLoaded('@type')) await criteriaGroup.load();
+            result.add(criteriaGroup.dataset());
+
+            for (let question of criteriaGroup.getNodes('ids3cm:question')) {
+                if (!question.isLoaded('@type')) await question.load();
+                result.add(question.dataset());
+
+                for (let questionChoice of question.getNodes('ids3cm:validChoice')) {
+                    if (!questionChoice.isLoaded('@type')) await questionChoice.load();
+                    result.add(questionChoice.dataset());
+                }
+
+                for (let questionChoice of question.getNodes('ids3cm:invalidChoice')) {
+                    if (!questionChoice.isLoaded('@type')) await questionChoice.load();
+                    result.add(questionChoice.dataset());
+                }
+
+                for (let matrixColumn of question.getNodes('ids3cm:matrixColumn')) {
+                    if (!matrixColumn.isLoaded('@type')) await matrixColumn.load();
+                    result.add(matrixColumn.dataset());
+                }
+            }
+        }
+
+        return result;
+    } // getQuestionnaire
+
 } // TestsuiteAgent
 
 module.exports = TestsuiteAgent;

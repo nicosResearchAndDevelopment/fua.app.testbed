@@ -1,11 +1,11 @@
 const
-    path                       = require('path'),
-    {CloudEvent, HTTP: ceHTTP} = require('cloudevents'),
-    util                       = require('./code/util.testsuite.js'),
-    express                    = require('express'),
-    Middleware_LDP             = require('@nrd/fua.middleware.ldp'),
-    Middleware_WEB             = require('@nrd/fua.middleware.web'),
-    Middleware_WEB_login       = require('@nrd/fua.middleware.web/login')
+    path                 = require('path'),
+    util                 = require('./code/util.testsuite.js'),
+    express              = require('express'),
+    Middleware_LDP       = require('@nrd/fua.middleware.ldp'),
+    Middleware_WEB       = require('@nrd/fua.middleware.web'),
+    Middleware_WEB_login = require('@nrd/fua.middleware.web/login'),
+    rdf                  = require('@nrd/fua.module.rdf')
 ; // const
 
 module.exports = async function TestsuiteApp(
@@ -21,11 +21,27 @@ module.exports = async function TestsuiteApp(
         io     = agent.io;
 
     //region >> WebApp
+
+    app.get('/browse/questionnaire/questionnaire', async function (request, response, next) {
+        try {
+            const
+                questionnaire = await agent.getQuestionnaire(),
+                contentType   = request.accepts(rdf.contentTypes);
+            if (!contentType) return next();
+            const result = await rdf.serializeDataset(questionnaire, contentType);
+            response.type(contentType).send(result);
+        } catch (err) {
+            util.logError(err);
+            next(err);
+        }
+    });
+
     app.use('/browse', Middleware_WEB({
         lib: true,
         ext: true,
         res: {pattern: '/nicos-rd/*'}
     }));
+
     app.use('/browse', express.static(path.join(__dirname, 'code/browse')));
 
     app.use('/data', Middleware_LDP({
@@ -67,7 +83,7 @@ module.exports = async function TestsuiteApp(
 
     //region >> Testsuite
     agent.on('event', (event) => {
-        util.logObject(event);
+        // util.logObject(event);
         io.to('terminal').emit('printData', {
             'prov': '[Testsuite]',
             'data': event

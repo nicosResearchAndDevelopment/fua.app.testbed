@@ -29,8 +29,12 @@ exports.context = {
     'ids':  "https://w3id.org/idsa/core/",
     'idsc': "https://w3id.org/idsa/code/",
 
-    'ids3cm': 'http://localhost/data/ids3cm/',
+    // 'ids3cm': 'http://localhost/data/ids3cm/',
     //'ids3c-co': 'http://localhost/data/ids3c-co/',
+    // @prefix ids3c-co:    <https://w3id.org/ids3c-component/> .
+    // @prefix ids3cm:      <https://w3id.org/ids3cm/> .
+    'ids3cm':   'https://w3id.org/ids3cm/',
+    'ids3c-co': 'https://w3id.org/ids3c-component/',
 
     'fua':        'https://www.nicos-rd.com/fua#',
     'dom':        'https://www.nicos-rd.com/fua/domain#',
@@ -115,6 +119,8 @@ exports.persistence = {
             },
             // require('@nrd/fua.resource.ontology'),
             // require('@nrd/fua.resource.universe'),
+            require('@nrd/fua.resource.ontology.ids/ids3cm'),
+            require('@nrd/fua.resource.ontology.ids/ids3c-co'),
             //
             // {'dct:identifier': path.join(__root, 'data/model/tsm.ttl'), 'dct:format': 'text/turtle'},
             {'dct:identifier': path.join(__root, 'data/ts.ttl'), 'dct:format': 'text/turtle'}
