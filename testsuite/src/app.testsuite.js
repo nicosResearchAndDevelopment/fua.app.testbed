@@ -5,7 +5,8 @@ const
     Middleware_LDP       = require('@nrd/fua.middleware.ldp'),
     Middleware_WEB       = require('@nrd/fua.middleware.web'),
     Middleware_WEB_login = require('@nrd/fua.middleware.web/login'),
-    rdf                  = require('@nrd/fua.module.rdf')
+    rdf                  = require('@nrd/fua.module.rdf'),
+    {Dataset}            = require('@nrd/fua.module.persistence')
 ; // const
 
 module.exports = async function TestsuiteApp(
@@ -22,14 +23,36 @@ module.exports = async function TestsuiteApp(
 
     //region >> WebApp
 
+    // TODO temporary, remove factory
+    let factory = null;
+
     app.get('/browse/questionnaire/questionnaire', async function (request, response, next) {
         try {
             const
                 questionnaire = await agent.getQuestionnaire(),
                 contentType   = request.accepts(rdf.contentTypes);
             if (!contentType) return next();
+            factory      = questionnaire.factory; // TODO temporary, remove factory
             const result = await rdf.serializeDataset(questionnaire, contentType);
             response.type(contentType).send(result);
+        } catch (err) {
+            util.logError(err);
+            next(err);
+        }
+    });
+
+    app.post('/browse/questionnaire/answers', async function (request, response, next) {
+        try {
+            const contentType = request.is(rdf.contentTypes);
+            if (!contentType) return next();
+            const
+                answers    = new Dataset(null, factory), // TODO temporary, remove factory
+                quadStream = rdf.parseStream(request, contentType, answers.factory);
+            await answers.addStream(quadStream);
+            // TODO do something with the answers
+            util.logText('\n' + await rdf.serializeDataset(answers, 'text/turtle'));
+            response.sendStatus(200);
+            // response.redirect('/browse/questionnaire');
         } catch (err) {
             util.logError(err);
             next(err);
