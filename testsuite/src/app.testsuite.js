@@ -23,19 +23,26 @@ module.exports = async function TestsuiteApp(
 
     //region >> WebApp
 
-    // TODO temporary, remove factory
-    let factory = null;
+    // TODO temporary, remove factory/cache
+    let factory = null, cache = new Map();
 
     app.get('/browse/questionnaire/questionnaire', async function (request, response, next) {
         try {
-            const
-                questionnaire = await agent.getQuestionnaire(),
-                contentType   = request.accepts(rdf.contentTypes);
+            const contentType = request.accepts(rdf.contentTypes);
             if (!contentType) return next();
-            factory      = questionnaire.factory; // TODO temporary, remove factory
-            const result = await rdf.serializeDataset(questionnaire, contentType);
-            util.logText('Loaded questionnaire');
-            response.type(contentType).send(result);
+            if (cache.has(contentType)) {
+                const result = cache.get(contentType);
+                util.logText('Loaded questionnaire');
+                response.type(contentType).send(result);
+            } else {
+                const
+                    questionnaire = await agent.getQuestionnaire(),
+                    result        = await rdf.serializeDataset(questionnaire, contentType);
+                if (!factory) factory = questionnaire.factory; // TODO temporary, remove factory/cache
+                cache.set(contentType, result);
+                util.logText('Loaded questionnaire');
+                response.type(contentType).send(result);
+            }
         } catch (err) {
             util.logError(err);
             next(err);
