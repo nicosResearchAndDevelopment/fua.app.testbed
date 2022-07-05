@@ -1,0 +1,72 @@
+@prefix cc:          <http://creativecommons.org/ns#> .
+@prefix dct:         <http://purl.org/dc/terms/> .
+@prefix foaf:        <http://xmlns.com/foaf/0.1/> .
+@prefix odrl:        <http://www.w3.org/ns/odrl/2/> .
+@prefix owl:         <http://www.w3.org/2002/07/owl#> .
+@prefix prov:        <http://www.w3.org/ns/prov#> .
+@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:        <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann:        <http://purl.org/vocab/vann/> .
+@prefix voaf:        <http://purl.org/vocommons/voaf#> .
+@prefix void:        <http://rdfs.org/ns/void#> .
+@prefix xsd:         <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix ids:         <https://w3id.org/idsa/core/> .
+@prefix idsa:        <https://w3id.org/idsa/> .
+@prefix ids3c-co:    <https://w3id.org/ids3c-component/> .
+@prefix ids3cm:      <https://w3id.org/ids3cm/> .
+
+ids3c-co:c_q_COM_02-1_NO-AUTHENTICATION
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "No authentication"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_COM_02-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-OFFERING-DATA
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "Only the component offering data authenticates the IDS Connector requesting data"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_COM_02-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-REQUESTING-DATA
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "Only the component requesting data authenticates the IDS Connector offering data"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_COM_02-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:c_q_COM_02-1_MUTUAL-AUTHENTICATION
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "Mutual authentication"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_COM_02-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:q_COM_02-1
+    # region CheckListQuestion_CHECKBOX_SINGLE
+    a                    ids3cm:CheckListQuestion_CHECKBOX_SINGLE ;
+    rdfs:label           "q_COM_02-1"@en ;
+    dct:description      """Which type of authentication does your component facilitate for communication with other IDS Connectors?"""@en ;
+    ids3cm:criteria      ids3c-co:COM_02 ;
+    ids3cm:mandatory     "true"^^xsd:boolean ;
+    ids3cm:invalidChoice ids3c-co:c_q_COM_02-1_NO-AUTHENTICATION ;
+    ids3cm:invalidChoice ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-OFFERING-DATA ;
+    ids3cm:invalidChoice ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-REQUESTING-DATA ;
+    ids3cm:validChoice   ids3c-co:c_q_COM_02-1_MUTUAL-AUTHENTICATION ;
+    rdfs:isDefinedBy     ids3c-co:IDSA ;
+    # endregion CheckListQuestion_CHECKBOX_SINGLE
+.

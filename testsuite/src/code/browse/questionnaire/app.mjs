@@ -23,6 +23,10 @@ try {
         // return if there is already data for this question
         if (answers.anyStatementMatching(question, null, null)) return;
 
+        const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, ''));
+        answers.add(answer, setup.properties.type, setup.types.Answer);
+        answers.add(answer, setup.properties.question, question);
+
         // ask any relevant question first or return if the relevant answer has not been given
         const relevantIfChoices = setup.extractObjects(questionnaire, question, setup.properties.relevantIf);
         for (let relevantIfChoice of relevantIfChoices) {
@@ -32,10 +36,15 @@ try {
                 ...setup.extractSubjects(questionnaire, relevantIfChoice, setup.properties.invalidChoice)
             ];
             for (let relevantQuestion of relevantQuestions) {
-                if (!answers.anyStatementMatching(relevantQuestion, null, null))
+                let relevantAnswer = answers.any(null, setup.properties.question, relevantQuestion);
+                // if (!answers.anyStatementMatching(relevantQuestion, null, null)) {
+                if (!relevantAnswer) {
                     await askQuestion(relevantQuestion);
-                if (!answers.anyStatementMatching(relevantQuestion, setup.properties.answer, relevantIfChoice)) {
-                    answers.add(question, setup.properties.skipped, setup.values.true);
+                    relevantAnswer = answers.any(null, setup.properties.question, relevantQuestion);
+                }
+                // if (!answers.anyStatementMatching(relevantQuestion, setup.properties.answer, relevantIfChoice)) {
+                if (!answers.anyStatementMatching(relevantAnswer, setup.properties.selectedChoice, relevantIfChoice)) {
+                    answers.add(answer, setup.properties.skipped, setup.values.true);
                     progress.skipped += 1;
                     return;
                 }
@@ -45,6 +54,7 @@ try {
         setup.form.reset();
 
         const
+            isMandatory         = !!questionnaire.anyStatementMatching(question, setup.properties.mandatory, setup.values.true),
             criteriaGroup       = setup.extractSubjects(questionnaire, question, setup.properties.question)
                 .find(criteriaGroup => setup.types.CriteriaGroup.equals(questionnaire.any(criteriaGroup, setup.properties.type))),
             criteriaGroupLabel  = questionnaire.any(criteriaGroup, setup.properties.label, null)?.value || '',
@@ -59,81 +69,112 @@ try {
             ].sort(() => Math.random() - .5),
             matrixColumns       = setup.extractObjects(questionnaire, question, setup.properties.matrixColumn);
 
-        setup.form.addHTML(`
-        <h3>
-            <span class="grey-5">/</span>
-            <span class="grey-4">${criteriaGroupLabel}</span>
-            <span class="grey-5">/</span>
-            <span class="grey-3">${questionLabel}</span>
-            <span class="grey-5">-</span>
-            <span class="grey-6">${progress.percentage()}%</span>
-        </h3>
-    `).addText({
-            tag:  'h2',
-            text: questionDescription
-        });
+        setup.form
+            .addHTML(`<h3>
+                <span class="grey-5">/</span>
+                <span class="grey-4">${criteriaGroupLabel}</span>
+                <span class="grey-5">/</span>
+                <span class="grey-3">${questionLabel}</span>
+                <span class="grey-5">-</span>
+                <span class="grey-6">${progress.percentage()}%</span>
+            </h3>`)
+            .addText({
+                tag:  'h2',
+                text: questionDescription
+            });
 
         switch (questionType) {
             case 'CHECKBOX_EXCLUSIVE':
             case 'CHECKBOX_SINGLE':
             case 'CHECKBOX_MULTI':
-                setup.form
-                    .addCheckbox({
-                        name:      'choice',
-                        exclusive: questionType === 'CHECKBOX_EXCLUSIVE',
-                        choices:   checklistChoices.map(choice => questionnaire.any(choice, setup.properties.label, null)?.value || '')
-                    });
+                await new Promise((resolve, reject) => {
+                    setup.form
+                        .addCheckbox({
+                            name:      'choice',
+                            exclusive: questionType === 'CHECKBOX_EXCLUSIVE',
+                            choices:   checklistChoices.map(choice =>
+                                questionnaire.any(choice, setup.properties.label, null)?.value || choice.value || '')
+                        }) // .addCheckbox
+                        .addButton({
+                            label: 'Submit',
+                            onClick() {
+                                try {
+                                    const
+                                        result          = this.getData(),
+                                        selectedChoices = (Array.isArray(result.choice) ? result.choice
+                                            : result.choice ? [result.choice] : [])
+                                            .map(strIndex => checklistChoices[parseInt(strIndex)]);
+
+                                    if (isMandatory && selectedChoices.length === 0) return;
+                                    if (questionType === 'CHECKBOX_EXCLUSIVE' && selectedChoices.length === 0) return;
+
+                                    answers.add(answer, setup.properties.skipped, setup.values.false);
+                                    for (let choice of selectedChoices) {
+                                        answers.add(answer, setup.properties.selectedChoice, choice);
+                                    }
+
+                                    resolve();
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            } // onClick
+                        }); // .addButton
+                }); // await new Promise
                 break;
             case 'TEXT':
-                setup.form
-                    .addInput({
-                        name:        'text',
-                        placeholder: questionnaire.any(question, setup.properties.textPlaceholder, null)?.value || ''
-                    });
+                await new Promise((resolve, reject) => {
+                    setup.form
+                        .addInput({
+                            name:        'text',
+                            placeholder: questionnaire.any(question, setup.properties.textPlaceholder, null)?.value || ''
+                        }) // .addInput
+                        .addButton({
+                            label: 'Submit',
+                            onClick() {
+                                try {
+                                    const
+                                        result    = this.getData(),
+                                        textValue = result.text || '';
+
+                                    if (isMandatory && !textValue) return;
+
+                                    answers.add(answer, setup.properties.skipped, setup.values.false);
+                                    answers.add(answer, setup.properties.textValue, textValue);
+
+                                    resolve();
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            } // onClick
+                        }); // .addButton
+                }); // await new Promise
                 break;
             case 'MATRIX':
-                // TODO display matrix questions
-                // IDEA implement table input for the form gui
-                return; // FIXME
+                await new Promise((resolve, reject) => {
+                    // TODO display matrixColumns
+                    // IDEA implement table input for the form gui
+                    setup.form
+                        .addButton({
+                            label: 'Skip', // FIXME
+                            onClick() {
+                                try {
+                                    const
+                                        result = this.getData();
+
+                                    // FIXME
+                                    answers.add(answer, setup.properties.skipped, setup.values.true);
+
+                                    resolve();
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            } // onClick
+                        }); // .addButton
+                }); // await new Promise
                 break;
             default:
                 throw new Error('unexpected questionType ' + questionType);
         }
-
-        await new Promise((resolve, reject) => setup.form.addButton({
-            label: 'Submit',
-            onClick() {
-                try {
-                    const result = this.getData();
-
-                    switch (questionType) {
-                        case 'CHECKBOX_EXCLUSIVE':
-                            if (!result.choice) return; // TODO only for EXCLUSIVE or also for the others?
-                        // REM no break here
-                        case 'CHECKBOX_SINGLE':
-                        case 'CHECKBOX_MULTI':
-                            // TODO
-                            break;
-                        case 'TEXT':
-                            // TODO
-                            break;
-                        case 'MATRIX':
-                            // TODO
-                            break;
-                        default:
-                            throw new Error('unexpected questionType ' + questionType);
-                    }
-
-                    // DEBUG FIXME remove
-                    answers.add(question, setup.properties.skipped, setup.values.true);
-                    resolve();
-
-                    // TODO add the correct result to the answers
-                } catch (err) {
-                    reject(err);
-                }
-            }
-        }));
 
         progress.done += 1;
     } // askQuestion
@@ -142,7 +183,7 @@ try {
     for (let criteriaGroup of criteriaGroups) {
         const criteriaQuestions = setup.extractObjects(questionnaire, criteriaGroup, setup.properties.question);
         for (let question of criteriaQuestions) {
-            // if (progress.done < 5) // DEBUG
+            if (progress.done < 5) // DEBUG
             await askQuestion(question);
         }
     }

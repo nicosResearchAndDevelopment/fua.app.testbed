@@ -42,6 +42,7 @@ export const factory = {
 };
 
 export const uris = {
+    _base:    location.href,
     rdf:      'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     rdfs:     'http://www.w3.org/2000/01/rdf-schema#',
     dct:      'http://purl.org/dc/terms/',
@@ -51,6 +52,7 @@ export const uris = {
 };
 
 export const namespace = {
+    _base:    factory.ns(uris._base),
     rdf:      factory.ns(uris.rdf),
     rdfs:     factory.ns(uris.rdfs),
     dct:      factory.ns(uris.dct),
@@ -66,6 +68,8 @@ export const individuals = {
 export const types = {
     Questionary:                 namespace.ids3cm('CheckListQuestionary'),
     CriteriaGroup:               namespace.ids3cm('CheckListCriteriaGroup'),
+    Question:                    namespace.ids3cm('CheckListQuestion'),
+    Answer:                      namespace.ids3cm('CheckListAnswer'),
     Question_CHECKBOX_EXCLUSIVE: namespace.ids3cm('CheckListQuestion_CHECKBOX_EXCLUSIVE'),
     Question_CHECKBOX_SINGLE:    namespace.ids3cm('CheckListQuestion_CHECKBOX_SINGLE'),
     Question_CHECKBOX_MULTI:     namespace.ids3cm('CheckListQuestion_CHECKBOX_MULTI'),
@@ -87,10 +91,12 @@ export const properties = {
     invalidChoice:   namespace.ids3cm('invalidChoice'),
     relevantIf:      namespace.ids3cm('relevantIf'),
     answer:          namespace.ids3cm('answer'),
-    skipped:         namespace.ids3cm('skipped'),
     matrixColumn:    namespace.ids3cm('matrixColumn'),
     matrixTopicText: namespace.ids3cm('matrixTopicText'),
-    textPlaceholder: namespace.ids3cm('textPlaceholder')
+    textPlaceholder: namespace.ids3cm('textPlaceholder'),
+    skipped:         namespace.ids3cm('skipped'),
+    selectedChoice:  namespace.ids3cm('selectedChoice'),
+    textValue:       namespace.ids3cm('textValue')
 }; // properties
 
 export const values = {

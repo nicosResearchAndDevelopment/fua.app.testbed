@@ -1,0 +1,50 @@
+@prefix cc:          <http://creativecommons.org/ns#> .
+@prefix dct:         <http://purl.org/dc/terms/> .
+@prefix foaf:        <http://xmlns.com/foaf/0.1/> .
+@prefix odrl:        <http://www.w3.org/ns/odrl/2/> .
+@prefix owl:         <http://www.w3.org/2002/07/owl#> .
+@prefix prov:        <http://www.w3.org/ns/prov#> .
+@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:        <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann:        <http://purl.org/vocab/vann/> .
+@prefix voaf:        <http://purl.org/vocommons/voaf#> .
+@prefix void:        <http://rdfs.org/ns/void#> .
+@prefix xsd:         <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix ids:         <https://w3id.org/idsa/core/> .
+@prefix idsa:        <https://w3id.org/idsa/> .
+@prefix ids3c-co:    <https://w3id.org/ids3c-component/> .
+@prefix ids3cm:      <https://w3id.org/ids3cm/> .
+
+ids3c-co:c_q_AUD_01-1_YES
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "Yes"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_AUD_01-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:c_q_AUD_01-1_NO
+    # region CheckListQuestionChoice
+    a                ids3cm:CheckListQuestionChoice ;
+    rdfs:label       "No"@en ;
+    # TODO dct:description
+    ids3cm:question  ids3c-co:q_AUD_01-1 ;
+    rdfs:isDefinedBy ids3c-co:IDSA ;
+    # endregion CheckListQuestionChoice
+.
+
+ids3c-co:q_AUD_01-1
+    # region CheckListQuestion_CHECKBOX_EXCLUSIVE
+    a                    ids3cm:CheckListQuestion_CHECKBOX_EXCLUSIVE ;
+    rdfs:label           "q_AUD_01-1"@en ;
+    dct:description      """Does your component log each access control decision in the form of an integrity protected entry in its domain?"""@en ;
+    ids3cm:criteria      ids3c-co:AUD_01 ;
+    ids3cm:mandatory     "true"^^xsd:boolean ;
+    ids3cm:validChoice   ids3c-co:c_q_AUD_01-1_YES ;
+    ids3cm:invalidChoice ids3c-co:c_q_AUD_01-1_NO ;
+    rdfs:isDefinedBy     ids3c-co:IDSA ;
+    # endregion CheckListQuestion_CHECKBOX_EXCLUSIVE
+.

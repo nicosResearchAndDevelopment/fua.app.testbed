@@ -34,6 +34,7 @@ module.exports = async function TestsuiteApp(
             if (!contentType) return next();
             factory      = questionnaire.factory; // TODO temporary, remove factory
             const result = await rdf.serializeDataset(questionnaire, contentType);
+            util.logText('Loaded questionnaire');
             response.type(contentType).send(result);
         } catch (err) {
             util.logError(err);
@@ -50,7 +51,7 @@ module.exports = async function TestsuiteApp(
                 quadStream = rdf.parseStream(request, contentType, answers.factory);
             await answers.addStream(quadStream);
             // TODO do something with the answers
-            util.logText('\n' + await rdf.serializeDataset(answers, 'text/turtle'));
+            util.logText('Submitted answers:\n' + await rdf.serializeDataset(answers, 'text/turtle'));
             response.sendStatus(200);
             // response.redirect('/browse/questionnaire');
         } catch (err) {
