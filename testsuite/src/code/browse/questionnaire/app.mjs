@@ -51,8 +51,6 @@ try {
             }
         }
 
-        setup.form.reset();
-
         const
             isMandatory         = !!questionnaire.anyStatementMatching(question, setup.properties.mandatory, setup.values.true),
             criteriaGroup       = setup.extractSubjects(questionnaire, question, setup.properties.question)
@@ -70,6 +68,7 @@ try {
             matrixColumns       = setup.extractObjects(questionnaire, question, setup.properties.matrixColumn);
 
         setup.form
+            .reset()
             .addHTML(`<h3>
                 <span class="grey-5">/</span>
                 <span class="grey-4">${criteriaGroupLabel}</span>
@@ -119,6 +118,17 @@ try {
                                 }
                             } // onClick
                         }); // .addButton
+                    if (!isMandatory) setup.form.addButton({
+                        label: 'Skip',
+                        onClick() {
+                            try {
+                                answers.add(answer, setup.properties.skipped, setup.values.true);
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        } // onClick
+                    }); // .addButton
                 }); // await new Promise
                 break;
             case 'TEXT':
@@ -147,6 +157,17 @@ try {
                                 }
                             } // onClick
                         }); // .addButton
+                    if (!isMandatory) setup.form.addButton({
+                        label: 'Skip',
+                        onClick() {
+                            try {
+                                answers.add(answer, setup.properties.skipped, setup.values.true);
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        } // onClick
+                    }); // .addButton
                 }); // await new Promise
                 break;
             case 'MATRIX':
@@ -155,7 +176,7 @@ try {
                     // IDEA implement table input for the form gui
                     setup.form
                         .addButton({
-                            label: 'Skip', // FIXME
+                            label: 'Submit',
                             onClick() {
                                 try {
                                     const
@@ -170,21 +191,34 @@ try {
                                 }
                             } // onClick
                         }); // .addButton
+                    if (!isMandatory) setup.form.addButton({
+                        label: 'Skip',
+                        onClick() {
+                            try {
+                                answers.add(answer, setup.properties.skipped, setup.values.true);
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        } // onClick
+                    }); // .addButton
                 }); // await new Promise
                 break;
             default:
                 throw new Error('unexpected questionType ' + questionType);
         }
 
-        progress.done += 1;
+        const wasSkipped = !!answers.anyStatementMatching(answer, setup.properties.skipped, setup.values.true);
+        if (wasSkipped) progress.skipped++; else progress.done++;
+        setup.form.reset();
     } // askQuestion
 
     const criteriaGroups = setup.extractObjects(questionnaire, setup.individuals.questionnaire, setup.properties.criteriaGroup);
     for (let criteriaGroup of criteriaGroups) {
         const criteriaQuestions = setup.extractObjects(questionnaire, criteriaGroup, setup.properties.question);
         for (let question of criteriaQuestions) {
-            if (progress.done < 5) // DEBUG
-            await askQuestion(question);
+            if (progress.done < 10) // DEBUG
+                await askQuestion(question);
         }
     }
 
