@@ -2,6 +2,7 @@ import {is, assert} from '../lib/core.mjs';
 import rdflib from '../ext/rdflib-2.2.19.mjs';
 import GUI from '../lib/gui.mjs';
 import Form from '../lib/gui.form.mjs';
+import Popup from '../lib/gui.popup.mjs';
 
 GUI.style({
     'body, html': {
@@ -12,7 +13,16 @@ GUI.style({
     }
 });
 
-export const form = new Form(document.body, {
+export const popup = new Popup({
+    'width':  '800px',
+    'height': '600px',
+    'title':  'Questionnaire'
+});
+
+popup.show();
+window.addEventListener('resize', () => popup.show());
+
+export const form = new Form(popup.content, {
     onSubmit(event) {
         event.preventDefault();
     }
