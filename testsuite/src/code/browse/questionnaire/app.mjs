@@ -1,3 +1,4 @@
+import {create} from '../lib/core.mjs';
 import * as setup from './setup.mjs';
 
 try {
@@ -23,7 +24,9 @@ try {
         // return if there is already data for this question
         if (answers.anyStatementMatching(question, null, null)) return;
 
-        const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, ''));
+        // const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, ''));
+        // TODO add better random ID concept
+        const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, '') + '#' + create.randomID());
         answers.add(answer, setup.properties.type, setup.types.Answer);
         answers.add(answer, setup.properties.question, question);
 

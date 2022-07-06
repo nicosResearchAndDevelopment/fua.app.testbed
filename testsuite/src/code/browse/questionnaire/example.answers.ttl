@@ -18,6 +18,15 @@
 
 @prefix ex:          <http://www.example.com/> .
 
+# TODO add answer-sheet collection (questionnaire-result)
+# TODO add unique id-suffix
+# IDEA create own model for questionnaire and answer sheet and wrap ids-questionnaire for the webapp
+
+ex:answers
+    a ids3cm:AnswerSheet ;
+    # ...
+.
+
 ex:q_CR_7_4-5
     # answer for CheckListQuestion_CHECKBOX_MULTI
     a                     ids3cm:CheckListAnswer ;
@@ -25,6 +34,15 @@ ex:q_CR_7_4-5
     ids3cm:skipped        false ;
     ids3cm:selectedChoice ids3c-co:c_q_CR_7_4-5_SELECTED_BACKUP ;
     ids3cm:selectedChoice ids3c-co:c_q_CR_7_4-5_RECENT_TRUSTED_BACKUP ;
+    # TODO add prov-o for the answers
+    a                     prov:Entity ;
+    prov:wasAttributedTo  ex:gbx_testsuite ;
+    prov:wasGeneratedBy   [ a                      prov:Activity ;
+                            prov:used              ids3c-co:q_CR_7_4-5 ;
+                            prov:wasAssociatedWith ex:logged_in_user ;
+                            prov:startedAtTime     "2021-01-01T12:00:00Z"^^xsd:dateTimeStamp ;
+                            prov:endedAtTime       "2021-01-01T12:01:00Z"^^xsd:dateTimeStamp ; ] ;
+    # TODO look up prov and correct usage
 .
 
 ex:q_AUD_01-1
@@ -52,7 +70,16 @@ ex:q_INF_01-2
 
 ex:q_CR_7_7-2
     # answer for CheckListQuestion_MATRIX
-    a               ids3cm:CheckListAnswer ;
-    ids3cm:question ids3c-co:q_CR_7_7-2 ;
-    ids3cm:skipped  false ;
+    a                   ids3cm:CheckListAnswer ;
+    ids3cm:question     ids3c-co:q_CR_7_7-2 ;
+    ids3cm:skipped      false ;
+    # TODO make solution
+    ids3cm:matrixAnswer [ ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
+                                                      ids3cm:textValue    "" ; ] ;
+                          ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
+                                                      ids3cm:textValue    "" ; ] ; ] ;
+    ids3cm:matrixAnswer [ ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
+                                                      ids3cm:textValue    "" ; ] ;
+                          ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
+                                                      ids3cm:textValue    "" ; ] ; ] ;
 .
