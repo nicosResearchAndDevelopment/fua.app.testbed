@@ -1,0 +1,194 @@
+@prefix dct:         <http://purl.org/dc/terms/> .
+@prefix foaf:        <http://xmlns.com/foaf/0.1/> .
+@prefix owl:         <http://www.w3.org/2002/07/owl#> .
+@prefix prov:        <http://www.w3.org/ns/prov#> .
+@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:        <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:         <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix form:        <https://www.nicos-rd.com/fua/form#> .
+@prefix ids3c-co:    <https://w3id.org/ids3c-component/> .
+@prefix ids3cm:      <https://w3id.org/ids3cm/> .
+
+<>
+    a            form:Questionnaire ;
+    rdfs:seeAlso ids3c-co:IDS_CheckListApproach_Questionnaire ;
+.
+
+<q_INF_01-2>
+    a                form:InputQuestion ;
+    form:requires    <c_q_INF_01-1_YES> ;
+    form:text        "Provide the self-description interface:"@en ;
+    form:mandatory   true ;
+    form:placeholder "<scheme>://<authority>[:port][/path/to/component]/"@en ;
+    rdfs:seeAlso     ids3c-co:q_INF_01-2 ;
+.
+
+<q_INF_01-2#answer>
+    a             form:Answer ;
+    form:question <q_INF_01-2> ;
+    form:value    "https://www.example.com/" ;
+.
+
+<q_AUD_01-1>
+    a              form:SelectQuestion ;
+    form:text      "Does your component log each access control decision in the form of an integrity protected entry in its domain?"@en ;
+    form:mandatory true ;
+    form:choice    <c_q_AUD_01-1_YES> ;
+    form:choice    <c_q_AUD_01-1_NO> ;
+    form:exclusive true ;
+    rdfs:seeAlso   ids3c-co:q_AUD_01-1 ;
+.
+
+<c_q_AUD_01-1_YES>
+    a            form:Choice ;
+    form:text    "Yes"@en ;
+    rdfs:seeAlso ids3c-co:c_q_AUD_01-1_YES ;
+.
+
+<c_q_AUD_01-1_NO>
+    a            form:Choice ;
+    form:text    "No"@en ;
+    rdfs:seeAlso ids3c-co:c_q_AUD_01-1_NO ;
+.
+
+<q_AUD_01-1#answer>
+    a             form:Answer ;
+    form:question <q_AUD_01-1> ;
+    form:choice   <c_q_AUD_01-1_YES> ;
+.
+
+<q_CR_7_4-5>
+    a              form:SelectQuestion ;
+    form:requires  <c_q_CR_4_1-1_YES> ;
+    form:text      "Which backup file is utilized for the recovery of the component?"@en ;
+    form:mandatory true ;
+    form:choice    <c_q_CR_7_4-5_RECENT_TRUSTED_BACKUP> ;
+    form:choice    <c_q_CR_7_4-5_SELECTED_BACKUP> ;
+    form:choice    <c_q_CR_7_4-5_RANDOM> ;
+    form:choice    <c_q_CR_7_4-5_OTHER> ;
+    rdfs:seeAlso   ids3c-co:q_CR_7_4-5 ;
+.
+
+<c_q_CR_7_4-5_SELECTED_BACKUP>
+    a            form:Choice ;
+    form:text    "A backup explicitely selected by an authorized person"@en ;
+    rdfs:seeAlso ids3c-co:c_q_CR_7_4-5_SELECTED_BACKUP ;
+.
+
+<c_q_CR_7_4-5_RECENT_TRUSTED_BACKUP>
+    a            form:Choice ;
+    form:text    "The most recent update from an internal authentic backup source"@en ;
+    rdfs:seeAlso ids3c-co:c_q_CR_7_4-5_RECENT_TRUSTED_BACKUP ;
+.
+
+<c_q_CR_7_4-5_RANDOM>
+    a            form:Choice ;
+    form:text    "A random backup file provided"@en ;
+    rdfs:seeAlso ids3c-co:c_q_CR_7_4-5_RANDOM ;
+.
+
+<c_q_CR_7_4-5_OTHER>
+    a            form:Choice ;
+    form:text    "Other"@en ;
+    rdfs:seeAlso ids3c-co:c_q_CR_7_4-5_OTHER ;
+.
+
+<q_CR_7_4-5#answer>
+    a             form:Answer ;
+    form:question <q_CR_7_4-5> ;
+    form:choice   <c_q_CR_7_4-5_SELECTED_BACKUP> ;
+    form:choice   <c_q_CR_7_4-5_RECENT_TRUSTED_BACKUP> ;
+.
+
+<q_COM_02-1>
+    a              form:SelectQuestion ;
+    form:text      "Which type of authentication does your component facilitate for communication with other IDS Connectors?"@en ;
+    form:mandatory true ;
+    form:choice    <c_q_COM_02-1_NO-AUTHENTICATION> ;
+    form:choice    <c_q_COM_02-1_ONLY-CONNECTOR-OFFERING-DATA> ;
+    form:choice    <c_q_COM_02-1_ONLY-CONNECTOR-REQUESTING-DATA> ;
+    form:choice    <c_q_COM_02-1_MUTUAL-AUTHENTICATION> ;
+    rdfs:seeAlso   ids3c-co:q_COM_02-1 ;
+.
+
+<c_q_COM_02-1_NO-AUTHENTICATION>
+    a            form:Choice ;
+    form:text    "No authentication"@en ;
+    rdfs:seeAlso ids3c-co:c_q_COM_02-1_NO-AUTHENTICATION ;
+.
+
+<c_q_COM_02-1_ONLY-CONNECTOR-OFFERING-DATA>
+    a            form:Choice ;
+    form:text    "Only the component offering data authenticates the IDS Connector requesting data"@en ;
+    rdfs:seeAlso ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-OFFERING-DATA ;
+.
+
+<c_q_COM_02-1_ONLY-CONNECTOR-REQUESTING-DATA>
+    a            form:Choice ;
+    form:text    "Only the component requesting data authenticates the IDS Connector offering data"@en ;
+    rdfs:seeAlso ids3c-co:c_q_COM_02-1_ONLY-CONNECTOR-REQUESTING-DATA ;
+.
+
+<c_q_COM_02-1_MUTUAL-AUTHENTICATION>
+    a            form:Choice ;
+    form:text    "Mutual authentication"@en ;
+    rdfs:seeAlso ids3c-co:c_q_COM_02-1_MUTUAL-AUTHENTICATION ;
+.
+
+<q_COM_02-1#answer>
+    a             form:Answer ;
+    form:question <q_COM_02-1> ;
+    form:choice   <c_q_COM_02-1_MUTUAL-AUTHENTICATION> ;
+.
+
+<q_CR_7_7-2>
+    a              form:TableQuestion ;
+    form:requires  <c_q_CR_7_7-1_YES> ;
+    form:text      "List all necessary ports and protocols that are externally reachable."@en ;
+    form:mandatory true ;
+    form:minCount  1 ;
+    form:maxCount  99 ;
+    form:column    <q_CR_7_7-2-port> ;
+    form:column    <q_CR_7_7-2-protocol> ;
+    rdfs:seeAlso   ids3c-co:q_CR_7_7-2 ;
+.
+
+<q_CR_7_7-2-port>
+    a                 form:InputQuestion ;
+    form:text         "Externally reachable port"@en ;
+    form:mandatory    true ;
+    form:datatype     xsd:nonNegativeInteger ;
+    form:minInclusive 1 ;
+    form:placeholder  "e.g. 80"@en ;
+    rdfs:seeAlso      ids3c-co:q_CR_7_7-2-port ;
+.
+
+<q_CR_7_7-2-protocol>
+    a                form:InputQuestion ;
+    form:text        "Utilized protocol"@en ;
+    form:mandatory   true ;
+    ids3cm:datatype  xsd:token ;
+    ids3cm:minLength 2 ;
+    form:placeholder "e.g. HTTP"@en ;
+    rdfs:seeAlso     ids3c-co:q_CR_7_7-2-protocol ;
+.
+
+<q_CR_7_7-2#answer>
+    a             form:Answer ;
+    form:question <q_CR_7_7-2> ;
+    form:answer   [ a           form:RowAnswer ;
+                    form:answer [ a             form:ColumnAnswer ;
+                                  form:question <q_CR_7_7-2-port> ;
+                                  form:value    "80" ; ] ;
+                    form:answer [ a             form:ColumnAnswer ;
+                                  form:question <q_CR_7_7-2-protocol> ;
+                                  form:value    "http" ; ] ; ] ;
+    form:answer   [ a           form:RowAnswer ;
+                    form:answer [ a             form:ColumnAnswer ;
+                                  form:question <q_CR_7_7-2-port> ;
+                                  form:value    "443" ; ] ;
+                    form:answer [ a             form:ColumnAnswer ;
+                                  form:question <q_CR_7_7-2-protocol> ;
+                                  form:value    "https" ; ] ; ] ;
+.

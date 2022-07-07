@@ -165,6 +165,19 @@ form:InputQuestion
     rdfs:isDefinedBy form: ;
 .
 
+form:placeholder
+    a                owl:DatatypeProperty ;
+    rdfs:label       "placeholder"@en ;
+    dct:description  """
+        The placeholder property defines a visible text that will be displayed in an empty text input.
+    """@en ;
+    rdfs:domain      form:InputQuestion ;
+    rdfs:range       [ a           owl:Class ;
+                       owl:unionOf ( xsd:string
+                                     rdf:langString ) ; ] ;
+    rdfs:isDefinedBy form: ;
+.
+
 form:datatype
     a                owl:ObjectProperty ;
     rdfs:label       "datatype"@en ;
@@ -329,11 +342,8 @@ form:column
     rdfs:label       "column"@en ;
     dct:description  """
         This reference links a table question to the corresponding column questions.
-        The same reference is used to link the answer of a row to its question.
     """@en ;
-    rdfs:domain      [ a           owl:Class ;
-                       owl:unionOf ( form:TableQuestion
-                                     form:ColumnAnswer ) ; ] ;
+    rdfs:domain      form:TableQuestion ;
     rdfs:range       form:Question ;
     rdfs:isDefinedBy form: ;
 .
