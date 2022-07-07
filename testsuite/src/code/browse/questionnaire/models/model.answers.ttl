@@ -16,6 +16,10 @@
 @prefix ids3c-co:    <https://w3id.org/ids3c-component/> .
 @prefix ids3cm:      <https://w3id.org/ids3cm/> .
 
+ids3cm:CheckListAnswerSheet
+    a owl:Class ;
+.
+
 ids3cm:CheckListQuestion
     a owl:Class ;
 .
@@ -57,9 +61,37 @@ ids3cm:selectedChoice
 .
 
 ids3cm:textValue
-    a           owl:ObjectProperty ;
-    rdfs:domain ids3cm:CheckListAnswer ;
-    rdfs:range  ids3cm:CheckListQuestionChoice ;
+    a           owl:DatatypeProperty ;
+    rdfs:domain [ rdf:type    owl:Class ;
+                  owl:unionOf ( ids3cm:CheckListAnswer
+                                ids3cm:MatrixAnswer ) ; ] ;
+    rdfs:range  xsd:string ;
 .
 
-# TODO matrix answers
+ids3cm:MatrixRow
+    a owl:Class ;
+.
+
+ids3cm:MatrixAnswer
+    a owl:Class ;
+.
+
+ids3cm:matrixColumn
+    a           owl:ObjectProperty ;
+    rdfs:domain [ rdf:type    owl:Class ;
+                  owl:unionOf ( ids3cm:CheckListQuestion_MATRIX
+                                ids3cm:MatrixAnswer ) ; ] ;
+    rdfs:range  ids3cm:MatrixColumn ;
+.
+
+ids3cm:matrixRow
+    a           owl:ObjectProperty ;
+    rdfs:domain ids3cm:CheckListAnswer ;
+    rdfs:range  ids3cm:MatrixRow ;
+.
+
+ids3cm:matrixAnswer
+    a           owl:ObjectProperty ;
+    rdfs:domain ids3cm:MatrixRow ;
+    rdfs:range  ids3cm:MatrixAnswer ;
+.

@@ -1,4 +1,3 @@
-import {create} from '../lib/core.mjs';
 import * as setup from './setup.mjs';
 
 try {
@@ -24,9 +23,7 @@ try {
         // return if there is already data for this question
         if (answers.anyStatementMatching(question, null, null)) return;
 
-        // const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, ''));
-        // TODO add better random ID concept
-        const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, '') + '#' + create.randomID());
+        const answer = setup.namespace._base(question.value.replace(setup.uris.ids3c_co, ''));
         answers.add(answer, setup.properties.type, setup.types.Answer);
         answers.add(answer, setup.properties.question, question);
 
@@ -68,7 +65,8 @@ try {
                 ...setup.extractObjects(questionnaire, question, setup.properties.validChoice),
                 ...setup.extractObjects(questionnaire, question, setup.properties.invalidChoice)
             ].sort(() => Math.random() - .5),
-            matrixColumns       = setup.extractObjects(questionnaire, question, setup.properties.matrixColumn);
+            matrixColumns       = setup.extractObjects(questionnaire, question, setup.properties.matrixColumn),
+            startedAtTime       = setup.factory.literal(new Date().toISOString(), setup.datatypes.dateTimeStamp);
 
         setup.form
             .reset()
@@ -211,8 +209,20 @@ try {
                 throw new Error('unexpected questionType ' + questionType);
         }
 
-        const wasSkipped = !!answers.anyStatementMatching(answer, setup.properties.skipped, setup.values.true);
+        const
+            wasSkipped = !!answers.anyStatementMatching(answer, setup.properties.skipped, setup.values.true);
+
         if (wasSkipped) progress.skipped++; else progress.done++;
+
+        const
+            endedAtTime = setup.factory.literal(new Date().toISOString(), setup.datatypes.dateTimeStamp),
+            action      = setup.factory.blankNode();
+
+        answers.add(answer, setup.properties.type, setup.types.Entity);
+        answers.add(answer, setup.properties.wasGeneratedBy, action);
+        answers.add(action, setup.properties.startedAtTime, startedAtTime);
+        answers.add(action, setup.properties.endedAtTime, endedAtTime);
+
         setup.form.reset();
     } // askQuestion
 
@@ -220,7 +230,7 @@ try {
     for (let criteriaGroup of criteriaGroups) {
         const criteriaQuestions = setup.extractObjects(questionnaire, criteriaGroup, setup.properties.question);
         for (let question of criteriaQuestions) {
-            if (progress.done < 10) // DEBUG
+            if (progress.done < 6) // DEBUG TODO FIXME
                 await askQuestion(question);
         }
     }

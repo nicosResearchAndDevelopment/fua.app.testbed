@@ -1,0 +1,48 @@
+@prefix dct:       <http://purl.org/dc/terms/> .
+@prefix foaf:      <http://xmlns.com/foaf/0.1/> .
+@prefix owl:       <http://www.w3.org/2002/07/owl#> .
+@prefix prov:      <http://www.w3.org/ns/prov#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fua:       <https://www.nicos-rd.com/fua#> .
+@prefix form:      <https://www.nicos-rd.com/fua/form#> .
+
+# TODO create a draft for the questionnaire/interview/form sub-ontology
+
+form:Questionnaire
+    a                owl:Class ;
+    rdfs:isDefinedBy form: ;
+.
+
+form:Question
+    a                owl:Class ;
+    rdfs:isDefinedBy form: ;
+.
+
+form:QuestionnaireResult
+    a                owl:Class ;
+    rdfs:isDefinedBy form: ;
+.
+
+form:Answer
+    a                owl:Class ;
+    rdfs:isDefinedBy form: ;
+.
+
+form:section
+    a           owl:ObjectProperty ;
+    rdfs:domain [ a           owl:Class ;
+                  owl:unionOf ( form:Questionnaire
+                                form:QuestionnaireResult ) ; ] ;
+    rdfs:range  form:Questionnaire ;
+.
+
+form:question
+    a           owl:ObjectProperty ;
+    rdfs:domain [ a           owl:Class ;
+                  owl:unionOf ( form:Questionnaire
+                                form:Answer ) ; ] ;
+    rdfs:range  form:Question ;
+.

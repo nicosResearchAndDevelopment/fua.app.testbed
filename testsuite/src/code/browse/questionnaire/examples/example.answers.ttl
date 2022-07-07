@@ -19,11 +19,10 @@
 @prefix ex:          <http://www.example.com/> .
 
 # TODO add answer-sheet collection (questionnaire-result)
-# TODO add unique id-suffix
 # IDEA create own model for questionnaire and answer sheet and wrap ids-questionnaire for the webapp
 
 ex:answers
-    a ids3cm:AnswerSheet ;
+    a ids3cm:CheckListAnswerSheet ;
     # ...
 .
 
@@ -70,16 +69,21 @@ ex:q_INF_01-2
 
 ex:q_CR_7_7-2
     # answer for CheckListQuestion_MATRIX
-    a                   ids3cm:CheckListAnswer ;
-    ids3cm:question     ids3c-co:q_CR_7_7-2 ;
-    ids3cm:skipped      false ;
-    # TODO make solution
-    ids3cm:matrixAnswer [ ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
-                                                      ids3cm:textValue    "" ; ] ;
-                          ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
-                                                      ids3cm:textValue    "" ; ] ; ] ;
-    ids3cm:matrixAnswer [ ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
-                                                      ids3cm:textValue    "" ; ] ;
-                          ids3cm:matrixColumnAnswer [ ids3cm:matrixColumn ids3c-co:blabla ;
-                                                      ids3cm:textValue    "" ; ] ; ] ;
+    a                ids3cm:CheckListAnswer ;
+    ids3cm:question  ids3c-co:q_CR_7_7-2 ;
+    ids3cm:skipped   false ;
+    ids3cm:matrixRow [ a                   ids3cm:MatrixRow ;
+                       ids3cm:matrixAnswer [ a                   ids3cm:MatrixAnswer ;
+                                             ids3cm:matrixColumn ids3c-co:q_CR_7_7-2-port ;
+                                             ids3cm:textValue    "80" ; ] ;
+                       ids3cm:matrixAnswer [ a                   ids3cm:MatrixAnswer ;
+                                             ids3cm:matrixColumn ids3c-co:q_CR_7_7-2-protocol ;
+                                             ids3cm:textValue    "http" ; ] ; ] ;
+    ids3cm:matrixRow [ a                   ids3cm:MatrixRow ;
+                       ids3cm:matrixAnswer [ a                   ids3cm:MatrixAnswer ;
+                                             ids3cm:matrixColumn ids3c-co:q_CR_7_7-2-port ;
+                                             ids3cm:textValue    "443" ; ] ;
+                       ids3cm:matrixAnswer [ a                   ids3cm:MatrixAnswer ;
+                                             ids3cm:matrixColumn ids3c-co:q_CR_7_7-2-protocol ;
+                                             ids3cm:textValue    "https" ; ] ; ] ;
 .
