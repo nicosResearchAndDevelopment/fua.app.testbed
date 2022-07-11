@@ -2,9 +2,11 @@ const
     path                    = require('path'),
     fs                      = require('fs'),
     __root                  = path.join(__dirname, '../..'),
+    default_context         = require('@nrd/fua.resource.data/context'),
     server_tls_certificates = require('../../cert/tls-server/server.js');
 
 exports.context = {
+    ...default_context,
     'fno':  'https://w3id.org/function/ontology#',
     'foaf': 'http://xmlns.com/foaf/0.1/',
     'dc':   'http://purl.org/dc/elements/1.1/',
@@ -57,7 +59,7 @@ exports.context = {
     'gbxm':  'http://localhost/model/',
     'gbxc':  'http://localhost/config/',
 
-    'bo-time': 'http://localhost/data/bo/time/'
+    'bo-time': 'http://localhost/data/bo/time/',
 
     //                 @prefix ids:      <https://w3id.org/idsa/core/> .
     //@prefix ids3cm:   <https://w3id.org/idsa/3cm/> .

@@ -1,5 +1,6 @@
 const
     path                 = require('path'),
+    fs                   = require('fs/promises'),
     util                 = require('./code/util.testsuite.js'),
     express              = require('express'),
     Middleware_LDP       = require('@nrd/fua.middleware.ldp'),
@@ -53,14 +54,28 @@ module.exports = async function TestsuiteApp(
         try {
             const contentType = request.is(rdf.contentTypes);
             if (!contentType) return next();
+
             const
                 answers    = new Dataset(null, factory), // TODO temporary, remove factory
                 quadStream = rdf.parseStream(request, contentType, answers.factory);
             await answers.addStream(quadStream);
-            // TODO do something with the answers
-            util.logText('Submitted answers:\n' + await rdf.serializeDataset(answers, 'text/turtle'));
+
+            const
+                answersTTL  = await rdf.serializeDataset(answers, 'text/turtle'),
+                answerSheet = answers.match(
+                    null,
+                    factory.namedNode('rdf:type'),
+                    factory.namedNode('ids3cm:CheckListAnswerSheet')
+                ).subjects().next().value || null;
+
+            util.logText('Submitted answers:\n' + answersTTL);
+
+            if (answerSheet) {
+                const [match, id] = /questionnaire\/(\w+)/.exec(answerSheet.value) || [];
+                if (match) await fs.writeFile(path.join(__dirname, '../data/questionnaire/answers', id + '.ttl'), answersTTL)
+            }
+
             response.sendStatus(200);
-            // response.redirect('/browse/questionnaire');
         } catch (err) {
             util.logError(err);
             next(err);

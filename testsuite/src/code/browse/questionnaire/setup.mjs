@@ -41,8 +41,8 @@ form.style({
 
 export const factory = {
     ...rdflib.DataFactory,
-    ns(prefix) {
-        return (suffix) => rdflib.sym(prefix + suffix);
+    ns(prefix = '') {
+        return (suffix = '') => rdflib.sym(prefix + suffix);
     },
     dataset(quads) {
         const dataset = new rdflib.Store();
@@ -82,6 +82,7 @@ export const types = {
     Questionary:                 namespace.ids3cm('CheckListQuestionary'),
     CriteriaGroup:               namespace.ids3cm('CheckListCriteriaGroup'),
     Question:                    namespace.ids3cm('CheckListQuestion'),
+    AnswerSheet:                 namespace.ids3cm('CheckListAnswerSheet'),
     Answer:                      namespace.ids3cm('CheckListAnswer'),
     Question_CHECKBOX_EXCLUSIVE: namespace.ids3cm('CheckListQuestion_CHECKBOX_EXCLUSIVE'),
     Question_CHECKBOX_SINGLE:    namespace.ids3cm('CheckListQuestion_CHECKBOX_SINGLE'),

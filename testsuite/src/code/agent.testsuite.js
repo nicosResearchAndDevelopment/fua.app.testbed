@@ -15,6 +15,9 @@ class TestsuiteAgent extends ServerAgent {
     #tbEmit          = null;
     #testcases       = null;
 
+    #connected      = false;
+    #connectPromise = null;
+
     constructor(options = {}) {
         util.assert(util.isString(options.prefix) && options.prefix.length > 0, 'expected prefix to be a non empty string');
         util.assert(util.isObject(options.testbed), 'expected testbed to be an object');
@@ -54,10 +57,11 @@ class TestsuiteAgent extends ServerAgent {
         });
 
         // TODO evaluate if it is actually better to not wait for the connect event
-        await new Promise((resolve, reject) => {
+        this.#connectPromise = new Promise((resolve, reject) => {
             let onError, onConnect;
             this.#tbSocket.once('connect', onConnect = () => {
                 this.#tbSocket.off(onError);
+                this.#connected = true;
                 resolve();
             });
             this.#tbSocket.once('error', onError = (err) => {
@@ -108,6 +112,8 @@ class TestsuiteAgent extends ServerAgent {
     }
 
     async test(token, data) {
+        this.#connected || await this.#connectPromise;
+
         util.assert(this.#tbSocket, 'expected testbed socket to be defined');
         const
             testToken               = {id: token.id, start: token.start, thread: []},
@@ -125,6 +131,8 @@ class TestsuiteAgent extends ServerAgent {
     } // TestsuiteAgent#test
 
     async enforce(token, data) {
+        this.#connected || await this.#connectPromise;
+
         util.assert(this.#tbSocket, 'expected testbed socket to be defined');
         util.assert(this.#testcases, 'expected testcases to be defined');
         const tcFunction = this.#testcases[data.testCase];
