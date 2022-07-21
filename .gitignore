@@ -1,2 +1,6 @@
+/.*/
+/node_modules/
+/package-lock.json
+
 /auditlog/tb_ids_bob/net/
 /auditlog/tb_ids_bob/ids/
