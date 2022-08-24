@@ -58,6 +58,15 @@ module.exports = async function RCApp(
             }
         }); // socket.on('refreshDAT')
 
+        socket.on('rc_refreshDAT', async (param, callback) => {
+            try {
+                const result = await agent.refreshDAT(param);
+                callback(null, result);
+            } catch (err) {
+                callback(err);
+            }
+        }); // socket.on('rc_refreshDAT')
+
         socket.on('requestApplicantsSelfDescription', async (param, callback) => {
             try {
                 const result = await agent.requestApplicantsSelfDescription(param);

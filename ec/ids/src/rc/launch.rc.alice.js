@@ -37,7 +37,9 @@ const
                 privateKey: certs.connector.privateKey,
                 SKIAKI:     certs.connector.meta.SKIAKI,
                 DAPS:       {
-                    default: 'http://omejdn-daps.nicos-rd.com:4567'
+                    //default: 'http://omejdn-daps.nicos-rd.com:4567'
+                    //default: 'https://omejdn-daps.nicos-rd.com:4567'
+                    default: 'https://nrd-daps.nicos-rd.com:8082/'
                 },
                 http_agent: config.schema === 'https' ? new https.Agent({
                     key:  certs.server.key,

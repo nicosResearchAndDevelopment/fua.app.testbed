@@ -161,9 +161,13 @@ class EcosystemIDS {
         return this;
     } // EcosystemIDS#off
 
+    async rc_refreshDAT({rc: remoteId, ...param}) {
+        return await this.callRemoteMethod(remoteId, 'rc_refreshDAT', param);
+    } // refreshDAT#refreshDAT
+
     async refreshDAT({rc: remoteId, ...param}) {
         return await this.callRemoteMethod(remoteId, 'refreshDAT', param);
-    } // EcosystemIDS#refreshDAT
+    } // refreshDAT#refreshDAT
 
     async requestApplicantsSelfDescription({rc: remoteId, ...param}) {
         return await this.callRemoteMethod(remoteId, 'requestApplicantsSelfDescription', param);
