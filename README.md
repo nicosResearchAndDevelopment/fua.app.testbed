@@ -10,22 +10,23 @@
 
 ## etc hosts
 
-| ec  | FQDN                     | ip        | port | description |
-|:----|:-------------------------|:----------|:-----|:------------|
-|     | testbed.nicos-rd.com     | 127.0.0.1 | 8080 |             |
-|     | testsuite.nicos-rd.com   | 127.0.0.1 | 8081 |             |
-| ids | nrd-daps.nicos-rd.com    | 127.0.0.1 | 8082 |             |
-| ids | omejdn-daps.nicos-rd.com | 127.0.0.1 | 4567 |             |
-| ids | mdb-fh.nicos-rd.com      | 127.0.0.1 |      |             |
-| ids | paris-fh.nicos-rd.com    | 127.0.0.1 |      |             |
-| ids | nrd-ch.nicos-rd.com      | 127.0.0.1 |      |             |
-| ids | nrd-dtm.nicos-rd.com     | 127.0.0.1 |      |             |
-| ids | alice.nicos-rd.com       | 127.0.0.1 | 8099 |             |
-| ids | bob.nicos-rd.com         | 127.0.0.1 | 8098 |             |
-| ids | **SUT**                  |           |      |             |
-| ids | gbx.nicos-rd.com         | 127.0.0.1 | 8090 |             |
-| ids | ids-dsc.nicos-rd.com     | 127.0.0.1 | 8091 |             |
-|     |                          |           |      |             |
+| ec  | FQDN                     | ip        | port | description  |
+|:----|:-------------------------|:----------|:-----|:-------------|
+|     | testbed.nicos-rd.com     | 127.0.0.1 | 8080 |              |
+|     | testsuite.nicos-rd.com   | 127.0.0.1 | 8081 |              |
+| ids | nrd-daps.nicos-rd.com    | 127.0.0.1 | 8082 |              |
+| ids | omejdn-daps.nicos-rd.com | 127.0.0.1 | 4567 |              |
+| ids | mdb-fh.nicos-rd.com      | 127.0.0.1 |      |              |
+| ids | paris-fh.nicos-rd.com    | 127.0.0.1 |      |              |
+| ids | nrd-ch.nicos-rd.com      | 127.0.0.1 |      |              |
+| ids | nrd-dtm.nicos-rd.com     | 127.0.0.1 |      |              |
+| ids | alice.nicos-rd.com       | 127.0.0.1 | 8099 |              |
+| ids | bob.nicos-rd.com         | 127.0.0.1 | 8098 |              |
+| ids | **SUT**                  |           |      |              |
+| ids | gbx.nicos-rd.com         | 127.0.0.1 | 8090 |              |
+| ids | ids-dsc.nicos-rd.com     | 127.0.0.1 | 8091 |              |
+| ids | edc.nicos-rd.com         | 127.0.0.1 | 8092 | TODO: C:/... |
+|     |                          |           |      |              |
 
 ```
 #region GBX-TF

@@ -1,17 +1,18 @@
 const
     http   = require('http'),
     https  = require('https'),
-    certs  = require('../resources/cert'),
+    //certs  = require('../resources/cert'),
+    certs  = require('../../../cert/daps/tls-server/server.js'),
     config = {
-        proxy_port:   8081,
+        proxy_port:   8082,
         service_host: 'localhost',
         service_port: 4567
     };
 
 // SEE https://stackoverflow.com/questions/20351637/how-to-create-a-simple-http-proxy-in-node-js
 https.createServer({
-    key:  certs.daps.private,
-    cert: certs.daps.cert
+    key:  certs.key,
+    cert: certs.cert
 }, function (clientRequest, clientResponse) {
     logRequest(clientRequest);
     const serviceRequest = http.request({

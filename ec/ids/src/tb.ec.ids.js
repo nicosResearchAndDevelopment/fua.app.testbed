@@ -162,11 +162,16 @@ class EcosystemIDS {
     } // EcosystemIDS#off
 
     async rc_refreshDAT({rc: remoteId, ...param}) {
-        return await this.callRemoteMethod(remoteId, 'rc_refreshDAT', param);
+        const result = await this.callRemoteMethod(remoteId, 'rc_refreshDAT', param);
+        return {
+            'timestamp':            util.utcDateTime(),
+            'operationalResultTyp': "ids:DAT",
+            'operationalResult':    result
+        }; // return
     } // refreshDAT#refreshDAT
 
-    async refreshDAT({rc: remoteId, ...param}) {
-        return await this.callRemoteMethod(remoteId, 'refreshDAT', param);
+    async refreshDAT(...args) {
+       return this.rc_refreshDAT(...args);
     } // refreshDAT#refreshDAT
 
     async requestApplicantsSelfDescription({rc: remoteId, ...param}) {

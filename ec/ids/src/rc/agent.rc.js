@@ -101,12 +101,13 @@ class RCAgent extends ServerAgent {
             });
 
             return DAT;
+
         } catch (err) {
             this.emitEvent('tb.rc.refreshDat.error', {
                 thread:  param.thread,
                 message: err?.message || '' + err
             });
-        }
+        } // try
     } // RCAgent#refreshDAT
 
     async requestApplicantsSelfDescription(param) {

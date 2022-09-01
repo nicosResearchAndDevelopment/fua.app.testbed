@@ -147,11 +147,11 @@ class RcConnector extends BaseConnector {
         try {
 
             let
-                daps = ((param.daps) ? param.daps : "default"),
+                daps   = ((param.daps) ? param.daps : "default"),
                 result = {
-                    'id':                randomLeave(`${this.id}rc_refreshDAT/result/`),
-                    'thread':            param.thread,
-                    'prov':              `${this.id}rc_refreshDAT`,
+                    'id':     randomLeave(`${this.id}rc_refreshDAT/result/`),
+                    'thread': param.thread,
+                    'prov':   `${this.id}rc_refreshDAT`,
                     //'target':            `${param.schema}://${param.host}${((!!param.port) ? ":" + param.port : "")}${param.path}`,
                     'operationalResult': undefined
                 }
@@ -163,9 +163,8 @@ class RcConnector extends BaseConnector {
                 DAT = await this.getDAT({'daps': param.daps})
             ;
 
-            // TODO :
-            //result.operationalResult = JSON.parse(body);
-            result.end = util.utcDateTime();
+            result.operationalResult = JSON.parse(body);
+            result.end               = util.utcDateTime();
 
             event.end = result.end;
             this.emit('event', null, event);

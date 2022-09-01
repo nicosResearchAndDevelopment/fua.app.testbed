@@ -67,7 +67,7 @@ module.exports = async function TestbedApp(
     //endregion >> LDN
 
     //region >> DAPS
-    app.post(agent.DAPS.token_path, express.json(), async (request, response, next) => {
+    app.post(agent.DAPS.token_path, express.json(), express.urlencoded({extended: false}), async (request, response, next) => {
         try {
             // util.logObject(request.body);
             // debugger;

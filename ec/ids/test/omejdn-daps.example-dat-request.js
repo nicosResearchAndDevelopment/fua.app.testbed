@@ -10,8 +10,8 @@ const
     fs         = require('fs/promises'),
     certs      = require('../resources/cert/index.js'),
     config     = {
-        // daps_url: 'http://localhost:4567'
-        daps_url: 'https://localhost:8081'
+         daps_url: 'http://localhost:4567'
+        //daps_url: 'https://localhost:8081'
     };
 
 (async function Main() {
