@@ -12,7 +12,7 @@ const
 (async function LaunchAlice() {
 
     const
-        {param} = parseArgv(),
+        param   = parseArgv(),
         config  = JSON.parse(Buffer.from(param.config, 'base64').toString()),
         rcAgent = await RCAgent.create({
             schema:     config.schema,
@@ -39,7 +39,7 @@ const
                 DAPS:       {
                     //default: 'http://omejdn-daps.nicos-rd.com:4567'
                     //default: 'https://omejdn-daps.nicos-rd.com:4567'
-                    default: 'https://nrd-daps.nicos-rd.com:8082/', // REM: proxy in testbed
+                    default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
                     //default: 'https://localhost:8082/', // REM: proxy in testbed
                     //default: 'https://testbed.nicos-rd.com:8080/'
                 },

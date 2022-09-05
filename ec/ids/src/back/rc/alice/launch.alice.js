@@ -12,11 +12,11 @@ const
 ; // const
 
 let
-    __privateKey__  = undefined,
-    config          = {}
+    __privateKey__ = undefined,
+    config         = {}
 ;
-const {param, args} = parseArgv();
-config              = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
+const param        = parseArgv();
+config             = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
 
 const {cert}                  = require(config['cert_client']);
 config['connectorPrivateKey'] = crypto.createPrivateKey(cert.connector.key.toString());
@@ -79,4 +79,3 @@ config['http_agent'] = new http.Agent({
     });
 
 })({'config': config}).catch(console.error);
-
