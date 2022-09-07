@@ -43,6 +43,7 @@ const
             },
             publicKey:                 config.cert.daps_connector.publicKey,
             privateKey:                config.cert.daps_connector.privateKey,
+            tweak_DAT_generation:      true,
             tweak_DAT_custom_enabled:  true,
             tweak_DAT_custom_max_size: 10000
         },

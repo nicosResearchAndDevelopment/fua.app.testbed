@@ -70,7 +70,7 @@ module.exports = async function TestbedApp(
     app.post(agent.DAPS.token_path, express.json(), express.urlencoded({extended: false}), async (request, response, next) => {
         try {
             // util.logObject(request.body);
-            // debugger;
+            //debugger;
 
             const DAT = await agent.DAPS.generateDAT({
                 client_assertion:      request.body.client_assertion,
@@ -82,7 +82,7 @@ module.exports = async function TestbedApp(
             response.send(DAT);
         } catch (err) {
             next(err);
-        }
+        } // try
     });
 
     app.get(agent.DAPS.jwks_path, async (request, response) => {
