@@ -91,7 +91,10 @@ class RCAgent extends ServerAgent {
         });
 
         try {
-            const DAT = await this.connector.getDAT({'daps': param.daps || 'default'});
+            const DAT = await this.connector.getDAT({
+                'daps':      param.daps || 'default',
+                'tweak_dat': param.tweak_dat
+            });
 
             this.touchIdle();
 
