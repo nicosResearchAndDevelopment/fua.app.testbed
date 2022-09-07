@@ -131,6 +131,11 @@ module.exports = async function TestbedApp(
 
         }); // testsuite_socket.on('test')
 
+        socket.on('config', async (token, test, callback) => {
+            //debugger;
+            token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : config : start`);
+        }); // testsuite_socket.on('config')
+
         socket.on('subscribe', ({room}) => {
             util.logText(`Socket<${socket.id}> tries to subscribe to { room: "${room}" }`);
             // TODO the id must be part of the room and referenced by any tickets/tokens/etc.

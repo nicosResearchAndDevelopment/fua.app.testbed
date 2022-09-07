@@ -42,7 +42,7 @@ module.exports = async function initializeIDS(
     util.assert(agent instanceof TestbedAgent, 'expected agent to be a TestbedAgent');
     util.assert(!agent.ecosystems[EC_NAME], 'expected ecosystem ' + EC_NAME + ' not to be initialized already');
 
-    const ec_ids = agent.ecosystems[EC_NAME] = new EcosystemIDS();
+    const ec_ids = agent.ecosystems[EC_NAME] = new EcosystemIDS({'agent': agent});
     util.lockProp(agent.ecosystems, EC_NAME);
 
     await Promise.all([

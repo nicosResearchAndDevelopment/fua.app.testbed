@@ -107,8 +107,13 @@ class RemoteComponent {
 
 class EcosystemIDS {
 
+    #agent            = null;
     #emitter          = new EventEmitter();
     #remoteComponents = new Map();
+
+    constructor({'agent': agent}) {
+        this.#agent = agent;
+    } // constructor
 
     async createRemoteComponent(launchFile, launchConfig) {
         const remoteComponent = new RemoteComponent(launchFile, launchConfig);
@@ -161,6 +166,21 @@ class EcosystemIDS {
         return this;
     } // EcosystemIDS#off
 
+    async rc_DAPS_nextDatRequest({rc: remoteId, ...param}) {
+
+        //TODO: const result = await this.callRemoteMethod(remoteId, 'rc_DAPS_nextDatRequest', param);
+        const daps                   = this.#agent.DAPS;
+        daps.setNextDatRequestConfig = param.next;
+        return {
+            'timestamp':            util.utcDateTime(),
+            'operationalResultTyp': "daps:setNextDatRequestConfigResult",
+            'operationalResult':    {
+                value:   true,
+                message: "Next DAPS request config successfully set."
+            }
+        }; // return
+    } // EcosystemIDS#rc_DAPS_nextDatRequest
+
     async rc_refreshDAT({rc: remoteId, ...param}) {
         const result = await this.callRemoteMethod(remoteId, 'rc_refreshDAT', param);
         return {
@@ -168,11 +188,11 @@ class EcosystemIDS {
             'operationalResultTyp': "ids:DAT",
             'operationalResult':    result
         }; // return
-    } // refreshDAT#refreshDAT
+    } // EcosystemIDS#refreshDAT
 
     async refreshDAT(...args) {
-       return this.rc_refreshDAT(...args);
-    } // refreshDAT#refreshDAT
+        return this.rc_refreshDAT(...args);
+    } // EcosystemIDS#refreshDAT
 
     async requestApplicantsSelfDescription({rc: remoteId, ...param}) {
         return await this.callRemoteMethod(remoteId, 'requestApplicantsSelfDescription', param);

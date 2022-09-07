@@ -39,9 +39,9 @@ const
                 DAPS:       {
                     //default: 'http://omejdn-daps.nicos-rd.com:4567'
                     //default: 'https://omejdn-daps.nicos-rd.com:4567'
-                    default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
+                    //default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
                     //default: 'https://localhost:8082/', // REM: proxy in testbed
-                    //default: 'https://testbed.nicos-rd.com:8080/'
+                    default: 'https://testbed.nicos-rd.com:8080/'
                 },
                 http_agent: config.schema === 'https' ? new https.Agent({
                     key:  certs.server.key,

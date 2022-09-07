@@ -104,7 +104,7 @@ class TestbedAgent extends ServerAgent {
         const ecosystem = this.#ecosystems[ecId];
         util.assert(util.isObject(ecosystem), 'expected ecosystem to be an object');
         const command = ecosystem[cmdId];
-        util.assert(util.isFunction(command), 'expected command to be a function');
+        util.assert(util.isFunction(command), `expected command (cmdId: <${cmdId}>) to be a function`);
         const result = await command.call(ecosystem, param);
         return result;
     } // TestbedAgent#executeTest
