@@ -17,8 +17,8 @@ let
     config         = {}
 ;
 
-const {param, args} = parseArgv();
-config              = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
+const param = parseArgv();
+config      = JSON.parse(Buffer.from(param.config, 'base64').toString('utf8'));
 
 const {cert} = require(config['cert_client']);
 

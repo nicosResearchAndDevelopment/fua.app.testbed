@@ -13,7 +13,7 @@ const
     });
 
 util.awaitMain(async function Main() {
-    const {param, args: [exe, script, method, ...args]} = subprocess.parseArgv();
+    const {_: [exe, script, method, ...args], ...param} = subprocess.parseArgv();
 
     switch (method) {
 

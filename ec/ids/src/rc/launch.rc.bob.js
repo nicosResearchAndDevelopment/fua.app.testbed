@@ -12,7 +12,7 @@ const
 (async function LaunchBob() {
 
     const
-        {param} = parseArgv(),
+        param   = parseArgv(),
         config  = JSON.parse(Buffer.from(param.config, 'base64').toString()),
         rcAgent = await RCAgent.create({
             schema:     config.schema,
