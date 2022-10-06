@@ -24,11 +24,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/launch.testbed.js",
-    "install-omejdn-daps": "node ec/ids/src/scripts/setup.omejdn-daps.js install",
-    "launch-omejdn-daps": "node ec/ids/src/scripts/setup.omejdn-daps.js launch",
-    "install-metadata-broker": "node ec/ids/src/scripts/setup.metadata-broker.js install",
-    "launch-metadata-broker": "node ec/ids/src/scripts/setup.metadata-broker.js launch"
+    "start": "node src/launch.testbed.js"
   },
   "repository": {
     "type": "git",
