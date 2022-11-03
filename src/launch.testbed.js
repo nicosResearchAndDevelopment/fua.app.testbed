@@ -48,13 +48,14 @@ const
             tweak_DAT_custom_max_size: 10000
         },
         scheduler: {
-            'idle': '*/30 * * * * *'
+            //    'idle': '*/30 * * * * *'
         }
     });
 
     /* 2. Use additional methods to configure the setup: */
 
     testbedAgent.event.on('*', (event) => testbedAgent.emit('event', event));
+    //testbedAgent.event.on('**', (event) => testbedAgent.emit('event', event));
 
     testbedAgent.amec.registerMechanism(BasicAuth.prefLabel, BasicAuth({
         domain: testbedAgent.domain

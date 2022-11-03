@@ -2,7 +2,9 @@ const
     util        = require('./util.testbed.js'),
     ServerAgent = require('@nrd/fua.agent.server'),
     {PEP}       = require('@nrd/fua.decide.pep'),
-    {DAPS}      = require('@nrd/fua.ids.agent.daps');
+    {DAPS}      = require('@nrd/fua.ids.agent.daps'),
+    testing     = require("@nrd/fua.module.testing"),
+    EventAgent  = require("@nrd/fua.agent.event");
 
 class TestbedAgent extends ServerAgent {
 
@@ -48,8 +50,21 @@ class TestbedAgent extends ServerAgent {
             }
         }
 
-        if (this.event && this.io)
+        if (this.event && this.io) {
             this.event.connectIOServer(this.io.of('/execute'), 'fua.module.testing.ProxyToken.**');
+
+            await testing.init({
+                events: this.event
+            });
+
+            (async () => {
+                for await (let proxyToken of testing.sync()) {
+
+                    /** NOT await */ this.processTestCase(proxyToken);
+                }
+            })().catch(util.logError);
+
+        } // if()
 
         return this;
     } // TestbedAgent#initialize
@@ -111,6 +126,66 @@ class TestbedAgent extends ServerAgent {
         const result = await command.call(ecosystem, param);
         return result;
     } // TestbedAgent#executeTest
+
+    async processTestCase(proxyToken) {
+
+        //socket.on('test', async (token, test, callback) => {
+        //    token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : start`);
+        //
+        //    let
+        //        ec       = test['ec'],
+        //        command  = test['command'],
+        //        param    = test['param']
+        //    ;
+        //    token        = ((typeof token === 'string') ? {id: token, thread: []} : token);
+        //    token.thread = (token.thread || []);
+        //    try {
+        //        let result = await agent.executeTest({
+        //            'ec':      ec,
+        //            'command': command,
+        //            'param':   param
+        //        });
+        //        token.thread.push(`${util.utcDateTime()} : TESTBED : urn:tb:app:testsuite_socket:on : test : before : callback`);
+        //        callback(null, token, result);
+        //    } catch (jex) {
+        //        // TODO : transform new Errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //        let error = {
+        //            message: jex.message
+        //        };
+        //        if (jex.code)
+        //            error.code = jex.code;
+        //        callback(error, token, undefined);
+        //    } // try
+        //
+        //}); // testsuite_socket.on('test')
+
+        try {
+
+            proxyToken.log(`TESTBED : processTestCase : start`);
+            let
+                ec      = proxyToken.data['ec'],
+                command = proxyToken.data['command'],
+                param   = proxyToken.data['param']
+            ;
+
+            let testResult = await this.executeTest({
+                'ec':      ec,
+                'command': command,
+                'param':   param
+            });
+
+            proxyToken.data.testResult = testResult;
+
+            proxyToken.log(`TESTBED : processTestCase : test : before : synch`);
+
+            await proxyToken.sync();
+
+        } catch (jex) {
+            proxyToken.log(jex);
+            util.logError(jex);
+        } // try
+
+    } // TestbedAgent#processTestCase
 
 } // TestbedAgent
 
