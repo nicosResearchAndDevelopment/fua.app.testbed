@@ -48,6 +48,9 @@ class TestbedAgent extends ServerAgent {
             }
         }
 
+        if (this.event && this.io)
+            this.event.connectIOServer(this.io.of('/execute'), 'fua.module.testing.ProxyToken.**');
+
         return this;
     } // TestbedAgent#initialize
 
