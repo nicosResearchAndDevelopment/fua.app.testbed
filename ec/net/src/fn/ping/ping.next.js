@@ -1,13 +1,13 @@
 // const
 //     util               = require('@nrd/fua.core.util'),
 //     {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
-//     {TestExec}         = require('@nrd/fua.module.testing/model'),
+//     {TestMethod}       = require('@nrd/fua.module.testing/model'),
 //     cmd_ping           = ExecutionProcess('ping', {encoding: 'cp437'});
 //
-// module.exports = new TestExec({
+// module.exports = new TestMethod({
 //     '@id': 'urn:tb:ec:net:te:ping',
 //     /** @param {fua.module.testing.ProxyToken} token */
-//     async execMethod(token) {
+//     async executor(token) {
 //         const
 //             result = {
 //                 timestamp: util.utcDateTime(),
