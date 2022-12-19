@@ -1,11 +1,14 @@
 const
-    util               = require('./tb.ec.net.util.js'),
-    {TestingEcosystem} = require('@nrd/fua.module.testing/model');
+    util    = require('./tb.ec.net.util.js'),
+    testing = require('@nrd/fua.module.testing');
 
 /** @type {fua.module.testing.TestingEcosystem} */
-module.exports = new TestingEcosystem({
+module.exports = new testing.Ecosystem({
     '@id':       'urn:tb:ec:net',
     testMethods: [
-        require('./tb.ec.net.tm.ping.js')
+        require('./tm/tb.ec.net.tm.ping.js')
+    ],
+    testCases:   [
+        require('./tc/tb.ec.net.tc.reachable.js')
     ]
 });
