@@ -20,7 +20,7 @@ class TestbedAgent extends ServerAgent {
             '@id':      this.uri,
             ecosystems: options.ecosystems || []
         });
-    }
+    } // TestbedAgent#constructor
 
     async initialize(options = {}) {
         await super.initialize(options);
