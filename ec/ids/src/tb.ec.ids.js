@@ -1,52 +1,34 @@
 const
-    util             = require('./tb.ec.ids.util.js'),
-    testing          = require('@nrd/fua.module.testing'),
-    {RunningProcess} = require('@nrd/fua.module.subprocess'),
-    NODE             = RunningProcess('node', {verbose: true, cwd: __dirname});
+    util    = require('./tb.ec.ids.util.js'),
+    testing = require('@nrd/fua.module.testing');
 
 /** @type {fua.module.testing.TestingEcosystem} */
 module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        // TODO
+        const [alice, bob] = await Promise.all([
+            util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
+                name:   'ALICE',
+                server: {
+                    schema:  'https',
+                    host:    'alice.nicos-rd.com',
+                    port:    8099,
+                    options: {}
+                }
+            }),
+            util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
+                name:   'BOB',
+                server: {
+                    schema: 'https',
+                    host:   'bob.nicos-rd.com',
+                    port:   8098,
+                    options: {}
+                }
+            })
+        ]);
 
-        // const
-        //     aliceProc = NODE('./rc/connector/launch.rc-connector.js', {
-        //         config: Buffer.from(JSON.stringify({
-        //             name: 'ALICE'
-        //         })).toString('base64')
-        //     }),
-        //     bobProc   = NODE('./rc/connector/launch.rc-connector.js', {
-        //         config: Buffer.from(JSON.stringify({
-        //             name: 'BOB'
-        //         })).toString('base64')
-        //     });
-        //
-        // await Promise.all([
-        //     new Promise((resolve, reject) => {
-        //         let onSpawn, onError;
-        //         aliceProc.once('spawn', onSpawn = () => {
-        //             aliceProc.off('error', onError);
-        //             resolve();
-        //         });
-        //         aliceProc.once('error', onError = (err) => {
-        //             aliceProc.off('spawn', onSpawn);
-        //             reject(err);
-        //         });
-        //     }),
-        //     new Promise((resolve, reject) => {
-        //         let onSpawn, onError;
-        //         bobProc.once('spawn', onSpawn = () => {
-        //             bobProc.off('error', onError);
-        //             resolve();
-        //         });
-        //         bobProc.once('error', onError = (err) => {
-        //             bobProc.off('spawn', onSpawn);
-        //             reject(err);
-        //         });
-        //     })
-        // ]);
+        // TODO
 
     },
     testMethods:    [
