@@ -6,7 +6,8 @@ const
     TestbedApp   = require('./app.testbed.js'),
     TestbedLab   = require('./lab.testbed.js'),
     ecosystems   = {
-        net: require('../ec/net/next/tb.ec.net.js')
+        net: require('../ec/net/next/tb.ec.net.js'),
+        // ids: require('../ec/ids/next/tb.ec.ids.js')
     };
 
 (async function LaunchTestbed() {
