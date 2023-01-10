@@ -5,7 +5,7 @@ const
     TestbedAgent = require('./code/agent.testbed.next.js'),
     TestbedApp   = require('./app.testbed.next.js'),
     TestbedLab   = require('./lab.testbed.js'),
-    ec           = {
+    ecosystems   = {
         net: require('../ec/net/next/tb.ec.net.js')
     };
 
@@ -16,12 +16,12 @@ const
     util.logText('creating testbed agent');
 
     const testbedAgent = await TestbedAgent.create({
-        schema:   'https',
-        hostname: 'testbed.nicos-rd.com',
-        port:     8080,
-        context:  config.space.context,
-        store:    config.space.datastore,
-        // space:     config.space,
+        uri:        config.space.uri,
+        schema:     config.server.schema,
+        hostname:   config.server.hostname,
+        port:       config.server.port,
+        context:    config.space.context,
+        store:      config.space.store,
         amec:       true,
         server:     config.server.options,
         app:        true,
@@ -31,17 +31,17 @@ const
         sessions:   {
             resave:            false,
             saveUninitialized: false,
-            secret:            config.server.id
+            secret:            config.space.uri
         },
         daps:       {
             keys:                      {
                 default: {
-                    publicKey:  config.cert.daps_connector.publicKey,
-                    privateKey: config.cert.daps_connector.privateKey
+                    publicKey:  config.connector.publicKey,
+                    privateKey: config.connector.privateKey
                 }
             },
-            publicKey:                 config.cert.daps_connector.publicKey,
-            privateKey:                config.cert.daps_connector.privateKey,
+            publicKey:                 config.connector.publicKey,
+            privateKey:                config.connector.privateKey,
             tweak_DAT_generation:      true,
             tweak_DAT_custom_enabled:  true,
             tweak_DAT_custom_max_size: 10000
@@ -49,7 +49,7 @@ const
         scheduler:  {
             //    'idle': '*/30 * * * * *'
         },
-        ecosystems: Object.values(ec)
+        ecosystems: Object.keys(config.ecosystem).map(ecName => ecosystems[ecName])
     });
 
     /* 2. Use additional methods to configure the setup: */
@@ -62,11 +62,10 @@ const
 
     util.logText('initializing ecosystems');
 
-    await Promise.all([
-        ec.net.initialize()
-    ]);
+    await Promise.all(Object.entries(config.ecosystem)
+        .map(([ecName, ecConfig]) => ecosystems[ecName].initialize(ecConfig)));
 
-    util.logText('ecosystems initialized (' + Object.keys(ec).join(', ') + ')');
+    util.logText('ecosystems initialized (' + Object.keys(config.ecosystem).join(', ') + ')');
 
     /* 4. Launch the main app: */
 
