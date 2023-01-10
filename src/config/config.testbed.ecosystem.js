@@ -1,3 +1,3 @@
 exports.net = {};
 
-// exports.ids = {};
+exports.ids = {};

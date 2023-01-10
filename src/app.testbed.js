@@ -14,7 +14,7 @@ module.exports = async function TestbedApp(
 ) {
 
     util.assert(agent.app, 'expected agent to have app defined');
-    util.assert(agent.io, 'expected agent to have app defined');
+    util.assert(agent.io, 'expected agent to have io defined');
 
     //region >> WebApp
 
