@@ -7,7 +7,7 @@ const
     TestbedLab   = require('./lab.testbed.js'),
     ecosystems   = {
         net: require('../ec/net/src/tb.ec.net.js'),
-        // ids: require('../ec/ids/src/tb.ec.ids.js')
+        ids: require('../ec/ids/src/tb.ec.ids.js')
     };
 
 (async function LaunchTestbed() {

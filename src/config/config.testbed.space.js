@@ -119,16 +119,17 @@ exports.store = {
             {'dct:identifier': path.join(__root, 'data/domain/user/tb.users.ttl'), 'dct:format': 'text/turtle'},
             //endregion domain : users
             //endregion domain
+            {'dct:identifier': path.join(__root, 'ec/net/data/tb.ec.net.ttl'), 'dct:format': 'text/turtle'},
             //region ids
-            {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
-            {
-                'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.alice.ttl'),
-                'dct:format':     'text/turtle'
-            },
-            {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.bob.ttl'), 'dct:format': 'text/turtle'},
+            {'dct:identifier': path.join(__root, 'ec/ids/data/tb.ec.ids.ttl'), 'dct:format': 'text/turtle'},
+            // {
+            //     'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.alice.ttl'),
+            //     'dct:format':     'text/turtle'
+            // },
+            // {'dct:identifier': path.join(__root, 'ec/ids/resources/tb.ec.ids.rc.bob.ttl'), 'dct:format': 'text/turtle'},
             //endregion ids
-            {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
-            {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
+            // {'dct:identifier': path.join(__root, 'ec/http/resources/tb.ec.http.ttl'), 'dct:format': 'text/turtle'},
+            // {'dct:identifier': path.join(__root, 'ec/ip/resources/tb.ec.ip.ttl'), 'dct:format': 'text/turtle'},
             //region DAPS
             //region DAPS :: user
             //{

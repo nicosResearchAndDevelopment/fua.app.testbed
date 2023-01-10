@@ -1,0 +1,148 @@
+@prefix rdf:                                    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:                                   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:                                    <http://www.w3.org/2002/07/owl#> .
+@prefix dct:                                    <http://purl.org/dc/terms/> .
+@prefix foaf:                                   <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:                                    <http://www.w3.org/2001/XMLSchema#> .
+@prefix org:                                    <http://www.w3.org/ns/org#> .
+@prefix ids:                                    <https://w3id.org/idsa/core/> .
+
+@prefix fua:                                    <https://www.nicos-rd.com/fua#> .
+
+@prefix idsa:                                   <https://www.internationaldataspaces.org/the-association/> .
+@prefix nicos-ag:                               <https://www.nicos-ag.com/> .
+@prefix nrd:                                    <https://www.nicos-rd.com/> .
+
+@prefix ecm:                                    <https://www.nicos-rd.com/fua/ecosystem#> .
+@prefix idsecm:                                 <https://www.internationaldataspaces.org/IDS-IM/ecosystem#> .
+
+@prefix dapsm:                                  <https://www.nicos-rd.com/model/daps#> .
+@prefix tbm:                                    <https://www.nicos-rd.com/fua/testbed#> .
+
+@base <https://testbed.nicos-rd.com/> .
+@prefix ec-ids:                                 <ec/ids/> .
+
+#region model
+tbm:Applicant_IDS_Connector
+    a                owl:Class ;
+    rdfs:label       "Class of IDS Connectors as Testbed-Applicant" ;
+    rdfs:subClassOf  tbm:Applicant ;
+    rdfs:subClassOf  idsecm:ApplicantComponent ;
+    rdfs:isDefinedBy ec-ids: ;
+.
+#endregion model
+
+ec-ids:
+    a                                       idsecm:ComponentTestbed ;
+# redundant (idsecm:Ecosystem, ecm:Ecosystem)
+    a                                       idsecm:Ecosystem ;
+    a                                       ecm:Ecosystem ;
+    rdfs:label                              "testbed 'IDS'" ;
+    idsecm:acronym                          "TB-EC-IDS" ;
+#    foaf:homepage                           "https://localhost" ;
+##region meta
+    idsecm:owner                            nrd: ;
+    idsecm:provider                         nrd: ;
+#    idsecm:domain                           ec:DOMAIN ;
+##endregion meta
+##region org
+##endregion org
+    idsecm:certificationBodies              idsa: ;
+    idsecm:certificationFacilities          <https://testcenter.sick.com/> ;
+    idsecm:certificationFacilities          <https://ids-certification.pwc.com/> ;
+##region cas
+    idsecm:cas                              <CA> ;
+##endregion cas
+    idsecm:daps                             <https://nrd-daps.nicos-rd.com/> ;
+    idsecm:daps                             <https://omejdn-daps.nicos-rd.com/> ;
+    idsecm:ParIS                            <https://paris-fh.nicos-rd.com/> ;
+##region participants
+#    idsecm:participants                     <https://ids.atos.net/> ;
+#    idsecm:participants                     <https://ids.sick.com/> ;
+    idsecm:participants                     nicos-ag: ;
+##endregion participants
+#    idsecm:mdbs             <https://mdb.nicos-rd.com/> ;
+    idsecm:connectors                       <https://alice.nicos-rd.com/> ;
+    idsecm:connectors                       <https://bob.nicos-rd.com/> ;
+##region ecosystems
+#    idsecm:ecosystems                       <https://ecosystem.internationaldataspaces.org/> ;
+#    idsecm:ecosystems                       <https://testbed.nicos-rd.com/> ;
+#    idsecm:ecosystems                       <https://testcenter.sick.com/> ;
+##region ecosystems subs
+    idsecm:componentTestbeds                <https://testbed.nicos-rd.com/> ;
+    idsecm:componentCertificationFacilities <https://testcenter.sick.com/> ;
+##endregion ecosystems subs
+##endregion ecosystems
+#    idsecm:islands          <> ;
+    idsecm:applicant                        <https://gbx.nicos-rd.com/> ;
+    rdfs:isDefinedBy                        ec-ids: ;
+.
+
+<https://gbx.nicos-rd.com/>
+    a        tbm:Applicant_IDS_Connector ;
+    fua:port "8090"^^xsd:nonNegativeInteger ; ## default = 80
+.
+
+<https://nrd-daps.nicos-rd.com/>
+    a                idsecm:DAPS ;
+    dapsm:privateKey """-----BEGIN RSA PRIVATE KEY-----
+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
+-----END RSA PRIVATE KEY-----"""^^xsd:string ;
+    fua:port         "8082"^^xsd:nonNegativeInteger ; ## default = 80
+.
+
+<https://omejdn-daps.nicos-rd.com/>
+    a        idsecm:DAPS ;
+## REM: docker, local
+    fua:port "4567"^^xsd:nonNegativeInteger ; ## default = 80
+.
+
+## EOF : nrd-testbed.IDS
