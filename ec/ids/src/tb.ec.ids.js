@@ -1,36 +1,60 @@
 const
-    util    = require('./tb.ec.ids.util.js'),
-    testing = require('@nrd/fua.module.testing');
+    util         = require('./tb.ec.ids.util.js'),
+    testing      = require('@nrd/fua.module.testing'),
+    alice_config = require('../cert/alice/index.js'),
+    bob_config   = require('../cert/bob/index.js');
 
 /** @type {fua.module.testing.TestingEcosystem} */
 module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        const [alice, bob] = await Promise.all([
+        util.assertTodo(/* TODO */);
+
+        const [aliceProc, bobProc] = await Promise.all([
             util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
-                name:   'ALICE',
-                server: {
+                name:      'ALICE',
+                server:    {
                     schema:  'https',
                     host:    'alice.nicos-rd.com',
                     port:    8099,
-                    options: {}
+                    options: {
+                        key:  alice_config.server.key.toString(),
+                        cert: alice_config.server.cert.toString(),
+                        ca:   alice_config.server.ca.toString()
+                    }
+                },
+                connector: {
+                    uri: 'https://alice.nicos-rd.com/',
+                    id:  alice_config.connector.meta.SKIAKI,
+                    key: alice_config.connector.key.toString(),
+                    pub: alice_config.connector.pub.toString()
                 }
             }),
             util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
-                name:   'BOB',
-                server: {
-                    schema: 'https',
-                    host:   'bob.nicos-rd.com',
-                    port:   8098,
-                    options: {}
+                name:      'BOB',
+                server:    {
+                    schema:  'https',
+                    host:    'bob.nicos-rd.com',
+                    port:    8098,
+                    options: {
+                        key:  bob_config.server.key.toString(),
+                        cert: bob_config.server.cert.toString(),
+                        ca:   bob_config.server.ca.toString()
+                    }
+                },
+                connector: {
+                    uri: 'https://bob.nicos-rd.com/',
+                    id:  bob_config.connector.meta.SKIAKI,
+                    key: bob_config.connector.key.toString(),
+                    pub: bob_config.connector.pub.toString()
                 }
             })
         ]);
 
         // TODO
 
-    },
+    }, // initialize
     testMethods:    [
         // require('./tm/tb.ec.ids.tm.rc_refreshDAT.js'),
         // require('./tm/tb.ec.ids.tm.rc_createSelfDescription.js')
