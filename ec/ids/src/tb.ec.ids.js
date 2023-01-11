@@ -9,16 +9,14 @@ module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        util.assertTodo(/* TODO */);
-
-        const [aliceProc, bobProc] = await Promise.all([
+        await Promise.all([
             util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
                 name:      'ALICE',
                 server:    {
-                    schema:  'https',
-                    host:    'alice.nicos-rd.com',
-                    port:    8099,
-                    options: {
+                    schema:   'https',
+                    hostname: 'alice.nicos-rd.com',
+                    port:     8099,
+                    options:  {
                         key:  alice_config.server.key.toString(),
                         cert: alice_config.server.cert.toString(),
                         ca:   alice_config.server.ca.toString()
@@ -30,14 +28,14 @@ module.exports = new testing.Ecosystem({
                     key: alice_config.connector.key.toString(),
                     pub: alice_config.connector.pub.toString()
                 }
-            }),
+            }), // util.launchNodeProcess(...)
             util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
                 name:      'BOB',
                 server:    {
-                    schema:  'https',
-                    host:    'bob.nicos-rd.com',
-                    port:    8098,
-                    options: {
+                    schema:   'https',
+                    hostname: 'bob.nicos-rd.com',
+                    port:     8098,
+                    options:  {
                         key:  bob_config.server.key.toString(),
                         cert: bob_config.server.cert.toString(),
                         ca:   bob_config.server.ca.toString()
@@ -49,10 +47,8 @@ module.exports = new testing.Ecosystem({
                     key: bob_config.connector.key.toString(),
                     pub: bob_config.connector.pub.toString()
                 }
-            })
-        ]);
-
-        // TODO
+            }) // util.launchNodeProcess(...)
+        ]); // Promise.all(...)
 
     }, // initialize
     testMethods:    [

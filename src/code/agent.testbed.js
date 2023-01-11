@@ -2,7 +2,7 @@ const
     util        = require('./util.testbed.js'),
     ServerAgent = require('@nrd/fua.agent.server'),
     {PEP}       = require('@nrd/fua.decide.pep'),
-    {DAPS}      = require('@nrd/fua.ids.agent.daps'),
+    DAPSAgent   = require('@nrd/fua.ids.agent.daps'),
     testing     = require('@nrd/fua.module.testing');
 
 class TestbedAgent extends ServerAgent {
@@ -36,7 +36,7 @@ class TestbedAgent extends ServerAgent {
         }
 
         if (options.daps) {
-            if (options.daps instanceof DAPS) {
+            if (options.daps instanceof DAPSAgent) {
                 this.#daps = options.daps;
             } else {
                 const dapsOptions = util.isObject(options.daps) && options.daps || {};
@@ -47,7 +47,7 @@ class TestbedAgent extends ServerAgent {
                     util.assert(options.domain, 'expected domain to be enabled');
                     dapsOptions.domain = this.domain;
                 }
-                this.#daps = new DAPS(dapsOptions);
+                this.#daps = new DAPSAgent(dapsOptions);
             }
         }
 

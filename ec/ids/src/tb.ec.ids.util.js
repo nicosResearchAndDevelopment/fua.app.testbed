@@ -10,7 +10,7 @@ const
 
 exports.launchNodeProcess = async function (launcherFile, launchConfig) {
     const proc = NODE(launcherFile, {
-        config: Buffer.from(JSON.stringify(launchConfig)).toString('base64')
+        config: Buffer.from(JSON.stringify(launchConfig)).toString('base64url')
     });
     await new Promise((resolve, reject) => {
         let onSpawn, onError;

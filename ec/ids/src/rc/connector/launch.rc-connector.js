@@ -16,7 +16,7 @@ const
 
     const
         param  = parseArgv(),
-        config = JSON.parse(Buffer.from(param.config, 'base64').toString());
+        config = JSON.parse(Buffer.from(param.config, 'base64url').toString());
 
     /* 2. Construct a server agent for your setup: */
 
@@ -24,33 +24,30 @@ const
 
     const connectorAgent = await RCConnectorAgent.create({
         schema:    config.server.schema,
-        host:      config.server.host,
-        port:      config.schema.port,
+        hostname:  config.server.hostname,
+        port:      config.server.port,
         server:    config.server.options,
         app:       true,
         io:        true,
         scheduler: true,
         connector: {
-            id:         config.connector.uri,
-            privateKey: crypto.createPrivateKey(config.connector.key),
-            SKIAKI:     config.connector.id,
-            DAPS:       {
-                //default: 'http://omejdn-daps.nicos-rd.com:4567'
-                default: {
-                    dapsUrl:       'https://omejdn-daps.nicos-rd.com:8082/auth',
-                    dapsTokenPath: `/token`,
-                    dapsJwksPath:  `/jwks.json`
-                },
-                tb_daps: {
-                    dapsUrl: 'https://testbed.nicos-rd.com:8080'
-                }
-                //default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
-                //default: 'https://localhost:8082/', // REM: proxy in testbed
-                //default: 'https://testbed.nicos-rd.com:8080/'
+            keyId: config.connector.id,
+            key:   config.connector.key,
+            pub:   config.connector.pub
+        },
+        daps:      {
+            //default: 'http://omejdn-daps.nicos-rd.com:4567'
+            default: {
+                dapsUrl:       'https://omejdn-daps.nicos-rd.com:8082/auth',
+                dapsTokenPath: `/token`,
+                dapsJwksPath:  `/jwks.json`
             },
-            http_agent: config.server.schema === 'https'
-                            ? new https.Agent(config.server.options)
-                            : new http.Agent()
+            tb_daps: {
+                dapsUrl: 'https://testbed.nicos-rd.com:8080'
+            }
+            //default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
+            //default: 'https://localhost:8082/', // REM: proxy in testbed
+            //default: 'https://testbed.nicos-rd.com:8080/'
         }
     });
 

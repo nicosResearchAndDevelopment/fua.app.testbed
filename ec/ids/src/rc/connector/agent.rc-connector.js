@@ -1,8 +1,8 @@
 const
-    util        = require('../../tb.ec.ids.util.js'),
-    ServerAgent = require('@nrd/fua.agent.server');
+    util           = require('../../tb.ec.ids.util.js'),
+    ConnectorAgent = require('@nrd/fua.ids.agent.connector');
 
-class RCConnectorAgent extends ServerAgent {
+class RCConnectorAgent extends ConnectorAgent {
 
     async initialize(options = {}) {
         await super.initialize(options);
