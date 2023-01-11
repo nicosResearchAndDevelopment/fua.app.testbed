@@ -7,6 +7,10 @@ module.exports = async function RCConnectorLab(
     }
 ) {
 
-    // TODO
+    // setTimeout(() => {
+    //     const err = new Error('timeout reached');
+    //     console.error(err);
+    //     process.exit(1);
+    // }, 2e3);
 
 }; // RCConnectorLab

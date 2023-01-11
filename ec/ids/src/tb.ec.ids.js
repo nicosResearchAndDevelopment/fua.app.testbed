@@ -9,7 +9,10 @@ module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        await Promise.all([
+        // TODO
+        // IDEA use IPC channel instead of socket.io
+
+        const [alice, bob] = await Promise.all([
             util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
                 name:      'ALICE',
                 server:    {

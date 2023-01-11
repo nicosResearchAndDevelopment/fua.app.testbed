@@ -6,24 +6,35 @@ const
         expect: require('expect')
     },
     subprocess = require('@nrd/fua.module.subprocess'),
-    NODE       = subprocess.RunningProcess('node', {verbose: true, cwd: __dirname});
+    NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
 
 exports.launchNodeProcess = async function (launcherFile, launchConfig) {
-    const proc = NODE(launcherFile, {
+    const subprocess = NODE(launcherFile, {
         config: Buffer.from(JSON.stringify(launchConfig)).toString('base64url')
     });
+
     await new Promise((resolve, reject) => {
         let onSpawn, onError;
-        proc.once('spawn', onSpawn = () => {
-            proc.off('error', onError);
+        subprocess.once('spawn', onSpawn = () => {
+            subprocess.off('error', onError);
             resolve();
         });
-        proc.once('error', onError = (err) => {
-            proc.off('spawn', onSpawn);
+        subprocess.once('error', onError = (err) => {
+            subprocess.off('spawn', onSpawn);
             reject(err);
         });
     });
-    return proc;
+
+    let lastMsg = '';
+    subprocess.stdout.on('data', (data) => lastMsg = data.toString());
+    subprocess.stderr.on('data', (data) => lastMsg = data.toString());
+    subprocess.once('exit', (exitCode) => {
+        util.logWarning(`process ${launchConfig.name || subprocess.pid} finished with exit code ${exitCode}`);
+        if (exitCode !== 0 && lastMsg) util.logError(lastMsg);
+    });
+
+    util.logText(`process ${launchConfig.name || subprocess.pid} launched successfully`);
+    return subprocess;
 };
 
 module.exports = Object.freeze(util);
