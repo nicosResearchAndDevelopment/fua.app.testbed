@@ -1,12 +1,9 @@
 const
-    util             = require('../../tb.ec.ids.util.js'),
-    crypto           = require('crypto'),
-    http             = require('http'),
-    https            = require('https'),
-    {parseArgv}      = require('@nrd/fua.module.subprocess'),
-    RCConnectorAgent = require('./agent.rc-connector.js'),
-    RCConnectorApp   = require('./app.rc-connector.js'),
-    RCConnectorLab   = require('./lab.rc-connector.js');
+    util           = require('../../tb.ec.ids.util.js'),
+    {parseArgv}    = require('@nrd/fua.module.subprocess'),
+    ConnectorAgent = require('@nrd/fua.ids.agent.connector'),
+    RCConnectorApp = require('./app.rc-connector.js'),
+    RCConnectorLab = require('./lab.rc-connector.js');
 
 (async function LaunchRCConnector() {
 
@@ -22,7 +19,7 @@ const
 
     util.logText('creating rc-connector agent for ' + config.name);
 
-    const connectorAgent = await RCConnectorAgent.create({
+    const connectorAgent = await ConnectorAgent.create({
         schema:    config.server.schema,
         hostname:  config.server.hostname,
         port:      config.server.port,
@@ -52,8 +49,6 @@ const
     });
 
     /* 3. Use additional methods to configure the setup: */
-
-    // TODO
 
     /* 4. Launch the main app: */
 

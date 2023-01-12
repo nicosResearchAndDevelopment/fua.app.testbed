@@ -7,6 +7,8 @@ module.exports = async function RCConnectorLab(
     }
 ) {
 
+    // agent.scheduler.createSchedule('idle', '*/30 * * * * *').on('trigger', () => util.logText('idle'));
+
     // setTimeout(() => {
     //     const err = new Error('timeout reached');
     //     console.error(err);
