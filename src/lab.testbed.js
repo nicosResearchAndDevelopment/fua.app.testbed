@@ -28,4 +28,9 @@ module.exports = async function TestbedLab(
             util.logError(error);
         });
 
+    // agent.testing.getEcosystem('urn:tb:ec:ids')
+    //     .callAlice('getSelfDescriptionFromRC')
+    //     .then(util.logObject)
+    //     .catch(util.logError);
+
 }; // module.exports = TestbedLab

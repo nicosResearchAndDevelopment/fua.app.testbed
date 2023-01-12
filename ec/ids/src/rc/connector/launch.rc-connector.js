@@ -1,5 +1,5 @@
 const
-    util           = require('../../tb.ec.ids.util.js'),
+    util           = require('@nrd/fua.core.util'),
     {parseArgv}    = require('@nrd/fua.module.subprocess'),
     ConnectorAgent = require('@nrd/fua.ids.agent.connector'),
     RCConnectorApp = require('./app.rc-connector.js'),

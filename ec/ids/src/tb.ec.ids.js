@@ -1,57 +1,76 @@
 const
-    util         = require('./tb.ec.ids.util.js'),
-    testing      = require('@nrd/fua.module.testing'),
-    alice_config = require('../cert/alice/index.js'),
-    bob_config   = require('../cert/bob/index.js');
+    util       = require('./tb.ec.ids.util.js'),
+    testing    = require('@nrd/fua.module.testing'),
+    aliceCerts = require('../cert/alice/index.js'),
+    bobCerts   = require('../cert/bob/index.js');
 
 /** @type {fua.module.testing.TestingEcosystem} */
 module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        // TODO
-        // IDEA use IPC channel instead of socket.io
-
-        const [alice, bob] = await Promise.all([
-            util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
+        const
+            aliceConfig    = {
                 name:      'ALICE',
                 server:    {
                     schema:   'https',
                     hostname: 'alice.nicos-rd.com',
                     port:     8099,
                     options:  {
-                        key:  alice_config.server.key.toString(),
-                        cert: alice_config.server.cert.toString(),
-                        ca:   alice_config.server.ca.toString()
+                        key:  aliceCerts.server.key.toString(),
+                        cert: aliceCerts.server.cert.toString(),
+                        ca:   aliceCerts.server.ca.toString()
                     }
                 },
                 connector: {
                     uri: 'https://alice.nicos-rd.com/',
-                    id:  alice_config.connector.meta.SKIAKI,
-                    key: alice_config.connector.key.toString(),
-                    pub: alice_config.connector.pub.toString()
+                    id:  aliceCerts.connector.meta.SKIAKI,
+                    key: aliceCerts.connector.key.toString(),
+                    pub: aliceCerts.connector.pub.toString()
                 }
-            }), // util.launchNodeProcess(...)
-            util.launchNodeProcess('./rc/connector/launch.rc-connector.js', {
+            },
+            bobConfig      = {
                 name:      'BOB',
                 server:    {
                     schema:   'https',
                     hostname: 'bob.nicos-rd.com',
                     port:     8098,
                     options:  {
-                        key:  bob_config.server.key.toString(),
-                        cert: bob_config.server.cert.toString(),
-                        ca:   bob_config.server.ca.toString()
+                        key:  bobCerts.server.key.toString(),
+                        cert: bobCerts.server.cert.toString(),
+                        ca:   bobCerts.server.ca.toString()
                     }
                 },
                 connector: {
                     uri: 'https://bob.nicos-rd.com/',
-                    id:  bob_config.connector.meta.SKIAKI,
-                    key: bob_config.connector.key.toString(),
-                    pub: bob_config.connector.pub.toString()
+                    id:  bobCerts.connector.meta.SKIAKI,
+                    key: bobCerts.connector.key.toString(),
+                    pub: bobCerts.connector.pub.toString()
                 }
-            }) // util.launchNodeProcess(...)
-        ]); // Promise.all(...)
+            },
+            connectOptions = {
+                rejectUnauthorized:   false,
+                reconnectionAttempts: 3,
+                connectTimeout:       10e3
+            },
+            [
+                aliceProc,
+                bobProc,
+                aliceEmitter,
+                bobEmitter
+            ]              = await Promise.all([
+                util.launchNodeProcess('./rc/connector/launch.rc-connector.js', aliceConfig),
+                util.launchNodeProcess('./rc/connector/launch.rc-connector.js', bobConfig),
+                util.createIOEmitter(`${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`, connectOptions),
+                util.createIOEmitter(`${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`, connectOptions)
+            ]);
+
+        // IDEA use IPC channel instead of socket.io
+
+        Object.defineProperties(this, {
+            callAlice: {value: aliceEmitter},
+            callBob:   {value: bobEmitter}
+        });
 
     }, // initialize
     testMethods:    [

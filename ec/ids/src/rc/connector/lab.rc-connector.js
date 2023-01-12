@@ -1,5 +1,5 @@
 const
-    util = require('../../tb.ec.ids.util.js');
+    util = require('@nrd/fua.core.util');
 
 module.exports = async function RCConnectorLab(
     {
