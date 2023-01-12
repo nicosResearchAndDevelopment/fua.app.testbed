@@ -17,7 +17,7 @@ const
 
     /* 2. Construct a server agent for your setup: */
 
-    util.logText('creating rc-connector agent for ' + config.name);
+    util.logText('creating rc-connector agent');
 
     const connectorAgent = await ConnectorAgent.create({
         schema:    config.server.schema,

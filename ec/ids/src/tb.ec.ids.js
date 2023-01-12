@@ -10,8 +10,8 @@ module.exports = new testing.Ecosystem({
     async initializer(args = {}) {
 
         const
-            aliceConfig    = {
-                name:      'ALICE',
+            aliceConfig       = {
+                id:        'urn:tb:ec:ids:rc:alice',
                 server:    {
                     schema:   'https',
                     hostname: 'alice.nicos-rd.com',
@@ -29,8 +29,8 @@ module.exports = new testing.Ecosystem({
                     pub: aliceCerts.connector.pub.toString()
                 }
             },
-            bobConfig      = {
-                name:      'BOB',
+            bobConfig         = {
+                id:        'urn:tb:ec:ids:rc:bob',
                 server:    {
                     schema:   'https',
                     hostname: 'bob.nicos-rd.com',
@@ -48,28 +48,31 @@ module.exports = new testing.Ecosystem({
                     pub: bobCerts.connector.pub.toString()
                 }
             },
-            connectOptions = {
-                rejectUnauthorized:   false,
-                reconnectionAttempts: 3,
-                connectTimeout:       10e3
+            aliceUrl          = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
+            bobUrl            = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
+            connectorLauncher = './rc/connector/launch.rc-connector.js',
+            socketOptions     = {
+                rejectUnauthorized: false,
+                connectTimeout:     10e3
+                // reconnectionAttempts: 5
             },
             [
                 aliceProc,
                 bobProc,
-                aliceEmitter,
-                bobEmitter
-            ]              = await Promise.all([
-                util.launchNodeProcess('./rc/connector/launch.rc-connector.js', aliceConfig),
-                util.launchNodeProcess('./rc/connector/launch.rc-connector.js', bobConfig),
-                util.createIOEmitter(`${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`, connectOptions),
-                util.createIOEmitter(`${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`, connectOptions)
+                aliceSocket,
+                bobSocket
+            ]                 = await Promise.all([
+                util.launchNodeProcess(connectorLauncher, aliceConfig),
+                util.launchNodeProcess(connectorLauncher, bobConfig),
+                util.connectIOSocket(aliceUrl, socketOptions),
+                util.connectIOSocket(bobUrl, socketOptions)
             ]);
 
         // IDEA use IPC channel instead of socket.io
 
         Object.defineProperties(this, {
-            callAlice: {value: aliceEmitter},
-            callBob:   {value: bobEmitter}
+            callAlice: {value: util.createIOEmitter(aliceSocket)},
+            callBob:   {value: util.createIOEmitter(bobSocket)}
         });
 
     }, // initialize

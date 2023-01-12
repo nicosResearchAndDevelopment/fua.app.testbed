@@ -9,7 +9,7 @@ const
     subprocess = require('@nrd/fua.module.subprocess'),
     NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
 
-exports.launchNodeProcess = async function (launcherFile, launchConfig) {
+util.launchNodeProcess = async function (launcherFile, launchConfig) {
     const subprocess = NODE(launcherFile, {
         config: Buffer.from(JSON.stringify(launchConfig)).toString('base64url')
     });
@@ -34,33 +34,50 @@ exports.launchNodeProcess = async function (launcherFile, launchConfig) {
         if (exitCode !== 0 && lastMsg) util.logError(lastMsg);
     });
 
-    util.logText(`process ${launchConfig.name || subprocess.pid} launched successfully`);
+    util.logText(`process ${launchConfig.id || subprocess.pid} launched`);
     return subprocess;
-};
+}; // launchNodeProcess
 
-exports.createIOEmitter = async function (url = 'http://localhost', options = {}) {
+util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
     const socket = io(url, options);
     await new Promise((resolve, reject) => {
-        let onConnect, onError, connectTimeout;
+        let onConnect, onFail, connectTimeout, onError, lastError;
         socket.once('connect', onConnect = () => {
-            if (connectTimeout) clearTimeout(connectTimeout);
-            socket.io.off('reconnect_failed', onError);
+            if (connectTimeout) {
+                clearTimeout(connectTimeout);
+                socket.io.off('reconnect_error', onError);
+            }
+            socket.io.off('reconnect_failed', onFail);
             resolve();
         });
-        socket.io.once('reconnect_failed', onError = () => {
-            if (connectTimeout) clearTimeout(connectTimeout);
+        socket.io.once('reconnect_failed', onFail = () => {
+            if (connectTimeout) {
+                clearTimeout(connectTimeout);
+                socket.io.off('reconnect_error', onError);
+            }
             socket.off('connect', onConnect);
             socket.io.once('reconnect_error', (err) => {
                 socket.disconnect();
                 reject(err);
             });
         });
-        if (util.isFiniteNumber(options.connectTimeout)) connectTimeout = setTimeout(() => {
-            socket.off('connect', onConnect);
-            socket.io.off('reconnect_failed', onError);
-            reject(new Error('initial connect timed out'));
-        }, options.connectTimeout);
+        if (util.isFiniteNumber(options.connectTimeout)) {
+            socket.io.on('reconnect_error', onError = (err) => {
+                lastError = err;
+            });
+            connectTimeout = setTimeout(() => {
+                socket.off('connect', onConnect);
+                socket.io.off('reconnect_failed', onFail);
+                socket.io.off('reconnect_error', onError);
+                const err = lastError || new Error('initial connect timed out');
+                reject(err);
+            }, options.connectTimeout);
+        }
     });
+    return socket;
+}; // connectIOSocket
+
+util.createIOEmitter = function (socket) {
     return (method = '', param = {}) => new Promise((resolve, reject) => {
         const callback = (err, result) => err ? reject(err) : resolve(result);
         socket.emit(method, param, callback);
