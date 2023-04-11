@@ -10,7 +10,7 @@ module.exports = new testing.Ecosystem({
     async initializer(args = {}) {
 
         const
-            aliceConfig       = {
+            aliceConfig                                  = {
                 id:        'urn:tb:ec:ids:rc:alice',
                 server:    {
                     schema:   'https',
@@ -29,7 +29,7 @@ module.exports = new testing.Ecosystem({
                     pub: aliceCerts.connector.pub.toString()
                 }
             },
-            bobConfig         = {
+            bobConfig                                    = {
                 id:        'urn:tb:ec:ids:rc:bob',
                 server:    {
                     schema:   'https',
@@ -48,20 +48,23 @@ module.exports = new testing.Ecosystem({
                     pub: bobCerts.connector.pub.toString()
                 }
             },
-            aliceUrl          = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
-            bobUrl            = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
-            connectorLauncher = './rc/connector/launch.rc-connector.js',
-            socketOptions     = {
+            dapsConfig                                   = {
+                baseUrl:        'https://nrd-daps.nicos-rd.com:8083/',
+                httpAgent:      new util.https.Agent(aliceConfig.server.options),
+                defaultHeaders: {
+                    // 'Authorization': 'Basic ...',
+                    // 'Authorization': 'Bearer ...',
+                }
+            },
+            aliceUrl                                     = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
+            bobUrl                                       = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
+            connectorLauncher                            = './rc/connector/launch.rc-connector.js',
+            socketOptions                                = {
                 rejectUnauthorized: false,
                 connectTimeout:     10e3
                 // reconnectionAttempts: 5
             },
-            [
-                aliceProc,
-                bobProc,
-                aliceSocket,
-                bobSocket
-            ]                 = await Promise.all([
+            [aliceProc, bobProc, aliceSocket, bobSocket] = await Promise.all([
                 util.launchNodeProcess(connectorLauncher, aliceConfig),
                 util.launchNodeProcess(connectorLauncher, bobConfig),
                 util.connectIOSocket(aliceUrl, socketOptions),
@@ -72,7 +75,13 @@ module.exports = new testing.Ecosystem({
 
         Object.defineProperties(this, {
             callAlice: {value: util.createIOEmitter(aliceSocket)},
-            callBob:   {value: util.createIOEmitter(bobSocket)}
+            callBob:   {value: util.createIOEmitter(bobSocket)},
+            tweakDAPS: {
+                value: async function (param) {
+                    util.assert(util.isObject(param) && util.isString(param.type), 'expected param to be an object with a string type');
+                    await util.callJsonApi(dapsConfig.baseUrl + 'tweak', dapsConfig.defaultHeaders, param, dapsConfig.httpAgent);
+                }
+            }
         });
 
     }, // initialize

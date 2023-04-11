@@ -3,11 +3,61 @@ const
     util       = exports = module.exports = {
         ..._util,
         assert: _util.Assert('tb.ec.ids'),
-        expect: require('expect')
+        expect: require('expect'),
+        http:   require('http'),
+        https:  require('https'),
+        fetch:  require('node-fetch')
     },
     {io}       = require('socket.io-client'),
     subprocess = require('@nrd/fua.module.subprocess'),
     NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
+
+util.HTTPResponseError = class HTTPResponseError extends Error {
+    constructor(response) {
+        super(`HTTP Error Response: ${response.status} ${response.statusText}`);
+        this.response = response;
+    }
+};
+
+/** @type {WeakMap<Record<string, any>, module:http.Agent | module:https.Agent>} */
+const _cachedHttpAgents = new WeakMap();
+
+/**
+ * @param {string} apiTargetUrl
+ * @param {Record<string, string>} [additionalHeaders]
+ * @param {Object} [bodyPayload]
+ * @param {Record<string, any> | module:http.Agent | module:https.Agent} [agentOptions]
+ * @returns {Promise<Object>}
+ */
+util.callJsonApi = async function (apiTargetUrl, additionalHeaders, bodyPayload, agentOptions) {
+    const requestOptions = {
+        method:  'POST',
+        headers: {
+            'Accept':       'application/json',
+            'Content-Type': 'application/json'
+        }
+    };
+    if (util.isObject(additionalHeaders)) {
+        Object.assign(requestOptions.headers, additionalHeaders)
+    }
+    if (util.isDefined(bodyPayload)) {
+        requestOptions.body = JSON.stringify(bodyPayload);
+    }
+    if (agentOptions instanceof util.http.Agent) {
+        requestOptions.agent = agentOptions;
+    } else if (util.isObject(agentOptions)) {
+        requestOptions.agent = _cachedHttpAgents.get(agentOptions);
+        if (!requestOptions.agent) {
+            requestOptions.agent = (agentOptions.key && agentOptions.cert)
+                ? new util.https.Agent(agentOptions)
+                : new util.http.Agent(agentOptions);
+            _cachedHttpAgents.set(agentOptions, requestOptions.agent);
+        }
+    }
+    const response = await util.fetch(apiTargetUrl, requestOptions);
+    if (!response.ok) throw new util.HTTPResponseError(response);
+    return await response.json();
+};
 
 util.launchNodeProcess = async function (launcherFile, launchConfig) {
     const subprocess = NODE(launcherFile, {
