@@ -127,11 +127,62 @@ util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
     return socket;
 }; // connectIOSocket
 
-util.createIOEmitter = function (socket) {
-    return (method = '', param = {}) => new Promise((resolve, reject) => {
-        const callback = (err, result) => err ? reject(err) : resolve(result);
-        socket.emit(method, param, callback);
-    });
-};
+/**
+ * @param {import('socket.io-client').Socket} socket
+ * @param {Record<string, boolean | number | string>} [defaultOptions]
+ * @returns {function(string=, Record<string, *>=, Record<string, boolean|number|string>=): Promise<unknown>}
+ */
+util.createIOEmitter = function (socket, defaultOptions) {
+
+    /**
+     * @param {string} method
+     * @param {Record<string, any>} param
+     * @param {Record<string, boolean | number | string>} [specificOptions]
+     * @returns {Promise<unknown>}
+     */
+    async function ioEmitter(method = '', param = {}, specificOptions) {
+        const options = {...defaultOptions, ...specificOptions};
+        // TODO include options.ackTimeout
+
+        const result = await new Promise((resolve, reject) => {
+            const callback = (err, result) => err ? reject(err) : resolve(result);
+            socket.emit(method, param, callback);
+        });
+
+        return result;
+    } // ioEmitter
+
+    return ioEmitter;
+
+}; // createIOEmitter
+
+/**
+ * @param {import('socket.io-client').Socket} socket
+ * @param {Record<string, boolean | number | string>} [defaultOptions]
+ * @returns {function(string=, function(*): boolean=, Record<string, boolean|number|string>=): Promise<unknown>}
+ */
+util.createIOReceiver = function (socket, defaultOptions) {
+
+    /**
+     * @param {string} method
+     * @param {function(result: any): boolean} filter
+     * @param {Record<string, boolean | number | string>} [specificOptions]
+     * @returns {Promise<unknown>}
+     */
+    async function ioReceiver(method = '', filter = () => true, specificOptions) {
+        const options = {...defaultOptions, ...specificOptions};
+
+        let result, finished = false;
+        while (!finished) {
+            result   = await new Promise(resolve => socket.once(method, resolve));
+            finished = filter(result);
+        }
+
+        return result;
+    } // ioReceiver
+
+    return ioReceiver;
+
+}; // createIOReceiver
 
 module.exports = Object.freeze(util);

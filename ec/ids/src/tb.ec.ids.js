@@ -66,8 +66,8 @@ module.exports = new testing.Ecosystem({
             aliceUrl          = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
             bobUrl            = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
             dapsUrl           = `${dapsConfig.server.schema}://${dapsConfig.server.hostname}:${dapsConfig.server.port}/`,
-            dapsTweakerUrl    = `${dapsUrl}tweak/`,
-            dapsObserverUrl   = `${dapsUrl}observe/`,
+            dapsTweakerUrl    = `${dapsUrl}tweak`,
+            dapsObserverUrl   = `${dapsUrl}observe`,
             connectorLauncher = './rc/connector/launch.rc-connector.js',
             socketOptions     = {
                 rejectUnauthorized: false,
@@ -77,14 +77,14 @@ module.exports = new testing.Ecosystem({
             [
                 aliceProc, bobProc,
                 aliceSocket, bobSocket,
-                // dapsTweakerSocket, dapsObserverSocket
+                dapsTweakerSocket, dapsObserverSocket
             ]                 = await Promise.all([
                 util.launchNodeProcess(connectorLauncher, aliceConfig),
                 util.launchNodeProcess(connectorLauncher, bobConfig),
                 util.connectIOSocket(aliceUrl, socketOptions),
                 util.connectIOSocket(bobUrl, socketOptions),
-                // util.connectIOSocket(dapsTweakerUrl, socketOptions),
-                // util.connectIOSocket(dapsObserverUrl, socketOptions)
+                util.connectIOSocket(dapsTweakerUrl, socketOptions),
+                util.connectIOSocket(dapsObserverUrl, socketOptions)
             ]);
 
         // IDEA use IPC channel instead of socket.io
@@ -92,21 +92,22 @@ module.exports = new testing.Ecosystem({
         Object.defineProperties(this, {
             callAlice: {value: util.createIOEmitter(aliceSocket)},
             callBob:   {value: util.createIOEmitter(bobSocket)},
-            // tweakDAPS: {value: util.createIOEmitter(dapsTweakerSocket)},
-            tweakDAPS: {
-                value: async function (type, param) {
-                    util.assert(util.isString(type), 'expected type to be a string');
-                    util.assert(util.isObject(param), 'expected param to be an object');
-                    return await util.callJsonApi(dapsTweakerUrl, dapsConfig.http.headers, {type, ...param}, dapsConfig.http.agent);
-                }
-            }
-            // TODO observeDAPS
+            // tweakDAPS: {
+            //     value: async function (type, param) {
+            //         util.assert(util.isString(type), 'expected type to be a string');
+            //         util.assert(util.isObject(param), 'expected param to be an object');
+            //         return await util.callJsonApi(dapsTweakerUrl, dapsConfig.http.headers, {type, ...param}, dapsConfig.http.agent);
+            //     }
+            // }
+            tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket)},
+            observeDAPS: {value: util.createIOReceiver(dapsObserverSocket)}
         });
 
     }, // initialize
     testMethods:    [
         // require('./tm/tb.ec.ids.tm.rc_refreshDAT.js'),
         // require('./tm/tb.ec.ids.tm.rc_createSelfDescription.js')
+        require('./tm/develop.js')
     ],
     testCases:      [
         // require('./tc/tb.ec.ids.tc.SUT_provideSelfDescription.js')

@@ -39,9 +39,9 @@ describe('agent.testbed', function () {
         await ecosystems.ids.initialize();
 
         const token = TestToken.from({
-            ecosystem: 'urn:tb:ec:ids',
-            testCase:  'urn:tb:ec:ids:tc:DAPSInteraction:ReceiveDATfromDAPS',
-            param:     {
+            ecosystem:  'urn:tb:ec:ids',
+            testMethod: 'urn:tb:ec:ids:tm:develop',
+            param:      {
                 connector: {
                     clientId:  aliceCerts.connector.meta.SKIAKI,
                     clientUri: 'https://alice.nicos-rd.com/',
