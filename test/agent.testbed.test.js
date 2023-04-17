@@ -54,7 +54,7 @@ describe('agent.testbed', function () {
 
         expect(token).toBeInstanceOf(TestToken);
         await agent.testing.launch(token);
-        console.log(token.toJSON());
+        // console.log(token.toJSON());
     });
 
 });
