@@ -12,13 +12,6 @@ const
     subprocess = require('@nrd/fua.module.subprocess'),
     NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
 
-util.HTTPResponseError = class HTTPResponseError extends Error {
-    constructor(response) {
-        super(`HTTP Error Response: ${response.status} ${response.statusText}`);
-        this.response = response;
-    }
-};
-
 /** @type {WeakMap<Record<string, any>, module:http.Agent | module:https.Agent>} */
 const _cachedHttpAgents = new WeakMap();
 
