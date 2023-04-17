@@ -121,28 +121,42 @@ util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
 }; // connectIOSocket
 
 /**
+ * @typedef {{
+ *     timeout?: number
+ * }} IOOptions
+ */
+
+/**
  * @param {import('socket.io-client').Socket} socket
- * @param {Record<string, boolean | number | string>} [defaultOptions]
- * @returns {function(string=, Record<string, *>=, Record<string, boolean|number|string>=): Promise<unknown>}
+ * @param {IOOptions} [defaultOptions]
+ * @returns {function(string=, Record<string, any>=, Record<string, boolean | number | string>=): Promise<unknown>}
  */
 util.createIOEmitter = function (socket, defaultOptions) {
 
     /**
+     * @template Result
      * @param {string} method
      * @param {Record<string, any>} param
-     * @param {Record<string, boolean | number | string>} [specificOptions]
-     * @returns {Promise<unknown>}
+     * @param {IOOptions} [specificOptions]
+     * @returns {Promise<Result>}
      */
-    async function ioEmitter(method = '', param = {}, specificOptions) {
-        const options = {...defaultOptions, ...specificOptions};
-        // TODO include options.ackTimeout
-
-        const result = await new Promise((resolve, reject) => {
-            const callback = (err, result) => err ? reject(err) : resolve(result);
-            socket.emit(method, param, callback);
+    function ioEmitter(method = '', param = {}, specificOptions) {
+        return new Promise((resolve, reject) => {
+            const options  = {...defaultOptions, ...specificOptions};
+            let canceled   = false, timeout;
+            const callback = (err, result) => {
+                if (canceled) return;
+                if (timeout) clearTimeout(timeout);
+                if (err) reject(err);
+                else resolve(result);
+            };
+            if (options.timeout) timeout = setTimeout(() => {
+                canceled = true;
+                reject(new Error('ioEmitter timed out'));
+            }, options.timeout);
+            if (socket.timeout && options.timeout) socket.timeout(options.timeout).emit(method, param, callback);
+            else socket.emit(method, param, callback);
         });
-
-        return result;
     } // ioEmitter
 
     return ioEmitter;
@@ -151,27 +165,33 @@ util.createIOEmitter = function (socket, defaultOptions) {
 
 /**
  * @param {import('socket.io-client').Socket} socket
- * @param {Record<string, boolean | number | string>} [defaultOptions]
- * @returns {function(string=, function(*): boolean=, Record<string, boolean|number|string>=): Promise<unknown>}
+ * @param {IOOptions} [defaultOptions]
+ * @returns {function(string=, function(*): boolean=, Record<string, boolean | number | string>=): Promise<unknown>}
  */
 util.createIOReceiver = function (socket, defaultOptions) {
 
     /**
+     * @template Result
      * @param {string} method
      * @param {function(result: any): boolean} filter
-     * @param {Record<string, boolean | number | string>} [specificOptions]
-     * @returns {Promise<unknown>}
+     * @param {IOOptions} [specificOptions]
+     * @returns {Promise<Result>}
      */
-    async function ioReceiver(method = '', filter = () => true, specificOptions) {
-        const options = {...defaultOptions, ...specificOptions};
-
-        let result, finished = false;
-        while (!finished) {
-            result   = await new Promise(resolve => socket.once(method, resolve));
-            finished = filter(result);
-        }
-
-        return result;
+    function ioReceiver(method = '', filter = () => true, specificOptions) {
+        return new Promise((resolve, reject) => {
+            const options = {...defaultOptions, ...specificOptions};
+            let onMethod, timeout;
+            if (options.timeout) timeout = setTimeout(() => {
+                socket.off(method, onMethod);
+                reject(new Error('ioReceiver timed out'));
+            }, options.timeout);
+            socket.on(method, onMethod = (result) => {
+                if (!filter(result)) return;
+                socket.off(method, onMethod);
+                if (timeout) clearTimeout(timeout);
+                resolve(result);
+            });
+        });
     } // ioReceiver
 
     return ioReceiver;

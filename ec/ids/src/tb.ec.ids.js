@@ -90,8 +90,8 @@ module.exports = new testing.Ecosystem({
         // IDEA use IPC channel instead of socket.io
 
         Object.defineProperties(this, {
-            callAlice: {value: util.createIOEmitter(aliceSocket)},
-            callBob:   {value: util.createIOEmitter(bobSocket)},
+            callAlice: {value: util.createIOEmitter(aliceSocket, {timeout: 60e3})},
+            callBob:   {value: util.createIOEmitter(bobSocket, {timeout: 60e3})},
             // tweakDAPS: {
             //     value: async function (type, param) {
             //         util.assert(util.isString(type), 'expected type to be a string');
@@ -99,8 +99,8 @@ module.exports = new testing.Ecosystem({
             //         return await util.callJsonApi(dapsTweakerUrl, dapsConfig.http.headers, {type, ...param}, dapsConfig.http.agent);
             //     }
             // }
-            tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket)},
-            observeDAPS: {value: util.createIOReceiver(dapsObserverSocket)}
+            tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket, {timeout: 60e3})},
+            observeDAPS: {value: util.createIOReceiver(dapsObserverSocket, {timeout: 60e3})}
         });
 
     }, // initialize
