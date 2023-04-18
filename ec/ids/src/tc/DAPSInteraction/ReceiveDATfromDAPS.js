@@ -11,8 +11,12 @@ module.exports = new testing.Case({
     '@id': 'urn:tb:ec:ids:tc:DAPSInteraction:ReceiveDATfromDAPS',
     /** @param {fua.module.testing.TestToken} token */
     async handler(token) {
-
         util.assertTodo(/* TODO */);
+
+        const clientId = token.param.connector?.clientId;
+        util.assert(util.isString(clientId), 'invalid connector clientId');
+        const isClientToken = ({payload}) => payload?.sub === clientId;
+        const result        = await this.ecosystem.observeDAPS('token', isClientToken);
 
     }
 });
