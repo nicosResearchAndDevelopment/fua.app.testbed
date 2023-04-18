@@ -1,6 +1,8 @@
 {
-    "SKI": "73:E1:A5:0F:98:EE:5E:02:01:7C:4E:09:68:A7:69:BB:1A:49:D4:BC",
-    "AKI": "keyid:06:E9:EE:23:75:07:01:47:9D:93:D7:97:27:8D:6B:33:BB:54:4C:87",
-    "SKIAKI": "73:E1:A5:0F:98:EE:5E:02:01:7C:4E:09:68:A7:69:BB:1A:49:D4:BC:keyid:06:E9:EE:23:75:07:01:47:9D:93:D7:97:27:8D:6B:33:BB:54:4C:87",
-    "SKIAKI_id_leave": "73_E1_A5_0F_98_EE_5E_02_01_7C_4E_09_68_A7_69_BB_1A_49_D4_BC_keyid_06_E9_EE_23_75_07_01_47_9D_93_D7_97_27_8D_6B_33_BB_54_4C_87"
+    "Issuer": "C = DE, ST = NRW, L = Muenster, O = nicos Research & Development GmbH, CN = tb, CN = tb_ca",
+    "Subject": "C = DE, ST = NRW, L = Muenster, O = nicos Research & Development GmbH, CN = tb, CN = testbed.nicos-rd.com",
+    "SKI": "04:34:22:71:6E:54:0C:03:0D:EF:1A:00:26:6F:9A:B4:F3:B5:FB:4D",
+    "AKI": "keyid:D3:98:C0:D2:C6:E9:50:AC:F9:B9:27:6A:E7:30:F1:05:D9:3D:80:D9",
+    "SKIAKI": "04:34:22:71:6E:54:0C:03:0D:EF:1A:00:26:6F:9A:B4:F3:B5:FB:4D:keyid:D3:98:C0:D2:C6:E9:50:AC:F9:B9:27:6A:E7:30:F1:05:D9:3D:80:D9",
+    "certSha256Fingerprint": "aa148b1cbdbb1f2ecea6a082de054209344dcccc36d572c7033c7d16984e99e7"
 }
