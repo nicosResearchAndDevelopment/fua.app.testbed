@@ -7,16 +7,21 @@ module.exports = new testing.Method({
     '@id': 'urn:tb:ec:ids:tm:develop',
     /** @param {fua.module.testing.TestToken} token */
     async executor(token) {
-        const [request, result] = await Promise.all([
-            this.ecosystem.observeDAPS('request', (details) => {
-                // console.log(details);
-                return true;
-            }),
-            util.fetch('https://nrd-daps.nicos-rd.com:8083/jwks.json', {
-                agent: new util.https.Agent({rejectUnauthorized: false})
-            }).then(response => response.json())
-        ]);
+        // const [request, result] = await Promise.all([
+        //     this.ecosystem.observeDAPS('request', (details) => {
+        //         // console.log(details);
+        //         return true;
+        //     }),
+        //     util.fetch('https://nrd-daps.nicos-rd.com:8083/jwks.json', {
+        //         agent: new util.https.Agent({rejectUnauthorized: false})
+        //     }).then(response => response.json())
+        // ]);
+        //
+        // return {request, result};
 
-        return {request, result};
+        token.result.response = await this.ecosystem.callAlice('fetchApplicantResource', {
+            url:  'https://bob.nicos-rd.com:8098/about',
+            daps: 'nrd_daps'
+        });
     }
 });

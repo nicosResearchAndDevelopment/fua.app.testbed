@@ -1,5 +1,6 @@
 const
     util    = require('@nrd/fua.core.util'),
+    fetch   = require('node-fetch'),
     express = require('express');
 
 module.exports = async function RCConnectorApp(
@@ -73,6 +74,18 @@ module.exports = async function RCConnectorApp(
                         reject('timeout reached');
                     }, 1000 * (param.timeout || 1));
                 });
+                callback(null, result);
+            } catch (err) {
+                callback(err);
+            }
+        });
+
+        socket.on('fetchApplicantResource', async (param, callback) => {
+            try {
+                const response    = await agent.fetch(param.url, param);
+                const contentType = response.headers.get('content-type') || '';
+                const result      = /application\/(?:\w+\+)?json/.test(contentType)
+                    ? await response.json() : await response.text();
                 callback(null, result);
             } catch (err) {
                 callback(err);

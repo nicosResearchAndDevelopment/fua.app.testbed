@@ -34,13 +34,16 @@ const
         },
         daps:      {
             //default: 'http://omejdn-daps.nicos-rd.com:4567'
-            default: {
+            default:  {
                 dapsUrl:       'https://omejdn-daps.nicos-rd.com:8082/auth',
                 dapsTokenPath: `/token`,
                 dapsJwksPath:  `/jwks.json`
             },
-            tb_daps: {
+            tb_daps:  {
                 dapsUrl: 'https://testbed.nicos-rd.com:8080'
+            },
+            nrd_daps: {
+                dapsUrl: 'https://nrd-daps.nicos-rd.com:8083/'
             }
             //default: 'https://nrd-daps.nicos-rd.com:8082/' // REM: proxy in testbed
             //default: 'https://localhost:8082/', // REM: proxy in testbed
