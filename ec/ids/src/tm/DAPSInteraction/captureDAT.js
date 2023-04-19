@@ -1,5 +1,5 @@
 const
-    util    = require('../tb.ec.ids.util.js'),
+    util    = require('../../tb.ec.ids.util.js'),
     testing = require('@nrd/fua.module.testing');
 
 /** @type {fua.module.testing.TestMethod} */
