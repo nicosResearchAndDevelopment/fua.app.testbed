@@ -11,12 +11,25 @@ module.exports = new testing.Case({
     '@id': 'urn:tb:ec:ids:tc:DAPSInteraction:ReceiveDATfromDAPS',
     /** @param {fua.module.testing.TestToken} token */
     async handler(token) {
-        util.assertTodo(/* TODO */);
+        util.assert(util.isString(token.param.connector?.clientId), 'invalid connector clientId');
 
-        const clientId = token.param.connector?.clientId;
-        util.assert(util.isString(clientId), 'invalid connector clientId');
-        const isClientToken = ({payload}) => payload?.sub === clientId;
-        const result        = await this.ecosystem.observeDAPS('token', isClientToken);
+        const capture = token.token({
+            ecosystem:  'urn:tb:ec:ids',
+            testMethod: 'urn:tb:ec:ids:tm:DAPSInteraction:captureDAT',
+            param:      {sub: token.param.connector.clientId}
+        });
 
+        try {
+            await this.launchTestMethod(capture);
+        } catch (err) {
+            if (err !== token.error) throw err;
+        }
+
+        const validation = {
+            timestamp:   util.utcDateTime(),
+            datReceived: !!capture.result.token
+        };
+
+        token.assign({validation});
     }
 });

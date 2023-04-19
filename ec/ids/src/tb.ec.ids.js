@@ -107,7 +107,8 @@ module.exports = new testing.Ecosystem({
     testMethods:    [
         // require('./tm/tb.ec.ids.tm.rc_refreshDAT.js'),
         // require('./tm/tb.ec.ids.tm.rc_createSelfDescription.js')
-        require('./tm/develop.js')
+        require('./tm/develop.js'),
+        require('./tm/captureDAT.js')
     ],
     testCases:      [
         // require('./tc/tb.ec.ids.tc.SUT_provideSelfDescription.js')
