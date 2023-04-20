@@ -22,7 +22,7 @@ module.exports = new testing.Case({
         try {
             await this.launchTestMethod(capture);
         } catch (err) {
-            if (err !== token.error) throw err;
+            if (err !== capture.error) throw err;
         }
 
         const validation = {

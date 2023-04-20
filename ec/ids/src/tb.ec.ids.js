@@ -113,7 +113,9 @@ module.exports = new testing.Ecosystem({
 
         require('./tm/develop.js'),
 
-        require('./tm/DAPSInteraction/captureDAT.js')
+        require('./tm/DAPSInteraction/captureDAT.js'),
+
+        require('./tm/SelfDescriptionInterface/requestSelfDescription.js')
     ],
     testCases:      [
         // require('./tc/tb.ec.ids.tc.SUT_provideSelfDescription.js')

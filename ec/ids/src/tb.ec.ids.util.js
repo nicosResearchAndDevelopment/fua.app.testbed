@@ -6,7 +6,8 @@ const
         expect: require('expect'),
         http:   require('http'),
         https:  require('https'),
-        fetch:  require('node-fetch')
+        fetch:  require('node-fetch'),
+        url:    require('url')
     },
     {io}       = require('socket.io-client'),
     subprocess = require('@nrd/fua.module.subprocess'),

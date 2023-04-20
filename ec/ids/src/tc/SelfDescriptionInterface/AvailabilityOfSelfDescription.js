@@ -11,8 +11,26 @@ module.exports = new testing.Case({
     '@id': 'urn:tb:ec:ids:tc:SelfDescriptionInterface:AvailabilityOfSelfDescription',
     /** @param {fua.module.testing.TestToken} token */
     async handler(token) {
+        util.assert(util.isString(token.param.connector?.baseUrl), 'invalid connector baseUrl');
 
-        util.assertTodo(/* TODO */);
+        const request = token.token({
+            ecosystem:  'urn:tb:ec:ids',
+            testMethod: 'urn:tb:ec:ids:tm:SelfDescriptionInterface:requestSelfDescription',
+            param:      {baseUrl: token.param.connector.baseUrl}
+        });
 
+        try {
+            await this.launchTestMethod(request);
+        } catch (err) {
+            if (err !== request.error) throw err;
+        }
+
+        const validation = {
+            timestamp:                   util.utcDateTime(),
+            selfDescriptionSend:         !!request.result.response,
+            isDescriptionRequestMessage: util.objectMatches(request.result.response, {'@type': 'ids:DescriptionRequestMessage'})
+        };
+
+        token.assign({validation});
     }
 });
