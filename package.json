@@ -1,9 +1,18 @@
 {
-  "name": "nrd-testbed",
-  "version": "0.1.0",
+  "name": "@nrd/fua.app.testbed",
+  "version": "1.0.0",
   "description": "",
+  "bin": {
+    "fua.app.testbed": "./src/launch.testbed.js"
+  },
+  "_bin_TODO": {
+    "fua.app.testbed.healthcheck": "./src/scripts/testbed.healthcheck.js"
+  },
   "files": [
-    "*"
+    "src/*",
+    "ec/*",
+    "data/*",
+    "cert/*"
   ],
   "dependencies": {
     "express": "^4.17.1",
