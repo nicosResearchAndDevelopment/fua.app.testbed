@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const
     config       = require('./config/config.testbed.js'),
     util         = require('./code/util.testbed.js'),
