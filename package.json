@@ -1,6 +1,6 @@
 {
   "name": "@nrd/fua.app.testbed",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "bin": {
     "fua.app.testbed": "./src/launch.testbed.js"
