@@ -1,6 +1,6 @@
 {
   "name": "@nrd/fua.app.testbed",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "bin": {
     "fua.app.testbed": "./src/launch.testbed.js"
@@ -23,6 +23,7 @@
     "@nrd/fua.agent.amec": "^1.0.1",
     "@nrd/fua.core.util": "^1.0.0",
     "@nrd/fua.ids.agent.connector": "^1.0.0",
+    "@nrd/fua.ids.agent.daps": "^1.0.0",
     "@nrd/fua.middleware.ldp": "^1.0.0",
     "@nrd/fua.middleware.web": "^1.0.0",
     "@nrd/fua.module.persistence": "^1.0.0",
