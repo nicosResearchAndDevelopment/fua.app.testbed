@@ -16,8 +16,9 @@ module.exports = new testing.Ecosystem({
             aliceConfig       = {
                 id:        'urn:tb:ec:ids:rc:alice',
                 server:    {
-                    schema:   'https',
-                    hostname: 'alice.nicos-rd.com',
+                    schema: 'https',
+                    // hostname: 'alice.nicos-rd.com',
+                    hostname: 'localhost',
                     port:     8099,
                     options:  {
                         key:  aliceCerts.server.key.toString(),
@@ -35,8 +36,9 @@ module.exports = new testing.Ecosystem({
             bobConfig         = {
                 id:        'urn:tb:ec:ids:rc:bob',
                 server:    {
-                    schema:   'https',
-                    hostname: 'bob.nicos-rd.com',
+                    schema: 'https',
+                    // hostname: 'bob.nicos-rd.com',
+                    hostname: 'localhost',
                     port:     8098,
                     options:  {
                         key:  bobCerts.server.key.toString(),
@@ -54,9 +56,11 @@ module.exports = new testing.Ecosystem({
             dapsConfig        = {
                 id:     'urn:tb:ec:ids:rc:daps',
                 server: {
-                    schema:   'https',
-                    hostname: 'nrd-daps.nicos-rd.com',
-                    port:     8083
+                    schema: 'https',
+                    // hostname: 'nrd-daps.nicos-rd.com',
+                    // port:     8083,
+                    hostname: 'daps.tb.nicos-rd.com',
+                    port:     443
                 },
                 http:   {
                     headers: {
