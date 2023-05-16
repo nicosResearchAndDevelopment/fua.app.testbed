@@ -1,8 +1,8 @@
 const
     util       = require('./tb.ec.ids.util.js'),
     testing    = require('@nrd/fua.module.testing'),
-    aliceCerts = require('../cert/alice/index.js'),
-    bobCerts   = require('../cert/bob/index.js');
+    aliceCerts = require('../data/alice/cert/index.js'),
+    bobCerts   = require('../data/bob/cert/index.js');
 
 /**
  * @type {fua.module.testing.TestingEcosystem}
@@ -13,6 +13,30 @@ module.exports = new testing.Ecosystem({
     async initializer(args = {}) {
 
         const
+            dapsConfig        = {
+                id:     'urn:tb:ec:ids:rc:daps',
+                server: {
+                    schema: 'https',
+                    // hostname: 'nrd-daps.nicos-rd.com',
+                    // port:     8083,
+                    hostname: 'daps.tb.nicos-rd.com',
+                    port:     443
+                },
+                http:   {
+                    headers: {
+                        // 'Authorization': 'Basic ...',
+                        // 'Authorization': 'Bearer ...',
+                    },
+                    agent:   new util.https.Agent({
+                        key:  aliceCerts.server.key.toString(),
+                        cert: aliceCerts.server.cert.toString(),
+                        ca:   aliceCerts.server.ca.toString()
+                    })
+                }
+            },
+            dapsUrl           = `${dapsConfig.server.schema}://${dapsConfig.server.hostname}:${dapsConfig.server.port}/`,
+            dapsTweakerUrl    = `${dapsUrl}tweak`,
+            dapsObserverUrl   = `${dapsUrl}observe`,
             aliceConfig       = {
                 id:        'urn:tb:ec:ids:rc:alice',
                 server:    {
@@ -31,6 +55,13 @@ module.exports = new testing.Ecosystem({
                     id:  aliceCerts.connector.meta.SKIAKI,
                     key: aliceCerts.connector.key.toString(),
                     pub: aliceCerts.connector.pub.toString()
+                },
+                daps:      {
+                    default: {
+                        dapsUrl:       dapsUrl,
+                        dapsTokenPath: '/token',
+                        dapsJwksPath:  '/jwks.json'
+                    }
                 }
             },
             bobConfig         = {
@@ -51,30 +82,17 @@ module.exports = new testing.Ecosystem({
                     id:  bobCerts.connector.meta.SKIAKI,
                     key: bobCerts.connector.key.toString(),
                     pub: bobCerts.connector.pub.toString()
-                }
-            },
-            dapsConfig        = {
-                id:     'urn:tb:ec:ids:rc:daps',
-                server: {
-                    schema: 'https',
-                    // hostname: 'nrd-daps.nicos-rd.com',
-                    // port:     8083,
-                    hostname: 'daps.tb.nicos-rd.com',
-                    port:     443
                 },
-                http:   {
-                    headers: {
-                        // 'Authorization': 'Basic ...',
-                        // 'Authorization': 'Bearer ...',
-                    },
-                    agent:   new util.https.Agent(aliceConfig.server.options)
+                daps:      {
+                    default: {
+                        dapsUrl:       dapsUrl,
+                        dapsTokenPath: '/token',
+                        dapsJwksPath:  '/jwks.json'
+                    }
                 }
             },
             aliceUrl          = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
             bobUrl            = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
-            dapsUrl           = `${dapsConfig.server.schema}://${dapsConfig.server.hostname}:${dapsConfig.server.port}/`,
-            dapsTweakerUrl    = `${dapsUrl}tweak`,
-            dapsObserverUrl   = `${dapsUrl}observe`,
             connectorLauncher = './rc/connector/launch.rc-connector.js',
             socketOptions     = {
                 rejectUnauthorized: false,

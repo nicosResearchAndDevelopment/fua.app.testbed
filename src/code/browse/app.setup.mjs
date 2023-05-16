@@ -58,7 +58,7 @@ layout.defineLayout(
 
 menu
     .addLink('Home', '/browse')
-    .addLink('Logout', '/login/logout');
+    .addLink('Logout', '/logout');
 
 const
     logoContainer = document.createElement('div'),

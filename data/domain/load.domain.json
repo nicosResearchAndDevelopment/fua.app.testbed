@@ -1,0 +1,45 @@
+{
+  "@context": "fua.load.rdf",
+  "dct:identifier": "./load.domain.json",
+  "dct:format": "application/fua.load+json",
+  "dct:title": "load.domain.json",
+  "dct:alternative": "Testbed Domain Loader",
+  "dct:requires": [
+    {
+      "dct:identifier": "./domain.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "domain.ttl",
+      "dct:alternative": "Testbed-Server Domain"
+    },
+    {
+      "dct:identifier": "./users/testsuite.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "testsuite.ttl",
+      "dct:alternative": "User: Testsuite"
+    },
+    {
+      "dct:identifier": "./users/test.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "test.ttl",
+      "dct:alternative": "User: Test"
+    },
+    {
+      "dct:identifier": "./users/spetrac.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "spetrac.ttl",
+      "dct:alternative": "User: Simon Petrac"
+    },
+    {
+      "dct:identifier": "./users/jlangkau.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "jlangkau.ttl",
+      "dct:alternative": "User: Jörg Langkau"
+    },
+    {
+      "dct:identifier": "./groups/admin.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "admin.ttl",
+      "dct:alternative": "Group: Admin"
+    }
+  ]
+}

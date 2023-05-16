@@ -1,0 +1,21 @@
+{
+  "@context": "fua.load.rdf",
+  "dct:identifier": "./load.applicant.json",
+  "dct:format": "application/fua.load+json",
+  "dct:title": "load.applicant.json",
+  "dct:alternative": "Testbed Applicant Loader",
+  "dct:requires": [
+    {
+      "dct:identifier": "./nicos.gbx.0-0-1.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "nicos.gbx.0-0-1.ttl",
+      "dct:alternative": "Applicant: GBX 0.0.1"
+    },
+    {
+      "dct:identifier": "./nicos.gbx.0-0-1.daps.user.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "nicos.gbx.0-0-1.daps.user.ttl",
+      "dct:alternative": "Applicant: GBX 0.0.1 DAPS User"
+    }
+  ]
+}

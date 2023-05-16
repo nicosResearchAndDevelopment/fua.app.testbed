@@ -1,0 +1,36 @@
+{
+  "@context": "fua.load.rdf",
+  "dct:identifier": "./load.json",
+  "dct:format": "application/fua.load+json",
+  "dct:title": "load.json",
+  "dct:alternative": "Testbed Loader",
+  "dct:requires": [
+    {
+      "dct:identifier": "./model/load.model.json",
+      "dct:format": "application/fua.load+json",
+      "dct:alternative": "Testbed Model"
+    },
+    {
+      "dct:identifier": "./server/load.server.json",
+      "dct:format": "application/fua.load+json",
+      "dct:alternative": "Testbed Server"
+    },
+    {
+      "dct:identifier": "./domain/load.domain.json",
+      "dct:format": "application/fua.load+json",
+      "dct:alternative": "Testbed Domain"
+    },
+    {
+      "dct:identifier": "./applicant/load.applicant.json",
+      "dct:format": "application/fua.load+json",
+      "dct:alternative": "Testbed Applicant"
+    },
+    {
+      "@id": "file://data.ttl",
+      "dct:identifier": "./data.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "data.ttl",
+      "dct:alternative": "Testbed Data"
+    }
+  ]
+}

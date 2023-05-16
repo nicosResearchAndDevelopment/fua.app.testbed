@@ -1,5 +1,5 @@
 import * as setup from './app.setup.mjs';
-import {model, space} from './lib/module.ldp.mjs';
+import {model, space, method} from './lib/module.ldp.mjs';
 import io from './ext/socket.io-wrapper.mjs';
 import FA from './ext/fontawesome-4.7.0.mjs';
 
@@ -144,5 +144,6 @@ socket
         );
     });
 
+method.setBaseURI('https://tb.nicos-rd.com/');
 setup.tree.addRoot(space.getNode('/data/'));
 setup.terminal.printLn('ready', setup.prompt);

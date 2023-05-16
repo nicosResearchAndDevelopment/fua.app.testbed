@@ -1,6 +1,6 @@
 {
   "name": "@nrd/fua.app.testbed",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "",
   "bin": {
     "fua.app.testbed": "./src/launch.testbed.js"
@@ -11,8 +11,7 @@
   "files": [
     "src/*",
     "ec/*",
-    "data/*",
-    "cert/*"
+    "data/*"
   ],
   "dependencies": {
     "express": "^4.17.1",
@@ -24,8 +23,8 @@
     "@nrd/fua.core.util": "^1.0.0",
     "@nrd/fua.ids.agent.connector": "^1.0.0",
     "@nrd/fua.ids.agent.daps": "^1.0.0",
-    "@nrd/fua.middleware.ldp": "^1.0.0",
-    "@nrd/fua.middleware.web": "^1.0.0",
+    "@nrd/fua.middleware.ldp": "^1.0.1",
+    "@nrd/fua.middleware.web": "^1.0.1",
     "@nrd/fua.module.persistence": "^1.0.0",
     "@nrd/fua.module.persistence.filesystem": "^1.0.0",
     "@nrd/fua.module.persistence.inmemory": "^1.0.0",

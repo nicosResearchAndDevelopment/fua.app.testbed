@@ -1,0 +1,15 @@
+{
+  "@context": "fua.load.rdf",
+  "dct:identifier": "./load.model.json",
+  "dct:format": "application/fua.load+json",
+  "dct:title": "load.model.json",
+  "dct:alternative": "Testbed Model Loader",
+  "dct:requires": [
+    {
+      "dct:identifier": "./tbm.ttl",
+      "dct:format": "text/turtle",
+      "dct:title": "tbm.ttl",
+      "dct:alternative": "Custom Testbed Model"
+    }
+  ]
+}

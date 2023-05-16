@@ -25,11 +25,11 @@ const
     copyTestbedCerts = (source, target) => copyCertFiles(path.join(ca_testbed, source), path.join(testbed_root, target));
 
 Promise.all([
-    copyTestbedCerts('tb/tls-server/server', 'cert/tls-server/server'),
-    copyTestbedCerts('ec/ids/component/daps_nrd/connector/client', 'cert/daps/connector/client'),
-    copyTestbedCerts('ec/ids/component/daps_nrd/tls-server/server', 'cert/daps/tls-server/server'),
-    copyTestbedCerts('ec/ids/component/alice/connector/client', 'ec/ids/cert/alice/connector/client'),
-    copyTestbedCerts('ec/ids/component/alice/tls-server/server', 'ec/ids/cert/alice/tls-server/server'),
-    copyTestbedCerts('ec/ids/component/bob/connector/client', 'ec/ids/cert/bob/connector/client'),
-    copyTestbedCerts('ec/ids/component/bob/tls-server/server', 'ec/ids/cert/bob/tls-server/server')
+    copyTestbedCerts('tb/tls-server/server', 'data/server/cert/tls-server/server'),
+    copyTestbedCerts('ec/ids/component/daps_nrd/connector/client', 'data/daps/cert/connector/client'),
+    copyTestbedCerts('ec/ids/component/daps_nrd/tls-server/server', 'data/daps/cert/tls-server/server'),
+    copyTestbedCerts('ec/ids/component/alice/connector/client', 'ec/ids/data/alice/cert/connector/client'),
+    copyTestbedCerts('ec/ids/component/alice/tls-server/server', 'ec/ids/data/alice/cert/tls-server/server'),
+    copyTestbedCerts('ec/ids/component/bob/connector/client', 'ec/ids/data/bob/cert/connector/client'),
+    copyTestbedCerts('ec/ids/component/bob/tls-server/server', 'ec/ids/data/bob/cert/tls-server/server')
 ]).then(() => console.log('done')).catch(console.error);
