@@ -96,7 +96,7 @@ module.exports = new testing.Ecosystem({
             connectorLauncher = './rc/connector/launch.rc-connector.js',
             socketOptions     = {
                 rejectUnauthorized: false,
-                connectTimeout:     10e3
+                connectTimeout:     60e3
                 // reconnectionAttempts: 5
             },
             [
