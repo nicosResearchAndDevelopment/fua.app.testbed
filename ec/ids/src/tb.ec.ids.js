@@ -1,8 +1,7 @@
 const
-    util       = require('./tb.ec.ids.util.js'),
-    testing    = require('@nrd/fua.module.testing'),
-    aliceCerts = require('../data/alice/cert/index.js'),
-    bobCerts   = require('../data/bob/cert/index.js');
+    util    = require('./tb.ec.ids.util.js'),
+    config  = require('./tb.ec.ids.config.js'),
+    testing = require('@nrd/fua.module.testing');
 
 /**
  * @type {fua.module.testing.TestingEcosystem}
@@ -12,105 +11,17 @@ module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        const
-            dapsConfig        = {
-                id:     'urn:tb:ec:ids:rc:daps',
-                server: {
-                    schema: 'https',
-                    // hostname: 'nrd-daps.nicos-rd.com',
-                    // port:     8083,
-                    hostname: 'daps.tb.nicos-rd.com',
-                    port:     443
-                },
-                http:   {
-                    headers: {
-                        // 'Authorization': 'Basic ...',
-                        // 'Authorization': 'Bearer ...',
-                    },
-                    agent:   new util.https.Agent({
-                        key:  aliceCerts.server.key.toString(),
-                        cert: aliceCerts.server.cert.toString(),
-                        ca:   aliceCerts.server.ca.toString()
-                    })
-                }
-            },
-            dapsUrl           = `${dapsConfig.server.schema}://${dapsConfig.server.hostname}:${dapsConfig.server.port}/`,
-            dapsTweakerUrl    = `${dapsUrl}tweak`,
-            dapsObserverUrl   = `${dapsUrl}observe`,
-            aliceConfig       = {
-                id:        'urn:tb:ec:ids:rc:alice',
-                server:    {
-                    schema: 'https',
-                    // hostname: 'alice.nicos-rd.com',
-                    hostname: 'localhost',
-                    port:     8099,
-                    options:  {
-                        key:  aliceCerts.server.key.toString(),
-                        cert: aliceCerts.server.cert.toString(),
-                        ca:   aliceCerts.server.ca.toString()
-                    }
-                },
-                connector: {
-                    uri: 'https://alice.nicos-rd.com/',
-                    id:  aliceCerts.connector.meta.SKIAKI,
-                    key: aliceCerts.connector.key.toString(),
-                    pub: aliceCerts.connector.pub.toString()
-                },
-                daps:      {
-                    default: {
-                        dapsUrl:       dapsUrl,
-                        dapsTokenPath: '/token',
-                        dapsJwksPath:  '/jwks.json'
-                    }
-                }
-            },
-            bobConfig         = {
-                id:        'urn:tb:ec:ids:rc:bob',
-                server:    {
-                    schema: 'https',
-                    // hostname: 'bob.nicos-rd.com',
-                    hostname: 'localhost',
-                    port:     8098,
-                    options:  {
-                        key:  bobCerts.server.key.toString(),
-                        cert: bobCerts.server.cert.toString(),
-                        ca:   bobCerts.server.ca.toString()
-                    }
-                },
-                connector: {
-                    uri: 'https://bob.nicos-rd.com/',
-                    id:  bobCerts.connector.meta.SKIAKI,
-                    key: bobCerts.connector.key.toString(),
-                    pub: bobCerts.connector.pub.toString()
-                },
-                daps:      {
-                    default: {
-                        dapsUrl:       dapsUrl,
-                        dapsTokenPath: '/token',
-                        dapsJwksPath:  '/jwks.json'
-                    }
-                }
-            },
-            aliceUrl          = `${aliceConfig.server.schema}://${aliceConfig.server.hostname}:${aliceConfig.server.port}/`,
-            bobUrl            = `${bobConfig.server.schema}://${bobConfig.server.hostname}:${bobConfig.server.port}/`,
-            connectorLauncher = './rc/connector/launch.rc-connector.js',
-            socketOptions     = {
-                rejectUnauthorized: false,
-                connectTimeout:     60e3
-                // reconnectionAttempts: 5
-            },
-            [
-                aliceProc, bobProc,
-                aliceSocket, bobSocket,
-                dapsTweakerSocket, dapsObserverSocket
-            ]                 = await Promise.all([
-                util.launchNodeProcess(connectorLauncher, aliceConfig),
-                util.launchNodeProcess(connectorLauncher, bobConfig),
-                util.connectIOSocket(aliceUrl, socketOptions),
-                util.connectIOSocket(bobUrl, socketOptions),
-                util.connectIOSocket(dapsTweakerUrl, socketOptions),
-                util.connectIOSocket(dapsObserverUrl, socketOptions)
-            ]);
+        // const [aliceProc, bobProc] = await Promise.all([
+        //     util.launchNodeProcess(config.alice.launcher, config.alice),
+        //     util.launchNodeProcess(config.bob.launcher, config.bob)
+        // ]);
+
+        const [aliceSocket, bobSocket, dapsTweakerSocket, dapsObserverSocket] = await Promise.all([
+            util.connectIOSocket(config.alice.url, config.socketIO.options),
+            util.connectIOSocket(config.bob.url, config.socketIO.options),
+            util.connectIOSocket(config.daps.tweakerUrl, config.socketIO.options),
+            util.connectIOSocket(config.daps.observerUrl, config.socketIO.options)
+        ]);
 
         // IDEA use IPC channel instead of socket.io
 
@@ -121,7 +32,7 @@ module.exports = new testing.Ecosystem({
             //     value: async function (type, param) {
             //         util.assert(util.isString(type), 'expected type to be a string');
             //         util.assert(util.isObject(param), 'expected param to be an object');
-            //         return await util.callJsonApi(dapsTweakerUrl, dapsConfig.http.headers, {type, ...param}, dapsConfig.http.agent);
+            //         return await util.callJsonApi(dapsTweakerUrl, config.daps.http.headers, {type, ...param}, config.daps.http.agent);
             //     }
             // }
             tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket, {timeout: 60e3})},
