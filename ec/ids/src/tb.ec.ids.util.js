@@ -83,7 +83,7 @@ util.launchNodeProcess = async function (launcherFile, launchConfig) {
 }; // launchNodeProcess
 
 util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
-    const socket = io(url, options);
+    const socket = io(url, {...options});
     await new Promise((resolve, reject) => {
         let onConnect, onFail, connectTimeout, onError, lastError;
         socket.once('connect', onConnect = () => {
