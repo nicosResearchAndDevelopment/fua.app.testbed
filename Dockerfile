@@ -35,10 +35,6 @@ ENV PATH="$PATH:/opt/gbx/node_modules/.bin"
 
 # 7. Define image setup and application entrypoint.
 
-# TODO fix alice and bob to remove fixed ports
-EXPOSE 8099
-EXPOSE 8098
-
 EXPOSE $SERVER_PORT
 HEALTHCHECK CMD fua.app.testbed.healthcheck
 ENTRYPOINT fua.app.testbed

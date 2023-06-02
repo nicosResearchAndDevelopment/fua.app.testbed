@@ -117,6 +117,10 @@ util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
                 reject(err);
             }, options.connectTimeout);
         }
+    }).catch((err) => {
+        console.log(`connectIOSocket (url = '${url}', options = ${JSON.stringify(options)})`);
+        console.error(err);
+        return Promise.reject(err);
     });
     return socket;
 }; // connectIOSocket
