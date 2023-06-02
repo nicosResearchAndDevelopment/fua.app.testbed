@@ -5,9 +5,12 @@ const
 // bobCerts   = require('../data/bob/cert/index.js');
 
 config.daps = {
-    url:         'https://daps.tb.nicos-rd.com/',
-    tweakerUrl:  'https://daps.tb.nicos-rd.com/tweak',
-    observerUrl: 'https://daps.tb.nicos-rd.com/observe'
+    // url:         'https://daps.tb.nicos-rd.com/',
+    url:         'https://daps.tb.nicos-rd:8080/',
+    // tweakerUrl:  'https://daps.tb.nicos-rd.com/tweak',
+    tweakerUrl:  'https://daps.tb.nicos-rd:8080/tweak',
+    // observerUrl: 'https://daps.tb.nicos-rd.com/observe'
+    observerUrl: 'https://daps.tb.nicos-rd:8080/observe'
     // url:    'https://daps.tb.nicos-rd.com:443/',
     // id:     'urn:tb:ec:ids:rc:daps',
     // server: {
@@ -31,7 +34,8 @@ config.daps = {
 };
 
 config.alice = {
-    url: 'https://alice.tb.nicos-rd.com/'
+    // url: 'https://alice.tb.nicos-rd.com/'
+    url: 'https://alice.tb.nicos-rd:8080/'
     // url: 'https://localhost:8099/'
     // launcher:  './rc/connector/launch.rc-connector.js',
     // id:        'urn:tb:ec:ids:rc:alice',
@@ -62,7 +66,8 @@ config.alice = {
 };
 
 config.bob = {
-    url: 'https://bob.tb.nicos-rd.com/'
+    // url: 'https://bob.tb.nicos-rd.com/'
+    url: 'https://bob.tb.nicos-rd:8080/'
     // url: 'https://localhost:8098/'
     // launcher:  './rc/connector/launch.rc-connector.js',
     // id:        'urn:tb:ec:ids:rc:bob',
