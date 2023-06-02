@@ -40,5 +40,5 @@ EXPOSE 8099
 EXPOSE 8098
 
 EXPOSE $SERVER_PORT
-# TODO HEALTHCHECK CMD fua.app.testbed.healthcheck
+HEALTHCHECK CMD fua.app.testbed.healthcheck
 ENTRYPOINT fua.app.testbed

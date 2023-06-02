@@ -16,6 +16,13 @@ module.exports = async function TestbedApp(
     util.assert(agent.app, 'expected agent to have app defined');
     util.assert(agent.io, 'expected agent to have io defined');
 
+    agent.app.get('/about', (request, response) => {
+        const about = {
+            issuer: `${config.server.schema}://${config.server.hostname}:${config.server.port}/`
+        };
+        response.type('json').send(JSON.stringify(about));
+    });
+
     //region >> Login
 
     agent.app.get('/', (request, response) => response.redirect('/browse'));

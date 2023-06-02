@@ -8,8 +8,8 @@ config.daps = {
     url:         'https://daps.tb.nicos-rd.com/',
     tweakerUrl:  'https://daps.tb.nicos-rd.com/tweak',
     observerUrl: 'https://daps.tb.nicos-rd.com/observe'
-    // id:     'urn:tb:ec:ids:rc:daps',
     // url:    'https://daps.tb.nicos-rd.com:443/',
+    // id:     'urn:tb:ec:ids:rc:daps',
     // server: {
     //     schema: 'https',
     //     // hostname: 'nrd-daps.nicos-rd.com',
@@ -32,9 +32,9 @@ config.daps = {
 
 config.alice = {
     url: 'https://alice.tb.nicos-rd.com/'
+    // url: 'https://localhost:8099/'
     // launcher:  './rc/connector/launch.rc-connector.js',
     // id:        'urn:tb:ec:ids:rc:alice',
-    // url:       'https://localhost:8099/',
     // server:    {
     //     schema: 'https',
     //     // hostname: 'alice.nicos-rd.com',
@@ -63,9 +63,9 @@ config.alice = {
 
 config.bob = {
     url: 'https://bob.tb.nicos-rd.com/'
+    // url: 'https://localhost:8098/'
     // launcher:  './rc/connector/launch.rc-connector.js',
     // id:        'urn:tb:ec:ids:rc:bob',
-    // url:       'https://localhost:8098/',
     // server:    {
     //     schema: 'https',
     //     // hostname: 'bob.nicos-rd.com',
