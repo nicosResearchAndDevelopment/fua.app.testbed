@@ -5,7 +5,7 @@ const
     {Ecosystem, TestToken}   = require('@nrd/fua.module.testing'),
     DAPSClient               = require('@nrd/fua.ids.client.daps'),
     ecIDS                    = require('../src/tb.ec.ids.js'),
-    aliceCerts               = require('../cert/alice/index.js');
+    aliceCerts               = require('../data/alice/cert/index.js');
 
 describe('tb.ec.ids', function () {
 
@@ -35,14 +35,16 @@ describe('tb.ec.ids', function () {
 
             before('initialized daps client', function () {
                 dapsClient = new DAPSClient({
-                    SKIAKI:       aliceCerts.connector.meta.SKIAKI,
-                    privateKey:   aliceCerts.connector.privateKey,
-                    dapsUrl:      'https://nrd-daps.nicos-rd.com:8083/',
+                    SKIAKI:     aliceCerts.connector.meta.SKIAKI,
+                    privateKey: aliceCerts.connector.privateKey,
+                    // dapsUrl:      'https://nrd-daps.nicos-rd.com:8083/',
+                    dapsUrl:      'https://daps.tb.nicos-rd.com/',
                     requestAgent: new https.Agent({
-                        key:                aliceCerts.server.key,
-                        cert:               aliceCerts.server.cert,
-                        ca:                 aliceCerts.server.ca,
-                        rejectUnauthorized: true
+                        key:  aliceCerts.server.key,
+                        cert: aliceCerts.server.cert,
+                        ca:   aliceCerts.server.ca,
+                        // rejectUnauthorized: true
+                        rejectUnauthorized: false
                     })
                 });
             });
@@ -79,9 +81,10 @@ describe('tb.ec.ids', function () {
 
             before('initialized daps client', function () {
                 dapsClient = new DAPSClient({
-                    SKIAKI:       aliceCerts.connector.meta.SKIAKI,
-                    privateKey:   aliceCerts.connector.privateKey,
-                    dapsUrl:      'https://nrd-daps.nicos-rd.com:8083/',
+                    SKIAKI:     aliceCerts.connector.meta.SKIAKI,
+                    privateKey: aliceCerts.connector.privateKey,
+                    // dapsUrl:      'https://nrd-daps.nicos-rd.com:8083/',
+                    dapsUrl:      'https://daps.tb.nicos-rd.com/',
                     requestAgent: new https.Agent({
                         key:                aliceCerts.server.key,
                         cert:               aliceCerts.server.cert,

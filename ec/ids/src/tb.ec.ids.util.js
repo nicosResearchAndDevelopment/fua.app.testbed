@@ -148,8 +148,16 @@ util.createIOEmitter = function (socket, defaultOptions) {
             const callback = (err, result) => {
                 if (canceled) return;
                 if (timeout) clearTimeout(timeout);
-                if (err) reject(err);
-                else resolve(result);
+                if (!err) resolve(result);
+                else if (err instanceof Error) reject(err);
+                else if (util.isString(err) || util.isBuffer(err)) reject(new Error(err.toString()));
+                else {
+                    const {message, name, code} = err || {};
+                    err                         = new Error(message ?? 'unknown error');
+                    if (name) err.name = name;
+                    if (code) err.code = code;
+                    reject(err);
+                }
             };
             if (options.timeout) timeout = setTimeout(() => {
                 canceled = true;

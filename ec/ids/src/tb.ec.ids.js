@@ -11,11 +11,6 @@ module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer(args = {}) {
 
-        // const [aliceProc, bobProc] = await Promise.all([
-        //     util.launchNodeProcess(config.alice.launcher, config.alice),
-        //     util.launchNodeProcess(config.bob.launcher, config.bob)
-        // ]);
-
         const [aliceSocket, bobSocket, dapsTweakerSocket, dapsObserverSocket] = await Promise.all([
             util.connectIOSocket(config.alice.url, config.socketIO.options),
             util.connectIOSocket(config.bob.url, config.socketIO.options),
@@ -23,18 +18,9 @@ module.exports = new testing.Ecosystem({
             util.connectIOSocket(config.daps.observerUrl, config.socketIO.options)
         ]);
 
-        // IDEA use IPC channel instead of socket.io
-
         Object.defineProperties(this, {
-            callAlice: {value: util.createIOEmitter(aliceSocket, {timeout: 60e3})},
-            callBob:   {value: util.createIOEmitter(bobSocket, {timeout: 60e3})},
-            // tweakDAPS: {
-            //     value: async function (type, param) {
-            //         util.assert(util.isString(type), 'expected type to be a string');
-            //         util.assert(util.isObject(param), 'expected param to be an object');
-            //         return await util.callJsonApi(dapsTweakerUrl, config.daps.http.headers, {type, ...param}, config.daps.http.agent);
-            //     }
-            // }
+            callAlice:   {value: util.createIOEmitter(aliceSocket, {timeout: 60e3})},
+            callBob:     {value: util.createIOEmitter(bobSocket, {timeout: 60e3})},
             tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket, {timeout: 60e3})},
             observeDAPS: {value: util.createIOReceiver(dapsObserverSocket, {timeout: 60e3})}
         });

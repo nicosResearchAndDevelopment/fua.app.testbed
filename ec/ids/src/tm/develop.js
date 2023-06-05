@@ -20,8 +20,8 @@ module.exports = new testing.Method({
         // return {request, result};
 
         token.result.response = await this.ecosystem.callAlice('fetchApplicantResource', {
-            url:  'https://bob.nicos-rd.com:8098/about',
-            daps: 'nrd_daps'
+            url:  'https://bob.tb.nicos-rd.com/about',
+            daps: 'default'
         });
     }
 });
