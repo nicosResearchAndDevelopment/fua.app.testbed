@@ -1,6 +1,7 @@
 import * as setup from './app.setup.mjs';
 import {model, space, method} from './lib/module.ldp.mjs';
-import io from './ext/socket.io-wrapper.mjs';
+// import io from './ext/socket.io-wrapper.mjs';
+import io from './ext/socket.io-client-3.1.3.mjs';
 import FA from './ext/fontawesome-4.7.0.mjs';
 
 let
