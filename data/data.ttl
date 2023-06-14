@@ -54,3 +54,30 @@
     rdfs:label "Example"@en ;
     rdfs:label "Beispiel"@de ;
 .
+
+<data/users/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/users/jlangkau> ;
+    ldp:contains <data/users/spetrac> ;
+.
+
+<data/users/jlangkau>
+    a         ldp:RDFSource ;
+    foaf:name "Jörg Langkau" ;
+.
+
+<data/users/spetrac>
+    a         ldp:RDFSource ;
+    foaf:name "Simon Petrac" ;
+.
+
+<data/groups/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/groups/admin/> ;
+.
+
+<data/groups/admin/>
+    a            ldp:BasicContainer ;
+    ldp:contains <data/users/jlangkau> ;
+    ldp:contains <data/users/spetrac> ;
+.

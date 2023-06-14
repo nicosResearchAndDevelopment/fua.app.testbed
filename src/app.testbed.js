@@ -142,7 +142,7 @@ module.exports = async function TestbedApp(
 
     agent.app.use('/browse', express.static(path.join(__dirname, 'code/browse')));
 
-    agent.app.use(['/domain', '/users', '/groups', '/data'], Middleware_LDP({
+    agent.app.use('/data', Middleware_LDP({
         space:      agent.space,
         rootFolder: path.join(__dirname, '../data/resource'),
         baseIRI:    agent.uri.replace(/[/#]$/, '')
