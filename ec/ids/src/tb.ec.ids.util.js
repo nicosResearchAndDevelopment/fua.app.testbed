@@ -13,6 +13,16 @@ const
     subprocess = require('@nrd/fua.module.subprocess'),
     NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
 
+util.joinURL = function (base, ...segments) {
+    let result = new util.url.URL(base).toString();
+    for (let segment of segments) {
+        if (!result.endsWith('/')) result += '/';
+        if (segment.startsWith('/')) segment = segment.substring(1);
+        result = new util.url.URL(segment, result).toString();
+    }
+    return result;
+};
+
 /** @type {WeakMap<Record<string, any>, module:http.Agent | module:https.Agent>} */
 const _cachedHttpAgents = new WeakMap();
 
@@ -206,5 +216,17 @@ util.createIOReceiver = function (socket, defaultOptions) {
     return ioReceiver;
 
 }; // createIOReceiver
+
+/**
+ * @param {{[key: string]: Promise<any>}} source
+ * @returns {Promise<{[key: string]: any}>}
+ */
+util.asyncMapObject = async function (source) {
+    const sourceEntries = Object.entries(source);
+    const valueMapper   = promise => util.isFunction(promise) ? promise() : promise;
+    const resultMapper  = async ([key, value]) => [key, await valueMapper(value)];
+    const resultEntries = await Promise.all(sourceEntries.map(resultMapper));
+    return Object.fromEntries(resultEntries);
+};
 
 module.exports = Object.freeze(util);

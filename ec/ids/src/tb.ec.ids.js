@@ -1,7 +1,7 @@
 const
-    util    = require('./tb.ec.ids.util.js'),
-    config  = require('./tb.ec.ids.config.js'),
-    testing = require('@nrd/fua.module.testing');
+    util     = require('./tb.ec.ids.util.js'),
+    defaults = require('./tb.ec.ids.defaults.js'),
+    testing  = require('@nrd/fua.module.testing');
 
 /**
  * @type {fua.module.testing.TestingEcosystem}
@@ -9,22 +9,26 @@ const
  */
 module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
-    async initializer(args = {}) {
+    async initializer({config}) {
+        config = util.extendObject({}, defaults, config || {});
 
-        const [aliceSocket, bobSocket, dapsTweakerSocket, dapsObserverSocket] = await Promise.all([
-            util.connectIOSocket(config.alice.url, config.socketIO.options),
-            util.connectIOSocket(config.bob.url, config.socketIO.options),
-            util.connectIOSocket(config.daps.tweakerUrl, config.socketIO.options),
-            util.connectIOSocket(config.daps.observerUrl, config.socketIO.options)
-        ]);
+        const
+            sockets = await util.asyncMapObject({
+                alice:        util.connectIOSocket(config.alice.url, config.socketIO.options),
+                bob:          util.connectIOSocket(config.bob.url, config.socketIO.options),
+                dapsTweaker:  util.connectIOSocket(util.joinURL(config.daps.url, config.daps.tweakerPath), config.socketIO.options),
+                dapsObserver: util.connectIOSocket(util.joinURL(config.daps.url, config.daps.observerPath), config.socketIO.options)
+            }),
+            methods = {
+                callAlice:   util.createIOEmitter(sockets.alice, {timeout: 60e3}),
+                callBob:     util.createIOEmitter(sockets.bob, {timeout: 60e3}),
+                tweakDAPS:   util.createIOEmitter(sockets.dapsTweaker, {timeout: 60e3}),
+                observeDAPS: util.createIOReceiver(sockets.dapsObserver, {timeout: 60e3})
+            };
 
-        Object.defineProperties(this, {
-            callAlice:   {value: util.createIOEmitter(aliceSocket, {timeout: 60e3})},
-            callBob:     {value: util.createIOEmitter(bobSocket, {timeout: 60e3})},
-            tweakDAPS:   {value: util.createIOEmitter(dapsTweakerSocket, {timeout: 60e3})},
-            observeDAPS: {value: util.createIOReceiver(dapsObserverSocket, {timeout: 60e3})}
-        });
-
+        Object.defineProperties(this, Object.fromEntries(
+            Object.entries(methods).map(([key, value]) => [key, {value}])
+        ));
     }, // initialize
     testMethods:    [
         // require('./tm/tb.ec.ids.tm.rc_refreshDAT.js'),
