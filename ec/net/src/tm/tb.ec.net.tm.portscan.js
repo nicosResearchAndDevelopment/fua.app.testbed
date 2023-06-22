@@ -12,7 +12,7 @@ module.exports = new testing.Method({
     async executor(token) {
         const
             output       = await cmd_nmap(token.param.host),
-            [tableMatch] = output.replace(/\r/g, '').match(/PORT.*?(?=\n\n|$)/s) || [],
+            [tableMatch] = output.replace(/\r/g, '').match(/PORT.*?(?=\n\n|$)/s) || [''],
             tableRows    = tableMatch.split('\n'),
             tableHeader  = tableRows.shift(),
             tableFields  = tableHeader.split(/\s+/g).map(value => value.toLowerCase()),

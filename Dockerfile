@@ -33,7 +33,11 @@ RUN mkdir -p /opt/gbx
 COPY --from=builder /opt/gbx/node_modules /opt/gbx/node_modules
 ENV PATH="$PATH:/opt/gbx/node_modules/.bin"
 
-# 7. Define image setup and application entrypoint.
+# 7. Install additionally required system packages.
+
+RUN apk add nmap
+
+# 8. Define image setup and application entrypoint.
 
 EXPOSE $SERVER_PORT
 HEALTHCHECK CMD fua.app.testbed.healthcheck
