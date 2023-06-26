@@ -5,7 +5,8 @@ const
     BasicAuth  = require('@nrd/fua.agent.amec/BasicAuth'),
     ecosystems = {
         net: require('../ec/net/src/tb.ec.net.js'),
-        ids: require('../ec/ids/src/tb.ec.ids.js')
+        ids: require('../ec/ids/src/tb.ec.ids.js'),
+        dev: require('../ec/dev/src/tb.ec.dev.js')
     };
 
 require('@nrd/fua.core.app').launch({
