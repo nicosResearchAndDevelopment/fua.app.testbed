@@ -1,7 +1,7 @@
 const
     connector_config = require('../../data/daps/cert/connector/client.js');
 
-exports.uri = 'https://testbed.nicos-rd.com/';
+exports.uri = 'https://tb.nicos-rd.com/';
 exports.id  = connector_config.meta.SKIAKI;
 // exports.key        = connector_config.key;
 // exports.pub       = connector_config.pub;

@@ -2,7 +2,7 @@ const
     tls_config = require('../../data/server/cert/tls-server/server.js');
 
 exports.schema   = 'https';
-exports.hostname = process.env.SERVER_HOST || 'testbed.nicos-rd.com';
+exports.hostname = process.env.SERVER_HOST || 'localhost';
 exports.port     = Number(process.env.SERVER_PORT || 8080);
 
 exports.options = {
