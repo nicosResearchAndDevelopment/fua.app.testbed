@@ -18,7 +18,8 @@ module.exports = async function TestbedApp(
 
     agent.app.get('/about', (request, response) => {
         const about = {
-            issuer: `${config.server.schema}://${config.server.hostname}:${config.server.port}/`
+            issuer:           `${config.server.schema}://${config.server.hostname}:${config.server.port}/`,
+            software_version: config.version
         };
         response.type('json').send(JSON.stringify(about));
     });
