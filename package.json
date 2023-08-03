@@ -43,7 +43,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@git02.int.nsc.ag:10022/research/fua/app/nrd-testbed.git"
+    "url": "ssh://git@git02.int.nsc.ag:10022/research/fua/app/testbed.git"
   },
   "keywords": [],
   "author": "spetrac@nicos-ag.com",
