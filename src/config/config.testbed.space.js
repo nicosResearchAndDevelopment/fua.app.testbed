@@ -29,7 +29,6 @@ exports.store = {
                 'dct:format':     'application/fua.load+json'
             }
             // require('@nrd/fua.resource.ontology'),
-            // require('@nrd/fua.resource.universe'),
             // require('@nrd/fua.resource.ontology/rdf'),
             // require('@nrd/fua.resource.ontology/rdfs'),
             // require('@nrd/fua.resource.ontology/owl'),
