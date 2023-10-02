@@ -2,9 +2,9 @@ const
     util                 = require('./code/util.testbed.js'),
     path                 = require('path'),
     express              = require('express'),
-    Middleware_LDP       = require('@nrd/fua.middleware.ldp'),
-    Middleware_WEB       = require('@nrd/fua.middleware.web'),
-    Middleware_WEB_login = require('@nrd/fua.middleware.web/login');
+    Middleware_LDP       = require('@nrd/fua.service.ldp'),
+    Middleware_WEB       = require('@nrd/fua.service.ui'),
+    Middleware_WEB_login = require('@nrd/fua.service.ui/login');
 
 module.exports = async function TestbedApp(
     {
