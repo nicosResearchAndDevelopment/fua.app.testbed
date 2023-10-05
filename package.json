@@ -17,7 +17,7 @@
     "socket.io-client": "^3.1.0",
     "node-fetch": "^2.6.1",
     "@nrd/fua.agent.server": "^1.0.1",
-    "@nrd/fua.agent.amec": "^1.0.1",
+    "@nrd/fua.agent.amec": "^1.0.2",
     "@nrd/fua.core.app": "^1.0.3",
     "@nrd/fua.core.util": "^1.0.8",
     "@nrd/fua.ids.agent.connector": "^1.0.1",
