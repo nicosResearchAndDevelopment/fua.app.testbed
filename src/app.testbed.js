@@ -4,7 +4,8 @@ const
     express              = require('express'),
     Middleware_LDP       = require('@nrd/fua.service.ldp'),
     Middleware_WEB       = require('@nrd/fua.service.ui'),
-    Middleware_WEB_login = require('@nrd/fua.service.ui/login');
+    Middleware_WEB_login = require('@nrd/fua.service.ui/login'),
+    Events               = require('@nrd/fua.agent.events');
 
 module.exports = async function TestbedApp(
     {
@@ -172,7 +173,7 @@ module.exports = async function TestbedApp(
         });
     }); // io.on('connection')
 
-    agent.event.on('**', (event) => {
+    Events.on('**', (event) => {
         util.logObject(event);
         agent.io.to('terminal').emit('printData', {
             'prov': '[Testbed]',
