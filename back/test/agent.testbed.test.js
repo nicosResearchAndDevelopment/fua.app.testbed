@@ -1,15 +1,15 @@
 const
     {describe, test}                        = require('mocha'),
     expect                                  = require('expect'),
-    TestbedAgent                            = require('../src/code/agent.testbed.js'),
+    TestbedAgent                            = require('../code/agent.testbed.js'),
     {Space}                                 = require('@nrd/fua.module.space'),
     {TestingProvider, Ecosystem, TestToken} = require('@nrd/fua.module.testing'),
     ecosystems                              = {
-        net: require('../ec/net/src/tb.ec.net.js'),
-        ids: require('../ec/ids/src/tb.ec.ids.js')
+        net: require('../../ec/net/src/tb.ec.net.js'),
+        ids: require('../../ec/ids/src/tb.ec.ids.js')
     },
-    config                                  = require('../src/config/config.testbed.js'),
-    aliceCerts                              = require('../ec/ids/cert/alice/index.js');
+    config                                  = require('../config/config.testbed.js'),
+    aliceCerts                              = require('../../ec/ids/cert/alice/index.js');
 
 describe('agent.testbed', function () {
 
