@@ -135,7 +135,7 @@ module.exports = async function ({server: {app, io}, space: {space}, tb, amec, e
 
     app.use('/data', Middleware_LDP({
         space:      space,
-        rootFolder: path.join(__dirname, '../data/resource'),
+        rootFolder: path.join(__dirname, '../../data/resource'),
         baseIRI:    config.ldp.uri.replace(/[/#]$/, '')
     }));
 
