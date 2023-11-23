@@ -10,14 +10,17 @@ const
 module.exports = new testing.Ecosystem({
     '@id': 'urn:tb:ec:ids',
     async initializer({config}) {
-        config = util.extendObject({}, defaults, config || {});
+        config       = util.extendObject({}, defaults, config || {});
+        config.alice = util.extendObject({}, config.socketIO, config.alice || {});
+        config.bob   = util.extendObject({}, config.socketIO, config.bob || {});
+        config.daps  = util.extendObject({}, config.socketIO, config.daps || {});
 
         const
             sockets = await util.asyncMapObject({
-                alice:        util.connectIOSocket(config.alice.url, config.socketIO.options),
-                bob:          util.connectIOSocket(config.bob.url, config.socketIO.options),
-                dapsTweaker:  util.connectIOSocket(util.joinURL(config.daps.url, config.daps.tweakerPath), config.socketIO.options),
-                dapsObserver: util.connectIOSocket(util.joinURL(config.daps.url, config.daps.observerPath), config.socketIO.options)
+                alice:        util.connectIOSocket(config.alice.url, config.alice.options),
+                bob:          util.connectIOSocket(config.bob.url, config.bob.options),
+                dapsTweaker:  util.connectIOSocket(util.joinURL(config.daps.url, config.daps.tweakerPath), config.daps.options),
+                dapsObserver: util.connectIOSocket(util.joinURL(config.daps.url, config.daps.observerPath), config.daps.options)
             }),
             methods = {
                 callAlice:   util.createIOEmitter(sockets.alice, {timeout: 60e3}),

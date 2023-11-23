@@ -123,7 +123,7 @@ util.connectIOSocket = async function (url = 'http://localhost', options = {}) {
                 socket.off('connect', onConnect);
                 socket.io.off('reconnect_failed', onFail);
                 socket.io.off('reconnect_error', onError);
-                const err = lastError || new Error('initial connect timed out');
+                const err = lastError || new Error('initial connect timed out (' + url + ')');
                 reject(err);
             }, options.connectTimeout);
         }

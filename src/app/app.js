@@ -6,10 +6,9 @@ const
     express              = require('express'),
     Middleware_LDP       = require('@nrd/fua.service.ldp'),
     Middleware_WEB       = require('@nrd/fua.service.ui'),
-    Middleware_WEB_login = require('@nrd/fua.service.ui/login'),
-    Events               = require('@nrd/fua.agent.events');
+    Middleware_WEB_login = require('@nrd/fua.service.ui/login');
 
-module.exports = async function ({server: {app, io}, space: {space}, tb, amec, ...config}) {
+module.exports = async function ({server: {app, io}, space: {space}, tb, amec, events, ...config}) {
 
     app.use(function (request, response, next) {
         tty.log.request(request);
@@ -17,11 +16,7 @@ module.exports = async function ({server: {app, io}, space: {space}, tb, amec, .
     });
 
     app.get('/about', (request, response) => {
-        const about = {
-            issuer:           `${config.server.schema}://${config.server.hostname}:${config.server.port}/`,
-            software_version: config.version
-        };
-        response.type('json').send(JSON.stringify(about));
+        response.type('json').send(JSON.stringify(config.about));
     });
 
     app.get('/', (request, response) => response.redirect('/browse'));
@@ -136,7 +131,7 @@ module.exports = async function ({server: {app, io}, space: {space}, tb, amec, .
         res: {pattern: '/nicos-rd/*'}
     }));
 
-    app.use('/browse', express.static(path.join(__dirname, 'browse')));
+    app.use('/browse', express.static(path.join(__dirname, '../browse')));
 
     app.use('/data', Middleware_LDP({
         space:      space,
@@ -167,7 +162,7 @@ module.exports = async function ({server: {app, io}, space: {space}, tb, amec, .
         });
     }); // io.on('connection')
 
-    Events.on('**', (event) => {
+    events.on('**', (event) => {
         tty.log(event);
         io.to('terminal').emit('printData', {
             'prov': '[Testbed]',
