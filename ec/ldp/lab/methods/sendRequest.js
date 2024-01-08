@@ -1,6 +1,3 @@
-const
-    fetch = require('node-fetch');
-
 // REM previous version
 //exports['send-request'] = async function ({url, method, headers, body}) {
 //    const

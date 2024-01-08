@@ -1,5 +1,4 @@
 const
-    fetch   = require("node-fetch"),
     id      = "https://localhost/ec/tests/getResource/",
     version = "0-0-1",
     //${FIR_function_documentation}
