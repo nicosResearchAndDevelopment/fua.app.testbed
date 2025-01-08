@@ -1,9 +1,9 @@
 const
     util        = require('./util.testbed.js'),
-    ServerAgent = require('@nrd/fua.agent.server'),
-    // {PEP}       = require('@nrd/fua.decide.pep'),
-    DAPSAgent   = require('@nrd/fua.ids.agent.daps'),
-    testing     = require('@nrd/fua.module.testing');
+    ServerAgent = require('@fua/agent.server'),
+    // {PEP}       = require('@fua/decide.pep'),
+    DAPSAgent   = require('@fua/ids.agent.daps'),
+    testing     = require('@fua/module.testing');
 
 class TestbedAgent extends ServerAgent {
 

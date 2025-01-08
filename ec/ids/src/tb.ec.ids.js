@@ -1,7 +1,7 @@
 const
     util     = require('./tb.ec.ids.util.js'),
     defaults = require('./tb.ec.ids.defaults.js'),
-    testing  = require('@nrd/fua.module.testing');
+    testing  = require('@fua/module.testing');
 
 /**
  * @type {fua.module.testing.TestingEcosystem}

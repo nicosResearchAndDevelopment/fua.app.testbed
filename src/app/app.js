@@ -1,12 +1,12 @@
 const
-    assert               = require('@nrd/fua.core.assert'),
-    is                   = require('@nrd/fua.core.is'),
-    tty                  = require('@nrd/fua.core.tty'),
+    assert               = require('@fua/core.assert'),
+    is                   = require('@fua/core.is'),
+    tty                  = require('@fua/core.tty'),
     path                 = require('path'),
     express              = require('express'),
-    Middleware_LDP       = require('@nrd/fua.service.ldp'),
-    Middleware_WEB       = require('@nrd/fua.service.ui'),
-    Middleware_WEB_login = require('@nrd/fua.service.ui/login');
+    Middleware_LDP       = require('@fua/service.ldp'),
+    Middleware_WEB       = require('@fua/service.ui'),
+    Middleware_WEB_login = require('@fua/service.ui/login');
 
 module.exports = async function ({server: {app, io}, space: {space}, tb, amec, events, ...config}) {
 

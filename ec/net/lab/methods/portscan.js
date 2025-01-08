@@ -1,6 +1,6 @@
 const
-    util               = require('@nrd/fua.core.util'),
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    util               = require('@fua/core.util'),
+    {ExecutionProcess} = require('@fua/module.subprocess'),
     //
     id                 = "/nmap#",
     version            = "0-0-2",

@@ -1,6 +1,6 @@
 const
     util    = require('../tb.ec.net.util.js'),
-    testing = require('@nrd/fua.module.testing');
+    testing = require('@fua/module.testing');
 
 /** @type {fua.module.testing.TestCase} */
 module.exports = new testing.Case({

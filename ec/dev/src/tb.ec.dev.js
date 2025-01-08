@@ -1,6 +1,6 @@
 const
-    util    = require('@nrd/fua.core.util'),
-    testing = require('@nrd/fua.module.testing');
+    util    = require('@fua/core.util'),
+    testing = require('@fua/module.testing');
 
 /** @type {fua.module.testing.TestingEcosystem} */
 module.exports = new testing.Ecosystem({

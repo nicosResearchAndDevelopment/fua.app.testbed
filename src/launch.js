@@ -2,7 +2,7 @@
 
 const
     path    = require('path'),
-    App     = require('@nrd/fua.agent.app'),
+    App     = require('@fua/agent.app'),
     Testbed = require('./app/testbed.js');
 
 App.launch({
@@ -53,7 +53,7 @@ App.launch({
         app:     true,
         io:      true,
         session: {
-            secret:            '@nrd/fua.app.testbed',
+            secret:            '@fua/app.testbed',
             resave:            false,
             saveUninitialized: false
         }
@@ -78,7 +78,7 @@ App.launch({
                         'dct:identifier': path.join(__dirname, '../data/load.json'),
                         'dct:format':     'application/fua.load+json'
                     },
-                    require('@nrd/fua.resource.ontology.core')
+                    require('@fua/resource.ontology.core')
                 ]
             }
         }

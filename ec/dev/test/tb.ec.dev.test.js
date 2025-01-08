@@ -1,7 +1,7 @@
 const
     {describe, test, before} = require('mocha'),
     expect                   = require('expect'),
-    {TestToken}              = require('@nrd/fua.module.testing'),
+    {TestToken}              = require('@fua/module.testing'),
     dev                      = require('../src/tb.ec.dev.js'),
     config                   = {};
 

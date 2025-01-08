@@ -2,8 +2,8 @@ const
     {describe, test}                        = require('mocha'),
     expect                                  = require('expect'),
     TestbedAgent                            = require('../code/agent.testbed.js'),
-    {Space}                                 = require('@nrd/fua.module.space'),
-    {TestingProvider, Ecosystem, TestToken} = require('@nrd/fua.module.testing'),
+    {Space}                                 = require('@fua/module.space'),
+    {TestingProvider, Ecosystem, TestToken} = require('@fua/module.testing'),
     ecosystems                              = {
         net: require('../../ec/net/src/tb.ec.net.js'),
         ids: require('../../ec/ids/src/tb.ec.ids.js')

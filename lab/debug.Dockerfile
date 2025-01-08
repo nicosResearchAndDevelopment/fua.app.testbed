@@ -15,7 +15,7 @@ RUN echo -e "@nrd:registry=${NRD_REGISTRY}\n${NRD_REGISTRY#http*:}:_authToken=${
 
 # 3. Install the application via npm.
 
-RUN npm install @nrd/fua.app.testbed
+RUN npm install @fua/app.testbed
 
 # 4. use lts-alpine as runner to reduce image size.
 

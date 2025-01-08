@@ -1,9 +1,9 @@
 const
-    uuid               = require('@nrd/fua.core.uuid'),
+    uuid               = require('@fua/core.uuid'),
     //
     id                 = "/tshark-sniff#", // TODO : better id
     version            = "0-0-1",
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    {ExecutionProcess} = require('@fua/module.subprocess'),
     cmd_tshark         = ExecutionProcess('tshark', {encoding: 'utf-8'})
 ;
 

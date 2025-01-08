@@ -2,14 +2,14 @@
 
 const
     util       = require('./code/util.testbed.js'),
-    BasicAuth  = require('@nrd/fua.agent.amec/BasicAuth'),
+    BasicAuth  = require('@fua/agent.amec/BasicAuth'),
     ecosystems = {
         net: require('../ec/net/src/tb.ec.net.js'),
         ids: require('../ec/ids/src/tb.ec.ids.js'),
         dev: require('../ec/dev/src/tb.ec.dev.js')
     };
 
-require('@nrd/fua.core.app').launch({
+require('@fua/core.app').launch({
     config: {
         default: require('./config/config.testbed.js')
     },

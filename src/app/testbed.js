@@ -1,16 +1,16 @@
 const
     Testbed            = exports,
     {name: identifier} = require('../../package.json'),
-    assert             = require('@nrd/fua.core.assert');
+    assert             = require('@fua/core.assert');
 
 assert(!global[identifier], 'unable to load a second uncached version of the singleton ' + identifier);
 Object.defineProperty(global, identifier, {value: Testbed, configurable: false, writable: false, enumerable: false});
 
 const
     _Testbed          = Object.create(null),
-    is                = require('@nrd/fua.core.is'),
-    tty               = require('@nrd/fua.core.tty'),
-    testing           = require('@nrd/fua.module.testing'),
+    is                = require('@fua/core.is'),
+    tty               = require('@fua/core.tty'),
+    testing           = require('@fua/module.testing'),
     EventEmitter      = require('events'),
     InitializeOptions = {
         uri:       is.string,

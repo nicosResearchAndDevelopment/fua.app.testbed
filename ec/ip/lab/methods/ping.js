@@ -1,7 +1,7 @@
 const
     id                 = "/windows-ping#",
     version            = "0-0-2",
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    {ExecutionProcess} = require('@fua/module.subprocess'),
     cmd_ping           = ExecutionProcess('ping', {encoding: 'cp437'})
 ; // const
 

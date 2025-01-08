@@ -1,5 +1,5 @@
 const
-    _util      = require('@nrd/fua.core.util'),
+    _util      = require('@fua/core.util'),
     util       = exports = module.exports = {
         ..._util,
         assert: _util.Assert('tb.ec.ids'),
@@ -10,7 +10,7 @@ const
         url:    require('url')
     },
     {io}       = require('socket.io-client'),
-    subprocess = require('@nrd/fua.module.subprocess'),
+    subprocess = require('@fua/module.subprocess'),
     NODE       = subprocess.RunningProcess('node', {verbose: false, cwd: __dirname});
 
 util.joinURL = function (base, ...segments) {

@@ -1,6 +1,6 @@
 const
-    uuid             = require('@nrd/fua.core.uuid'),
-    {RunningProcess} = require('@nrd/fua.module.subprocess'),
+    uuid             = require('@fua/core.uuid'),
+    {RunningProcess} = require('@fua/module.subprocess'),
     EventEmitter     = require('events'),
     cmd_tshark       = RunningProcess('tshark', {verbose: false}),
     emitter          = new EventEmitter(),

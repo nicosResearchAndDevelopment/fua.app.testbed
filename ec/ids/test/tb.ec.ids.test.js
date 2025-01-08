@@ -2,8 +2,8 @@ const
     {describe, test, before} = require('mocha'),
     expect                   = require('expect'),
     https                    = require('https'),
-    {Ecosystem, TestToken}   = require('@nrd/fua.module.testing'),
-    DAPSClient               = require('@nrd/fua.ids.client.daps'),
+    {Ecosystem, TestToken}   = require('@fua/module.testing'),
+    DAPSClient               = require('@fua/client.daps'),
     ecIDS                    = require('../src/tb.ec.ids.js'),
     aliceCerts               = require('../data/alice/cert/index.js');
 

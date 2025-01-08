@@ -1,6 +1,6 @@
 const
     util    = require('../tb.ec.ids.util.js'),
-    testing = require('@nrd/fua.module.testing');
+    testing = require('@fua/module.testing');
 
 /** @type {fua.module.testing.TestMethod} */
 module.exports = new testing.Method({

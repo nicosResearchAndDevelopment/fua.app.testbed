@@ -1,7 +1,7 @@
 const
     util               = require('../tb.ec.net.util.js'),
-    testing            = require('@nrd/fua.module.testing'),
-    {ExecutionProcess} = require('@nrd/fua.module.subprocess'),
+    testing            = require('@fua/module.testing'),
+    {ExecutionProcess} = require('@fua/module.subprocess'),
     OS_WIN32           = util.OS_PLATFORM === 'win32',
     cmd_nmap           = ExecutionProcess('nmap', OS_WIN32 ? {encoding: 'cp437'} : {});
 
